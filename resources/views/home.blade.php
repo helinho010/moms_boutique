@@ -20,5 +20,4 @@
       <div class="alert alert-success" role="alert">
         A simple success alert—check it out!
       </div>
-      <h1>Example heading <span class="badge bg-secondary">New</span></h1>
 @endsection
