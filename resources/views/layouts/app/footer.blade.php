@@ -3,22 +3,19 @@
         <div class="row text-muted">
             <div class="col-6 text-start">
                 <p class="mb-0">
-                    <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>AdminKit</strong></a> - <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>Bootstrap Admin Template</strong></a>								&copy;
+                    <a class="text-muted" href="#"><strong>Mom's Boutique</strong></a>
+                    <img src="{{asset('img/bandera_Bolivia.png')}}" alt="Bolivia" style="width: 20px; height: 20px; border-radius:50%">
                 </p>
             </div>
             <div class="col-6 text-end">
                 <ul class="list-inline">
                     <li class="list-inline-item">
-                        <a class="text-muted" href="https://adminkit.io/" target="_blank">Support</a>
+                        <i class="fa-brands fa-facebook" style="color: blue"></i>
+                        <a class="text-muted" href="#" target="_blank">Facebook</a>
                     </li>
                     <li class="list-inline-item">
-                        <a class="text-muted" href="https://adminkit.io/" target="_blank">Help Center</a>
-                    </li>
-                    <li class="list-inline-item">
-                        <a class="text-muted" href="https://adminkit.io/" target="_blank">Privacy</a>
-                    </li>
-                    <li class="list-inline-item">
-                        <a class="text-muted" href="https://adminkit.io/" target="_blank">Terms</a>
+                        <i class="fa-brands fa-instagram" style="color: #DD2A7B"></i>
+                        <a class="text-muted" href="" target="_blank">Instagram</a>
                     </li>
                 </ul>
             </div>
