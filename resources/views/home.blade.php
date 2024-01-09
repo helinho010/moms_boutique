@@ -2,7 +2,7 @@
 
 @section('title','Inicio')
 @section('h-title','Bienvenido a Mom\'s Boutique')
-@section('card-title','Bienvenidos a Mom\'s Boutique')
+@section('card-title','Reportes')
 
 @section('content')
     @if (session('status'))
@@ -11,7 +11,7 @@
         </div>
     @endif
 
-    <div class="alert alert-primary" role="alert">
+      <div class="alert alert-primary" role="alert">
         A simple primary alert—check it out!
       </div>
       <div class="alert alert-secondary" role="alert">

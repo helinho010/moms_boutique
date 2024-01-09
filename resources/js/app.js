@@ -17,3 +17,4 @@ import "./modules/vector-maps";
 
 //Fontawesome
 import "@fortawesome/fontawesome-free/js/all";
+
