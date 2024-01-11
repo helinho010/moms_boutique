@@ -5,7 +5,7 @@
         </a>
         <ul class="sidebar-nav">
             <li class="sidebar-header">
-                Pages
+                Opciones
             </li>
             <li class="sidebar-item active">
                 <a class="sidebar-link" href="#">
@@ -28,20 +28,70 @@
             </li>
 
             <li class="sidebar-item">
-                <a class="sidebar-link" href="#">
+                <a class="sidebar-link" href="{{ route('home_categoria') }}">
                     <i class="fa fa-user"></i>
-                    <span class="align-middle">Profile</span>
+                    <span class="align-middle">Categoria</span>
                 </a>
             </li>
 
             <li class="sidebar-item">
-                <a class="sidebar-link" href="#">
+                <a class="sidebar-link" href="{{ route('home_tipo_ingreso_salida') }}">
                     <i class="fa-solid fa-envelope"></i>
-                    <span class="align-middle">Invoice</span>
+                    <span class="align-middle">Tipo Ingreo Salida</span>
                 </a>
             </li>
 
-            <li class="sidebar-header">
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('home_evento') }}">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="align-middle">Evento</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('home_producto') }}">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="align-middle">Producto</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('home_sucursal') }}">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="align-middle">Sucurusal</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('home_inventario_interno') }}">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="align-middle">Inventario Interno</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('home_inventario_externo') }}">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="align-middle">Inventario Externo</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('home_detalle_venta')}}">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="align-middle">Venta</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('home_tipo_pago') }}">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="align-middle">Tipo Pago</span>
+                </a>
+            </li>
+            
+
+            {{-- <li class="sidebar-header">
                 Components
             </li>
             <li class="sidebar-item">
@@ -119,7 +169,7 @@
                     <li class="sidebar-item"><a class="sidebar-link" href="#">ApexCharts <span
                                 class="sidebar-badge badge bg-primary">Pro</span></a></li>
                 </ul>
-            </li>
+            </li> --}}
         </ul>
     </div>
 </nav>

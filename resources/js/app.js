@@ -18,3 +18,5 @@ import "./modules/vector-maps";
 //Fontawesome
 import "@fortawesome/fontawesome-free/js/all";
 
+// select 2
+import 'select2/dist/js/select2.min.js';

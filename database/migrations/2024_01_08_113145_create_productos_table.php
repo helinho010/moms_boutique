@@ -17,9 +17,11 @@ return new class extends Migration
             $table->string('nombre');
             $table->double('precio',8,2);
             $table->string('talla');
+            $table->unsignedBigInteger('id_categoria');
+            $table->boolean('estado')->default(1)->comment('0 = inactivo, 1 = activo');
             $table->timestamps();
 
-            $table->unsignedBigInteger('id_categoria');
+            
             $table->foreign('id_categoria')
                   ->references('id')
                   ->on('categorias')

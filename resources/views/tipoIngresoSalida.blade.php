@@ -1,9 +1,8 @@
 @extends('layouts.plantillabase')
 
-@section('title','Categoria')
+@section('title','Tipo de Ingreso o Salida')
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('DataTables/datatables.min.css') }}">
     <style>
         table > tbody > tr > th > i{
             font-size: 20px;
@@ -16,13 +15,13 @@
         if (isset($_GET['exito'])) 
         {
             if ($_GET['exito'] == 1) {
-                echo '<div class="alert alert-success" role="alert">La Categoria se registro correctamente</div>';
+                echo '<div class="alert alert-success" role="alert">El Tipo de Ingreso o Salida se registro correctamente</div>';
             }else{
-                echo '<div class="alert alert-danger" role="alert">Error al registrar la Categoria</div>';
+                echo '<div class="alert alert-danger" role="alert">Error al registrar el Tipo de Ingreso o Salida</div>';
             }
         }
-        if ($errors->first('nombre') != '') {
-            echo '<div class="alert alert-danger" role="alert">'.$errors->first('nombre').'</div>';
+        if ($errors->first('tipo') != '') {
+            echo '<div class="alert alert-danger" role="alert">'.$errors->first('tipo').'</div>';
         }   
     @endphp
 @endsection
@@ -30,11 +29,11 @@
 @section('card-title')
     <div class="row">
         <div class="col">
-            <h4>Lista de Categorias</h4>
+            <h4>Lista de Tipos de Ingresos o Salidas</h4>
         </div>
         <div class="col text-end">
-            <button type="button" class="btn btn-success" id="modalCategoria" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <i class="fas fa-plus"></i> Agregar Categoria 
+            <button type="button" class="btn btn-success" id="modaltipoIngresoSalida" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <i class="fas fa-plus"></i> Agregar Tipo de Ingreso o Salida 
             </button>
         </div>
     </div>
@@ -44,7 +43,7 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <form action="{{ route('buscar_categoria') }}" method="POST" id="buscarformulario">
+            <form action="{{ route('buscar_tipo_ingreso_salida') }}" method="POST" id="buscarformulario">
                 @method('POST')
                 @csrf
                 <div class="input-group flex-nowrap">
@@ -61,29 +60,29 @@
             <thead>
                 <tr>
                   <th scope="col">Opciones</th>
-                  <th scope="col">Nombre Categoria</th>
+                  <th scope="col">Tipo</th>
                   <th scope="col">Estado</th>
                 </tr>
               </thead>
               <tbody>
-                @foreach ($categorias as $categoria)
+                @foreach ($tipoIngresoSalidas as $tipoIngresoSalida)
                   <tr>
                     <th scope="row">
-                      <i class="fas fa-edit fa-xl i" onclick='editarCategoria(@php echo json_encode(["id"=>$categoria->id,"nombre"=>$categoria->nombre]); @endphp)'></i>
+                      <i class="fas fa-edit fa-xl i" onclick='editartipoIngresoSalida(@php echo json_encode(["id"=>$tipoIngresoSalida->id,"tipo"=>$tipoIngresoSalida->tipo]); @endphp)'></i>
                       @php
-                        $dataCategoria = json_encode(['id'=>$categoria->id,'estado'=>$categoria->estado]);
-                        if ($categoria->estado == 1) 
+                        $datatipoIngresoSalida = json_encode(['id'=>$tipoIngresoSalida->id,'estado'=>$tipoIngresoSalida->estado]);
+                        if ($tipoIngresoSalida->estado == 1) 
                         {
-                            echo  '<i class="fas fa-trash-alt fa-xl" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>'; 
+                            echo  '<i class="fas fa-trash-alt fa-xl" onclick=\'habilitarDesabilitar('.$datatipoIngresoSalida.')\'></i>'; 
                         }else{
-                            echo '<i class="fas fa-check-circle fa-xl" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>';
+                            echo '<i class="fas fa-check-circle fa-xl" onclick=\'habilitarDesabilitar('.$datatipoIngresoSalida.')\'></i>';
                         }
                       @endphp
 
                     </th>
-                    <td>{{ $categoria->nombre }}</td>
+                    <td>{{ $tipoIngresoSalida->tipo }}</td>
                     <td> 
-                        @if ( $categoria->estado == 1 )
+                        @if ( $tipoIngresoSalida->estado == 1 )
                             <span class="badge bg-success">Activo</span>    
                         @else
                             <span class="badge bg-warning">Inactivo</span>    
@@ -93,7 +92,7 @@
                 @endforeach
               </tbody>
         </table>
-        {{ $categorias->links() }}
+        {{ $tipoIngresoSalidas->links() }}
     </div>
 
         <!-- Modal -->
@@ -101,22 +100,22 @@
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Nueva Categoria</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Nueva Tipo de Ingreso o Salida</h5>
                 <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{{ route('nueva_categoria') }}" id="nueva_categoria">
+                    <form method="POST" action="{{ route('nuevo_tipo_ingreso_salida') }}" id="formularioTipoIngresoSalida">
                         @csrf
                         @method('POST')
                         <div class="mb-3">
-                          <label for="exampleInputEmail1" class="form-label">Nombre de la Categoria:</label>
-                          <input type="text" class="form-control" name="nombre" id="nombre_categoria" aria-describedby="emailHelp" placeholder="Introduzca el nombre de la Categoria"> 
+                          <label for="exampleInputEmail1" class="form-label">Nombre del tipo de Ingreso o Salida:</label>
+                          <input type="text" class="form-control" name="tipo" id="tipo_ingreso_salida" aria-describedby="emailHelp" placeholder="Introduzca el tipo de ingreso o salida"> 
                         </div>
                       </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger cerrarModal" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-success" id="inputNombreModal">Guardar</button>
+                    <button type="button" class="btn btn-success" id="inputTipoModal">Guardar</button>
                 </div>
             </div>
             </div>
@@ -126,7 +125,6 @@
 
 @push('scripts')
 <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
-<script src="{{ asset('DataTables/datatables.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     
@@ -142,32 +140,42 @@
         if ($(this).attr('id') == 'inputBuscar') 
         {
             $("#buscarformulario").submit();
-        } else if ($(this).attr('id') == 'inputNombreModal') 
+        } else if ($(this).attr('id') == 'inputTipoModal') 
         {
-            $("#nueva_categoria").submit();
+            $("#formularioTipoIngresoSalida").submit();
         }
     });
 
-    function editarCategoria(categoria){
-        console.log(categoria.nombre);
-        $("#exampleModal").modal("show");
-        $("#exampleModalLabel").html("<h3>Editar Categoria</h3>");
-        $("#nueva_categoria").attr("action","{{ route('actualizar_categoria') }}");
-        $("#nueva_categoria").append('<input type="text" name="id" '+ 'value="'+ categoria.id +'"' +'hidden>');
-        $("#nombre_categoria").val(categoria.nombre);
-        $("#inputNombreModal").val("Actualizar");
-        $("#inputNombreModal").on('click',function(){
-            $("#nueva_categoria").submit();
-        });
+    function resestablecerValoresModal()
+    {
+        $("#exampleModalLabel").html("<h3>Nueva Tipo de Ingreso o Salida</h3>");
+        $("#formularioTipoIngresoSalida").attr("action","{{ route('nuevo_tipo_ingreso_salida') }}");
+        $("#tipo_ingreso_salida").val('');
+        $("#inputTipoModal").val("Guardar");     
     }
 
-    function habilitarDesabilitar(categoria)
+    function editartipoIngresoSalida(tipoIngresoSalida){
+        console.log(tipoIngresoSalida.tipo);
+        $("#exampleModal").modal("show");
+        $("#exampleModalLabel").html("<h3>Editar Tipo de Ingreso o Salida</h3>");
+        $("#formularioTipoIngresoSalida").attr("action","{{ route('actualizar_tipo_ingreso_salida') }}");
+        $("#formularioTipoIngresoSalida").append('<input type="text" name="id" '+ 'value="'+ tipoIngresoSalida.id +'"' +'hidden>');
+        $("#tipo_ingreso_salida").val(tipoIngresoSalida.tipo);
+        $("#inputTipoModal").val("Actualizar");
+        $("#inputTipoModal").on('click',function(){
+            $("#formularioTipoIngresoSalida").submit();
+            resestablecerValoresModal();
+        });
+        
+    }
+
+    function habilitarDesabilitar(tipoIngresoSalida)
     {
         let mensaje = '';
-        if(categoria.estado == 1){
-            mensaje = 'Esta seguro de deshabilitar la categoria?';
+        if(tipoIngresoSalida.estado == 1){
+            mensaje = 'Esta seguro de deshabilitar la tipoIngresoSalida?';
         }else{
-            mensaje = 'Esta seguro de habilitar la categoria?';
+            mensaje = 'Esta seguro de habilitar la tipoIngresoSalida?';
         }
 
         Swal.fire({
@@ -182,8 +190,8 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado',
-                        data: {"id":categoria.id, "estado":categoria.estado},
+                        url: '/actualizar_estado_tipo_ingreso_salida',
+                        data: {"id":tipoIngresoSalida.id, "estado":tipoIngresoSalida.estado},
                         success: function (response) {
                           Swal.fire("Cambio Guardado!", "", "success");        
                           location.reload();

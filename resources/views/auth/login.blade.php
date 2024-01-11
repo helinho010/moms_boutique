@@ -66,7 +66,7 @@ login-box
                         <button type="submit" class="btn btn-block btn-primary"><strong>{{ __('Login') }}  <i class="fa-solid fa-right-to-bracket"></i></strong></button>
                         <p class="mb-0">
                             <br>
-                            <a href="{{ route('register') }}" class="text-center">Registrar nuevo usuario</a>
+                            {{-- <a href="{{ route('register') }}" class="text-center">Registrar nuevo usuario</a> --}}
                         </p>
                     </div>
 

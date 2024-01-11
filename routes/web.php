@@ -1,14 +1,86 @@
 <?php
 
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\TipoPagoController;
+use App\Http\Controllers\TipoIngresoSalidaController;
+use App\Http\Controllers\EventoController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\SucursalController;
+use App\Http\Controllers\InventarioInternoController;
+use App\Http\Controllers\InventarioExternoController;
+use App\Http\Controllers\DetalleVentaController;
 use Illuminate\Support\Facades\Route;
 
 require(base_path('routes/route-list/route-auth.php'));
 
-// Categoria
-Route::get('/categoria', [CategoriaController::class,'index'])->name('home_categoria');
-Route::post('/categoria', [CategoriaController::class,'buscar'])->name('buscar_categoria');
-Route::post('/nueva_categoria',[CategoriaController::class,'store'])->name('nueva_categoria');
+Route::group(['middleware' => 'auth'], function () {
+    // Home
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    // Categoria
+    Route::get('/categoria', [CategoriaController::class,'index'])->name('home_categoria');
+    Route::post('/categoria', [CategoriaController::class,'buscar'])->name('buscar_categoria');
+    Route::post('/nueva_categoria',[CategoriaController::class,'store'])->name('nueva_categoria');
+    Route::post('/actualizar_categoria',[CategoriaController::class,'update'])->name('actualizar_categoria');
+    Route::post('/actualizar_estado',[CategoriaController::class,'update_estado'])->name('actualizar_estado');
+
+    // Tipo Ingreso Salida
+    Route::get('/tipo_ingreso_salida', [TipoIngresoSalidaController::class,'index'])->name('home_tipo_ingreso_salida');
+    Route::post('/tipo_ingreso_salida', [TipoIngresoSalidaController::class,'buscar'])->name('buscar_tipo_ingreso_salida');
+    Route::post('/nueva_tipo_ingreso_salida',[TipoIngresoSalidaController::class,'store'])->name('nuevo_tipo_ingreso_salida');
+    Route::post('/actualizar_tipo_ingreso_salida',[TipoIngresoSalidaController::class,'update'])->name('actualizar_tipo_ingreso_salida');
+    Route::post('/actualizar_estado_tipo_ingreso_salida',[TipoIngresoSalidaController::class,'update_estado'])->name('actualizar_estado_tipo_ingreso_salida');
+
+    // Evento
+    Route::get('/evento', [EventoController::class,'index'])->name('home_evento');
+    Route::post('/evento', [EventoController::class,'buscar'])->name('buscar_evento');
+    Route::post('/nuevo_evento',[EventoController::class,'store'])->name('nuevo_evento');
+    Route::post('/actualizar_evento',[EventoController::class,'update'])->name('actualizar_evento');
+    Route::post('/actualizar_estado_evento',[EventoController::class,'update_estado'])->name('actualizar_estado_evento');
+
+    // Producto
+    Route::get('/producto', [ProductoController::class,'index'])->name('home_producto');
+    Route::post('/producto', [ProductoController::class,'buscar'])->name('buscar_producto');
+    Route::post('/nuevo_producto',[ProductoController::class,'store'])->name('nuevo_producto');
+    Route::post('/actualizar_producto',[ProductoController::class,'update'])->name('actualizar_producto');
+    Route::post('/actualizar_estado_producto',[ProductoController::class,'update_estado'])->name('actualizar_estado_producto');
+
+    // Sucursal
+    Route::get('/sucursal', [SucursalController::class,'index'])->name('home_sucursal');
+    Route::post('/sucursal', [SucursalController::class,'buscar'])->name('buscar_sucursal');
+    Route::post('/nueva_sucursal',[SucursalController::class,'store'])->name('nueva_sucursal');
+    Route::post('/actualizar_sucursal',[SucursalController::class,'update'])->name('actualizar_sucursal');
+    Route::post('/actualizar_estado_sucursal',[SucursalController::class,'update_estado'])->name('actualizar_estado_sucursal');
+
+    // Inventario Interno
+    Route::get('/inventario_interno', [InventarioInternoController::class,'index'])->name('home_inventario_interno');
+    Route::post('/inventario_interno', [InventarioInternoController::class,'buscar'])->name('buscar_inventario_interno');
+    Route::post('/nuevo_inventario_interno',[InventarioInternoController::class,'store'])->name('nuevo_inventario_interno');
+    Route::post('/actualizar_inventario_interno',[InventarioInternoController::class,'update'])->name('actualizar_inventario_interno');
+    Route::post('/actualizar_estado_inventario_interno',[InventarioInternoController::class,'update_estado'])->name('actualizar_estado_inventario_interno');
+
+    // Inventario Externo
+    Route::get('/inventario_externo', [InventarioExternoController::class,'index'])->name('home_inventario_externo');
+    Route::post('/inventario_externo', [InventarioExternoController::class,'buscar'])->name('buscar_inventario_externo');
+    Route::post('/nuevo_inventario_externo',[InventarioExternoController::class,'store'])->name('nuevo_inventario_externo');
+    Route::post('/actualizar_inventario_externo',[InventarioExternoController::class,'update'])->name('actualizar_inventario_externo');
+    Route::post('/actualizar_estado_inventario_externo',[InventarioExternoController::class,'update_estado'])->name('actualizar_estado_inventario_externo');
+
+    // Detalle Venta
+    Route::get('/detalle_venta', [DetalleVentaController::class,'index'])->name('home_detalle_venta');
+    Route::post('/detalle_venta', [DetalleVentaController::class,'buscar'])->name('buscar_detalle_venta');
+    Route::post('/nuevo_detalle_venta',[DetalleVentaController::class,'store'])->name('nuevo_detalle_venta');
+    Route::post('/actualizar_detalle_venta',[DetalleVentaController::class,'update'])->name('actualizar_detalle_venta');
+    Route::post('/actualizar_estado_detalle_venta',[DetalleVentaController::class,'update_estado'])->name('actualizar_estado_detalle_venta');
+
+    // Tipo Pago
+    Route::get('/tipo_pago', [TipoPagoController::class,'index'])->name('home_tipo_pago');
+    Route::post('/tipo_pago', [TipoPagoController::class,'buscar'])->name('buscar_tipo_pago');
+    Route::post('/nuevo_tipo_pago',[TipoPagoController::class,'store'])->name('nuevo_tipo_pago');
+    Route::post('/actualizar_tipo_pago',[TipoPagoController::class,'update'])->name('actualizar_tipo_pago');
+    Route::post('/actualizar_estado_tipo_pago',[TipoPagoController::class,'update_estado'])->name('actualizar_estado_tipo_pago');
+
+});
+
+
 

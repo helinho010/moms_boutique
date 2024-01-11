@@ -43,4 +43,44 @@ class CategoriaController extends Controller
 
         return redirect()->route('home_categoria',['exito'=>$estado]);
     }
+
+    public function update(Request $request)
+    {
+        // dd($request);
+
+        $request->validate([
+           'nombre' => 'required|unique:categorias', 
+        ]);
+
+        $actualizarCategoria = Categoria::where("id",$request->id)->first();
+        $actualizarCategoria->nombre = $request->nombre;
+
+        $estado = 0;
+        if ($actualizarCategoria->save()) {
+            $estado = 1;
+        }
+
+        return redirect()->route('home_categoria',['actualizado'=>$estado]);
+    }
+
+    public function update_estado(Request $request)
+    {
+        switch ($request->estado) 
+        {
+            case 0:
+                $categoria = Categoria::where("id",$request->id)->first();
+                $categoria->estado = 1;
+            break;
+
+            case 1:
+                $categoria = Categoria::where("id",$request->id)->first();
+                $categoria->estado = 0;
+            break;
+            
+            default:
+                
+            break;
+        }
+        $categoria->save();
+    }
 }
