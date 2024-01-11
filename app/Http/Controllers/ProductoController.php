@@ -10,11 +10,22 @@ class ProductoController extends Controller
 {
     public function index()
     {
-        $productos = Producto::orderBy('updated_at','desc')->paginate(10);
-        $categoriasSelect = Categoria::where('estado',1)->get();
+        $productos = Producto::selectRaw('productos.id,
+                                        productos.codigo_producto,
+                                        productos.nombre,
+                                        productos.precio,
+                                        productos.talla,
+                                        productos.estado,
+                                        productos.created_at,
+                                        productos.updated_at, 
+                                        productos.id_categoria,
+                                        categorias.nombre as nombre_categoria')
+                               ->join('categorias','categorias.id','productos.id_categoria')
+                               ->orderBy('updated_at','desc')
+                               ->paginate(10);
         $categorias = Categoria::all();
 
-        return view('producto',compact('productos','categorias','categoriasSelect'));
+        return view('producto',compact('productos','categorias'));
     }
 
     public function buscar(Request $request)
@@ -60,17 +71,19 @@ class ProductoController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'id_categoria' => 'required|numeric',
             'nombre' => 'required',
             'precio' => 'required',
             'talla' => 'required',
         ]);
 
         $actualizarProducto = Producto::where("id",$request->id)->first();
-        $actualizarProducto->nombre = $request->nit;
+        $actualizarProducto->nombre = $request->nombre;
         $actualizarProducto->precio = $request->precio;
         $actualizarProducto->talla = $request->talla;
-        $actualizarProducto->id_categoria = $request->id_categoria;
+        if (isset($request->id_categoria)) 
+        {
+            $actualizarProducto->id_categoria = $request->id_categoria;
+        }
         
         $estado = 0;
         if ($actualizarProducto->save()) {
@@ -82,16 +95,16 @@ class ProductoController extends Controller
 
     public function update_estado(Request $request)
     {
-        switch ($request->activo) 
+        switch ($request->estado) 
         {
             case 0:
                 $producto = Producto::where("id",$request->id)->first();
-                $producto->activo = 1;
+                $producto->estado = 1;
             break;
 
             case 1:
                 $producto = Producto::where("id",$request->id)->first();
-                $producto->activo = 0;
+                $producto->estado = 0;
             break;
             
             default:

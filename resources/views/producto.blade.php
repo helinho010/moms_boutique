@@ -98,6 +98,7 @@
                             "precio"=>$aux->precio,
                             "talla"=>$aux->talla,
                             "id_categoria"=>$aux->id_categoria,
+                            "arrayCategorias" => $categorias,
                             ]); @endphp)'>
                         </i>
                         @php
@@ -107,6 +108,7 @@
                             "nombre"=>$aux->nombre,
                             "precio"=>$aux->precio,
                             "talla"=>$aux->talla,
+                            "estado"=>$aux->estado,
                             "id_categoria"=>$aux->id_categoria,
                             ]);
                         if ($aux->estado == 1) 
@@ -122,12 +124,7 @@
                     <th>{{$aux->nombre}}</th>
                     <th>{{$aux->precio}}</th>
                     <th>{{$aux->talla}}</th>
-                    <th>@foreach ($categorias as $item)
-                            @if($item->id == $aux->id_categoria)
-                                {{ $item->nombre}}
-                            @endif   
-                        @endforeach
-                    </th>
+                    <th>{{$aux->nombre_categoria}}</th>
                     <td> 
                         @if ( $aux->estado == 1 )
                             <span class="badge bg-success">Activo</span>    
@@ -143,7 +140,7 @@
     </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -155,17 +152,21 @@
                         @csrf
                         @method('POST')
                         <div class="mb-3">
-                            <label for="nombre_producto" class="form-label">Categoria:</label>
                             {{-- <select class="select2" name="category">
-                                 @foreach($categorias as $categoria)
-                                    <option value="{{ $categoria->id }}">{{ "$categoria->nombre - $categoria->talla - $categoria->precio" }}</option>
+                                @foreach($categorias as $categoria)
+                                <option value="{{ $categoria->id }}">{{ "$categoria->nombre - $categoria->talla - $categoria->precio" }}</option>
                                 @endforeach 
-                             </select> --}}
+                            </select> --}}
+                             <label for="id_categoria_producto" class="form-label">Categoria:</label>
                              <select class="form-select" aria-label="Default select example" name="id_categoria" id="id_categoria_producto">
-                                <option selected>Seleccione una opcion...</option>
-                                @foreach ($categoriasSelect as $item)
-                                  <option value="{{ $item->id }}">{{ $item->nombre }}</option>      
-                                @endforeach
+                                <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
+                                    @foreach ($categorias as $item)
+                                       @if ($item->estado == 1)
+                                          <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                                        @else
+                                          <option value="{{ $item->id }}" disabled>{{ "$item->nombre (deshabilitado)" }}</option>
+                                       @endif
+                                    @endforeach
                              </select>
                         </div>
                         <div class="mb-3">
@@ -219,6 +220,7 @@
     {
         $("#exampleModalLabel").html("<h3>Nuevo Producto</h3>");
         $("#formularioTipoIngresoSalida").attr("action","{{ route('nuevo_producto') }}");
+        $("#id_categoria_producto").val('seleccionado');
         $("#nombre_producto").val('');
         $("#precio_producto").val('');
         $("#talla_producto").val('');
@@ -227,7 +229,6 @@
 
     function editar(item)
     {
-        console.log(item);
         $("#exampleModal").modal("show");
         $("#exampleModalLabel").html("<h3>Editar Producto</h3>");
         $("#formularioRegistroActualizacion").attr("action","{{ route('actualizar_producto') }}");
@@ -246,6 +247,7 @@
     function habilitarDesabilitar(item)
     {
         let mensaje = '';
+        console.log(item);
         if(item.estado == 1){
             mensaje = 'Esta seguro de deshabilitar el Producto?';
         }else{
