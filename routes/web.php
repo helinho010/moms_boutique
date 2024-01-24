@@ -41,6 +41,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Producto
     Route::get('/producto', [ProductoController::class,'index'])->name('home_producto');
     Route::post('/producto', [ProductoController::class,'buscar'])->name('buscar_producto');
+    Route::post('/buscarProductoId', [ProductoController::class,'buscarProductoId'])->name('buscar_producto_id');
     Route::post('/nuevo_producto',[ProductoController::class,'store'])->name('nuevo_producto');
     Route::post('/actualizar_producto',[ProductoController::class,'update'])->name('actualizar_producto');
     Route::post('/actualizar_estado_producto',[ProductoController::class,'update_estado'])->name('actualizar_estado_producto');
@@ -54,6 +55,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Inventario Interno
     Route::get('/inventario_interno', [InventarioInternoController::class,'index'])->name('home_inventario_interno');
+    Route::get('/data_inventario_interno', [InventarioInternoController::class,'listarInventraio']);
+    Route::post('/data_inventario_interno', [InventarioInternoController::class,'listarInventraio'])->name('data_inventario_interno');
     Route::post('/inventario_interno', [InventarioInternoController::class,'buscar'])->name('buscar_inventario_interno');
     Route::post('/nuevo_inventario_interno',[InventarioInternoController::class,'store'])->name('nuevo_inventario_interno');
     Route::post('/actualizar_inventario_interno',[InventarioInternoController::class,'update'])->name('actualizar_inventario_interno');
@@ -62,6 +65,8 @@ Route::group(['middleware' => 'auth'], function () {
     // Inventario Externo
     Route::get('/inventario_externo', [InventarioExternoController::class,'index'])->name('home_inventario_externo');
     Route::post('/inventario_externo', [InventarioExternoController::class,'buscar'])->name('buscar_inventario_externo');
+    Route::get('/data_inventario_externo', [InventarioExternoController::class,'listarInventraio']);
+    Route::post('/data_inventario_externo', [InventarioExternoController::class,'listarInventraio'])->name('data_inventario_externo');
     Route::post('/nuevo_inventario_externo',[InventarioExternoController::class,'store'])->name('nuevo_inventario_externo');
     Route::post('/actualizar_inventario_externo',[InventarioExternoController::class,'update'])->name('actualizar_inventario_externo');
     Route::post('/actualizar_estado_inventario_externo',[InventarioExternoController::class,'update_estado'])->name('actualizar_estado_inventario_externo');
@@ -72,7 +77,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/nuevo_detalle_venta',[DetalleVentaController::class,'store'])->name('nuevo_detalle_venta');
     Route::post('/actualizar_detalle_venta',[DetalleVentaController::class,'update'])->name('actualizar_detalle_venta');
     Route::post('/actualizar_estado_detalle_venta',[DetalleVentaController::class,'update_estado'])->name('actualizar_estado_detalle_venta');
-
+    Route::post('/seleccion_sucursal_venta',[DetalleVentaController::class,'seleccionSucursalVenta'])->name('seleccion_sucursal_venta'); 
+    Route::post('/numeros_a_letras',[DetalleVentaController::class,'numeroALetras'])->name('numeros_a_letras');
+    
     // Tipo Pago
     Route::get('/tipo_pago', [TipoPagoController::class,'index'])->name('home_tipo_pago');
     Route::post('/tipo_pago', [TipoPagoController::class,'buscar'])->name('buscar_tipo_pago');

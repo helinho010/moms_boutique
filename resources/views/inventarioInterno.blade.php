@@ -1,6 +1,6 @@
 @extends('layouts.plantillabase')
 
-@section('title','Productos')
+@section('title','Inventario Interno')
 
 @section('css')
     <style>
@@ -15,31 +15,31 @@
         if (isset($_GET['exito'])) 
         {
             if ($_GET['exito'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El Producto se registro correctamente</div>';
+                echo '<div class="alert alert-success" role="alert">El item del Inventario se registro correctamente</div>';
             }else{
-                echo '<div class="alert alert-danger" role="alert">Error al registrar el Producto</div>';
+                echo '<div class="alert alert-danger" role="alert">Error al registrar el nuevo Item de Inventario</div>';
             }
         }
 
         if (isset($_GET['actualizado'])) 
         {
             if ($_GET['actualizado'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El Producto fue actualizado correctamente</div>';
+                echo '<div class="alert alert-success" role="alert">El Item del Inventario fue actualizado correctamente</div>';
             }else{
-                echo '<div class="alert alert-danger" role="alert">Error al actualizar el Producto</div>';
+                echo '<div class="alert alert-danger" role="alert">Error al actualizar el Item del Inventario</div>';
             }
         }
 
-        if ($errors->first('id_categoria') != '' ||
-            $errors->first('nombre') != '' ||
-            $errors->first('precio') != '' ||
-            $errors->first('talla') != '') 
+        if ($errors->first('id_sucursal') != '' ||
+            $errors->first('id_producto') != '' ||
+            $errors->first('id_tipo_ingreso_salida') != '' ||
+            $errors->first('cantidad_ingreso') != '') 
             {
                 echo '<div class="alert alert-danger" role="alert">'.
-                $errors->first('id_categoria')."<br>".
-                $errors->first('nombre')."<br>".
-                $errors->first('precio')."<br>".
-                $errors->first('talla')."<br>"
+                $errors->first('id_sucursal')."<br>".
+                $errors->first('id_producto')."<br>".
+                $errors->first('id_tipo_ingreso_salida')."<br>".
+                $errors->first('cantidad_ingreso')."<br>"
                 .'</div>';
         }   
     @endphp
@@ -48,30 +48,62 @@
 @section('card-title')
     <div class="row">
         <div class="col">
-            <h4>Lista de Productos</h4>
+            <h4>Inventario Interno</h4>
         </div>
         <div class="col text-end">
-            <button type="button" class="btn btn-success" id="modalRegistroActualizacion" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <i class="fas fa-plus"></i> Agregar Producto
-            </button>
+            <button type="button" class="btn btn-success" id="btnModalRegistroActualizacion" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
+                <i class="fas fa-plus"></i> Agregar Iten al Inventario
+            </button><br>
+            <span style="font-size: 10px; color:red" id="reqBtnAgregarItem">(*) Seleccionar una Sucursal</span>
         </div>
     </div>
 @endsection
 
 @section('content')
     <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-6">
-            <form action="{{ route('buscar_producto') }}" method="POST" id="buscarformulario">
-                @method('POST')
-                @csrf
-                <div class="input-group flex-nowrap">
-                    <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
-                    <button class="input-group-text" id="inputBuscar"><i class="fas fa-search"></i></button>
+        <div class="col-md-5">
+            <div class="row">
+                <div class="col-md-2">
+                    <label for="inputPassword6" class="col-form-label">Sucursal: </label>
                 </div>
-            </form>
+                <div class="col-md-8">
+                    <form action="{{ route('data_inventario_interno') }}" method="POST" id="dataformInventario">
+                        @method('POST')
+                        @csrf
+                        <div class="input-group">
+                            <select class="form-select" aria-describedby="" name="id_sucursal" id="select_sucursal">
+                                <option value="seleccionado" @if (!isset($id_sucursal)) selected  @endif disabled>Seleccione una opcion...</option>
+                                    @foreach ($sucursales as $item)
+                                       @if ($item->estado_sucursal == 1)
+                                          <option value="{{ $item->id_sucursal_user_sucursal }}" @if (isset($id_sucursal) && $item->id_sucursal_user_sucursal == $id_sucursal ) selected  @endif>{{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,40)."..." }}</option>
+                                        @else
+                                          <option value="{{ $item->id_sucursal_user_sucursal }}" disabled>{{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,30)."... (deshabilitado)" }}</option>
+                                       @endif
+                                    @endforeach
+                             </select>
+                             <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-search"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>  
         </div>
-        <div class="col-md-3"></div>
+        
+        <div class="col-md-4">
+            <div class="row">
+                <form action="{{ route('buscar_inventario_interno') }}" method="POST" id="buscarformulario">
+                    @method('POST')
+                    @csrf
+                    <div class="input-group flex-nowrap">
+                        <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="" aria-describedby="addon-wrapping">
+                        <input type="text" name="id_sucursal" id="id_sucursal" hidden>
+                        <button class="input-group-text" id="inputBuscar" disabled><i class="fas fa-search"></i></button><br>
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <span style="font-size: 10px; color:red" id="btnBuscarItem">(*) Seleccionar una Sucursal</span>
+            </div>
+        </div>
     </div>
     <br>
     <div class="row">
@@ -79,39 +111,39 @@
             <thead>
                 <tr>
                   <th scope="col">Opciones</th>
-                  <th scope="col">Codigo_producto</th>
-                  <th scope="col">Nombre Social</th>
-                  <th scope="col">Precio</th>
-                  <th scope="col">Talla</th>
-                  <th scope="col">Categoria</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Sucursal</th>
+                  <th scope="col">Tipo Ingreso Salida</th>
+                  <th scope="col">Stock</th>
+                  <th scope="col">Usuario</th>
                   <th scope="col">Estado</th>
                 </tr>
               </thead>
               <tbody>
-                @foreach ($productos as $aux)
+                @foreach ($inventariosInternos as $aux)
                   <tr>
                     <th scope="row">
-                        <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
+                        {{-- <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
                             "id"=>$aux->id,
                             "codigo"=>$aux->codigo_producto,
                             "nombre"=>$aux->nombre,
                             "precio"=>$aux->precio,
                             "talla"=>$aux->talla,
                             "id_categoria"=>$aux->id_categoria,
-                            "arrayCategorias" => $categorias,
+
                             ]); @endphp)'>
-                        </i>
+                        </i> --}}
                         @php
                         $auxdata = json_encode([
-                            "id"=>$aux->id,
-                            "codigo"=>$aux->codigo_producto,
-                            "nombre"=>$aux->nombre,
-                            "precio"=>$aux->precio,
-                            "talla"=>$aux->talla,
-                            "estado"=>$aux->estado,
-                            "id_categoria"=>$aux->id_categoria,
+                            "id"=>$aux->id_inventario_interno,
+                            "id_producto"=>$aux->id_producto,
+                            "id_sucursal"=>$aux->id_sucursal,
+                            "id_tipo_ingreso_salida"=>$aux->id_tipo_ingreso_salida,
+                            "stock"=>$aux->stock,
+                            "cantidad_ingreso,"=>$aux->cantidad_ingreso,
+                            "estado"=>$aux->estado_inventario_interno,
                             ]);
-                        if ($aux->estado == 1) 
+                        if ($aux->estado_inventario_interno == 1) 
                         {
                             echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>'; 
                         }else{
@@ -120,13 +152,13 @@
                       @endphp
 
                     </th>
-                    <th>{{$aux->codigo_producto}}</th>
-                    <th>{{$aux->nombre}}</th>
-                    <th>{{$aux->precio}}</th>
-                    <th>{{$aux->talla}}</th>
-                    <th>{{$aux->nombre_categoria}}</th>
+                    <th>{{"$aux->nombre_producto - $aux->talla - $aux->precio Bs"}}</th>
+                    <th>{{"$aux->razon_social_sucursal - $aux->ciudad_sucursal"}}</th>
+                    <th>{{"$aux->nombre_tipo_ingreso_salida"}}</th>
+                    <th>{{$aux->stock}}</th>
+                    <th>{{"$aux->nombre_usuario"}}</th>
                     <td> 
-                        @if ( $aux->estado == 1 )
+                        @if ( $aux->estado_inventario_interno == 1 )
                             <span class="badge bg-success">Activo</span>    
                         @else
                             <span class="badge bg-warning">Inactivo</span>    
@@ -136,56 +168,98 @@
                 @endforeach
               </tbody>
         </table>
-        {{ $productos->links() }}
+        {{ $inventariosInternos->links() }}
     </div>
 
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Nuevo Producto</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Nuevo Item para el Inventario: </h5>
                 <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close" onclick="resestablecerValoresModal()"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{{ route('nuevo_producto') }}" id="formularioRegistroActualizacion">
-                        @csrf
-                        @method('POST')
-                        <div class="mb-3">
-                            {{-- <select class="select2" name="category">
-                                @foreach($categorias as $categoria)
-                                <option value="{{ $categoria->id }}">{{ "$categoria->nombre - $categoria->talla - $categoria->precio" }}</option>
-                                @endforeach 
-                            </select> --}}
-                             <label for="id_categoria_producto" class="form-label">Categoria:</label>
-                             <select class="form-select" aria-label="Default select example" name="id_categoria" id="id_categoria_producto">
-                                <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
-                                    @foreach ($categorias as $item)
-                                       @if ($item->estado == 1)
-                                          <option value="{{ $item->id }}">{{ $item->nombre }}</option>
-                                        @else
-                                          <option value="{{ $item->id }}" disabled>{{ "$item->nombre (deshabilitado)" }}</option>
-                                       @endif
-                                    @endforeach
-                             </select>
+                    <form method="POST" action="{{ route('nuevo_inventario_interno') }}" id="modalFormularioRegistroActualizacion"> 
+                      @csrf
+                      @method('POST')
+                      <div class="row">
+                        <div class="col-md-2">
+                            <label for="inputPassword6" class="col-form-label">Sucursal: </label>
                         </div>
-                        <div class="mb-3">
-                          <label for="nombre_producto" class="form-label">Nombre:</label>
-                          <input type="text" class="form-control" name="nombre" id="nombre_producto" aria-describedby="emailHelp" placeholder="Introduzca el Nombre del producto"> 
+                        <div class="col-md-8">
+                                <div class="input-group">
+                                    <select class="form-select" aria-describedby="" name="id_sucursal" id="modalSelectSucursal">
+                                        <option value="seleccionado" @if (!isset($id_sucursal)) selected  @endif disabled>Seleccione una opcion...</option>
+                                            @foreach ($sucursales as $item)
+                                               @if ($item->estado_sucursal == 1)
+                                                  <option value="{{ $item->id_sucursal_user_sucursal }}" @if (isset($id_sucursal) && $item->id_sucursal_user_sucursal == $id_sucursal ) selected  @endif>{{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,40)."..." }}</option>
+                                                @else
+                                                  <option value="{{ $item->id_sucursal_user_sucursal }}" disabled>{{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,30)."... (deshabilitado)" }}</option>
+                                               @endif
+                                            @endforeach
+                                     </select>
+                                </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="precio_producto" class="form-label">Precio:</label>
-                            <input type="number" class="form-control" name="precio" id="precio_producto" aria-describedby="emailHelp" placeholder="Introduzca el Precio del Producto"> 
-                          </div>
-                          <div class="mb-3">
-                            <label for="talla_producto" class="form-label">Talla:</label>
-                            <input type="text" class="form-control" name="talla" id="talla_producto" aria-describedby="emailHelp" placeholder="Introduzca la Talla del Producto"> 
-                          </div>
-                      </form>
+                      </div>
+                      <br>
+                      @isset($productos)
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="inputPassword6" class="col-form-label">Producto: </label>
+                            </div>
+                            <div class="col-md-8">
+                                    <div class="input-group">
+                                        <select class="form-select" aria-describedby="" name="id_producto" id="modalSelectProducto">
+                                            <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
+                                                @foreach ($productos as $item)
+                                                @if ($item->estado == 1)
+                                                    <option value="{{ $item->id }}">{{ "$item->nombre - $item->talla - $item->precio" }}</option>
+                                                    @else
+                                                    <option value="{{ $item->id }}" disabled>{{ "$item->nombre - $item->talla - $item->precio (deshabilitado)" }}</option>
+                                                @endif
+                                                @endforeach
+                                        </select>
+                                    </div>
+                            </div>
+                        </div>
+                      @endisset
+                      <br>
+                      @isset($tiposIngresosSalidas)
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="inputPassword6" class="col-form-label">Tipo de Ingreo: </label>
+                            </div>
+                            <div class="col-md-8">
+                                    <div class="input-group">
+                                        <select class="form-select" aria-describedby="" name="id_tipo_ingreso_salida" id="modalSelectTipoEntrada">
+                                            <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
+                                                @foreach ($tiposIngresosSalidas as $item)
+                                                @if ($item->estado == 1)
+                                                    <option value="{{ $item->id }}">{{ "$item->tipo"}}</option>
+                                                    @else
+                                                    <option value="{{ $item->id }}" disabled>{{ "$item->tipo (deshabilitado)"}}</option>
+                                                @endif
+                                                @endforeach
+                                        </select>
+                                    </div>
+                            </div>
+                        </div> 
+                      @endisset
+                      <br>     
+                      <div class="row">
+                        <div class="col-md-2">
+                            <label for="exampleInputPassword1" class="form-label">Cantidad Ingreso: </label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="number" name="cantidad_ingreso" placeholder="0" class="form-control" id="modalInputCantidadIngreso">
+                        </div>
+                      </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger cerrarModal" data-bs-dismiss="modal" onclick="resestablecerValoresModal()">Cerrar</button>
-                    <button type="button" class="btn btn-success" id="btnGuardarActualizar">Guardar</button>
+                    <button type="button" class="btn btn-success" id="modalBtnGuardarActualizar">Guardar</button>
                 </div>
             </div>
             </div>
@@ -203,28 +277,57 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    $(document).ready(function(){
+        // alert($("#select_sucursal option:selected").attr('value'));
+        if ($("#select_sucursal option:selected").attr('value') > 0) 
+        {
+            $('#btnModalRegistroActualizacion').prop( "disabled", false );
+            $('#reqBtnAgregarItem').remove();     
+            $('#inputBuscar').prop( "disabled", false );
+            $('#btnBuscarItem').remove();
+            $('#id_sucursal').val($("#select_sucursal option:selected").attr('value'));
+            $('#title_nombre_sucursal').text($("#select_sucursal option:selected").text());
+            // formularioRegistroActualizacion-selectSucursalRegAct
+            $('#selectSucursalRegAct').val($("#select_sucursal option:selected").attr('value'))
+        }
+        
+    });
+
+    $("#select_sucursal").on('change',function(){  
+        $('#btnModalRegistroActualizacion').prop( "disabled", false );
+        $('#reqBtnAgregarItem').remove();
+        $('#inputBuscar').prop( "disabled", false );
+        $('#btnBuscarItem').remove();
+        $('#id_sucursal').val($("#select_sucursal option:selected").attr('value'));
+        $('#modalSelectSucursal').val($("#select_sucursal option:selected").attr('value'));
+        $('#title_nombre_sucursal').text($("#select_sucursal option:selected").text());
+    });
     
     $('button').on('click',function() 
     {   
         event.preventDefault();
-        if ($(this).attr('id') == 'inputBuscar') 
-        {
+        if ($(this).attr('id') == 'inputBuscar'){
             $("#buscarformulario").submit();
-        } else if ($(this).attr('id') == 'btnGuardarActualizar') 
-        {
-            $("#formularioRegistroActualizacion").submit();
+
+        } else if ($(this).attr('id') == 'modalBtnGuardarActualizar'){
+            $("#modalFormularioRegistroActualizacion").submit();
+
+        } else if ($(this).attr('id') == 'btnFormDataInventario'){
+            $("#dataformInventario").submit();
+
         }
     });
 
     function resestablecerValoresModal()
     {
-        $("#exampleModalLabel").html("<h3>Nuevo Producto</h3>");
-        $("#formularioTipoIngresoSalida").attr("action","{{ route('nuevo_producto') }}");
-        $("#id_categoria_producto").val('seleccionado');
-        $("#nombre_producto").val('');
-        $("#precio_producto").val('');
-        $("#talla_producto").val('');
+        $("#exampleModalLabel").html("<h3>Nuevo Item para el Inventario Interno</h3>");
+        $("#formularioTipoIngresoSalida").attr("action","{{ route('nuevo_inventario_interno') }}");
+        $("#modalSelectProducto").val('seleccionado');
+        $("#modalSelectTipoEntrada").val('seleccionado');
+        $("#modalInputCantidadIngreso").val('');
         $("#btnGuardarActualizar").val("Guardar");     
+        // $("#id_categoria_producto").val('seleccionado');
     }
 
     function editar(item)
@@ -266,7 +369,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_producto',
+                        url: '/actualizar_estado_inventario_interno',
                         data: {"id":item.id, "estado":item.estado},
                         success: function (response) {
                           Swal.fire("Cambio Guardado!", "", "success");        

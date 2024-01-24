@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_usuario');
             $table->unsignedBigInteger('id_tipo_ingreso_salida');
             $table->Integer('stock')->default(0);
-            $table->boolean('activo')->default(1)->comment('0 = inactivo, 1 = activo');
+            $table->boolean('estado')->default(1)->comment('0 = inactivo, 1 = activo');
 
             $table->foreign('id_producto')->references('id')->on('productos')->onUpdate('cascade');
             $table->foreign('id_sucursal')->references('id')->on('sucursals')->onUpdate('cascade');

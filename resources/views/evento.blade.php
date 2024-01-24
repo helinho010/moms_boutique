@@ -62,6 +62,7 @@
                 <tr>
                   <th scope="col">Opciones</th>
                   <th scope="col">Nombre Evento</th>
+                  <th scope="col">Fecha del Evento</th>
                   <th scope="col">Estado</th>
                 </tr>
               </thead>
@@ -69,7 +70,7 @@
                 @foreach ($eventos as $aux)
                   <tr>
                     <th scope="row">
-                      <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode(["id"=>$aux->id,"nombre"=>$aux->nombre]); @endphp)'></i>
+                      <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode(["id"=>$aux->id,"nombre"=>$aux->nombre,"fecha_evento"=>$aux->fecha_evento]); @endphp)'></i>
                       @php
                         $auxdata = json_encode(['id'=>$aux->id,'estado'=>$aux->estado]);
                         if ($aux->estado == 1) 
@@ -82,6 +83,7 @@
 
                     </th>
                     <td>{{ $aux->nombre }}</td>
+                    <td>{{ $aux->fecha_evento }}</td>
                     <td> 
                         @if ( $aux->estado == 1 )
                             <span class="badge bg-success">Activo</span>    
@@ -112,6 +114,10 @@
                           <label for="exampleInputEmail1" class="form-label">Nombre del Evento:</label>
                           <input type="text" class="form-control" name="nombre" id="nombre_evento" aria-describedby="emailHelp" placeholder="Introduzca el nombre del Evento"> 
                         </div>
+                        <div class="mb-3">
+                            <label for="fecha_evento" class="form-label">Fecha del Evento:</label>
+                            <input type="date" class="form-control" name="fecha_evento" id="fecha_evento" aria-describedby="emailHelp"> 
+                          </div>
                       </form>
                 </div>
                 <div class="modal-footer">
@@ -152,6 +158,7 @@
         $("#exampleModalLabel").html("<h3>Nuevo Evento</h3>");
         $("#formularioTipoIngresoSalida").attr("action","{{ route('nuevo_evento') }}");
         $("#nombre_evento").val('');
+        $("#fecha_evento").val('');
         $("#inputTipoModal").val("Guardar");     
     }
 
@@ -162,6 +169,7 @@
         $("#formularioRegistroActualizacion").attr("action","{{ route('actualizar_evento') }}");
         $("#formularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
         $("#nombre_evento").val(item.nombre);
+        $("#fecha_evento").val(item.fecha_evento);
         $("#btnGuardarActualizar").val("Actualizar");
         $("#btnGuardarActualizar").on('click',function(){
             $("#formularioRegistroActualizacion").submit();

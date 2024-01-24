@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             EventoSeeder::class,
             SucursalSeeder::class,
             ProductoSeeder::class,
+            OpcionesSistemaSeeder::class,
+            // UserOpcSucSeeder::class,
     	]);
     }
 }

@@ -69,14 +69,14 @@
                 @foreach ($categorias as $categoria)
                   <tr>
                     <th scope="row">
-                      <i class="fas fa-edit fa-xl i" onclick='editarCategoria(@php echo json_encode(["id"=>$categoria->id,"nombre"=>$categoria->nombre]); @endphp)'></i>
+                      <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editarCategoria(@php echo json_encode(["id"=>$categoria->id,"nombre"=>$categoria->nombre]); @endphp)'></i>
                       @php
                         $dataCategoria = json_encode(['id'=>$categoria->id,'estado'=>$categoria->estado]);
                         if ($categoria->estado == 1) 
                         {
-                            echo  '<i class="fas fa-trash-alt fa-xl" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>'; 
+                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>'; 
                         }else{
-                            echo '<i class="fas fa-check-circle fa-xl" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>';
+                            echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>';
                         }
                       @endphp
 

@@ -113,4 +113,10 @@ class ProductoController extends Controller
         }
         $producto->save();
     }
+
+    public function buscarProductoId(Request $request)
+    {
+        $productoEncontrado = Producto::where('id',$request->id)->get();
+        return $productoEncontrado;
+    }
 }

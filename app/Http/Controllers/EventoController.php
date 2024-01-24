@@ -29,11 +29,13 @@ class EventoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-           'nombre' => 'required|unique:eventos', 
+           'nombre' => 'required', 
+           'fecha_evento' => 'required', 
         ]);
 
         $nuevaEvento = new Evento();
         $nuevaEvento->nombre = $request->nombre;
+        $nuevaEvento->fecha_evento = $request->fecha_evento;
 
         $estado = 0;
         if ($nuevaEvento->save()) {
@@ -46,11 +48,13 @@ class EventoController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-           'nombre' => 'required|unique:eventos', 
+           'nombre' => 'required', 
+           'fecha_evento' => 'required', 
         ]);
 
         $actualizarEvento = Evento::where("id",$request->id)->first();
         $actualizarEvento->nombre = $request->nombre;
+        $actualizarEvento->fecha_evento = $request->fecha_evento;
 
         $estado = 0;
         if ($actualizarEvento->save()) {

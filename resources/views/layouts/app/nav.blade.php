@@ -8,12 +8,12 @@
                 Opciones
             </li>
             <li class="sidebar-item active">
-                <a class="sidebar-link" href="#">
+                <a class="sidebar-link" href="{{ route('home') }}">
                     <i class="fa fa-house"></i>
                     <span class="align-middle">Dashboards</span>
                 </a>
             </li>
-            <li class="sidebar-item">
+            {{-- <li class="sidebar-item">
                 <a data-bs-target="#analytics" data-bs-toggle="collapse" class="sidebar-link collapsed" aria-expanded="false">
                     <i class="fa-solid fa-chart-simple"></i>
                     <span class="align-middle">Analytics</span>
@@ -25,7 +25,7 @@
                     <li class="sidebar-item"><a class="sidebar-link" href="#">Crypto <span
                                 class="sidebar-badge badge bg-primary">Pro</span></a></li>
                 </ul>
-            </li>
+            </li> --}}
 
             <li class="sidebar-item">
                 <a class="sidebar-link" href="{{ route('home_categoria') }}">
