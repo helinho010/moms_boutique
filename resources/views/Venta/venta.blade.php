@@ -68,13 +68,13 @@
                         <option value="seleccionado" @if (!isset($id_evento) || !isset($_GET['id_evento'])) selected  @endif disabled>Seleccione una opcion...</option>
                             @foreach ($productos as $item)
                                @if ($item->estado_inventario_interno == 1)
-                                  <option value="{{ $item->id_producto }}" 
-                                    @if ( isset($id_evento) && $item->id == $id_evento ) 
-                                        selected  
-                                    @endif
-                                    >{{ "$item->nombre_producto - $item->talla -  $item->precio (Stock: $item->stock)" }}</option>
+                                  @if ($item->stock > 0)
+                                    <option value="{{ $item->id_producto }}" @if ( isset($id_evento) && $item->id == $id_evento )  selected @endif> {{ "$item->nombre_producto - $item->talla -  $item->precio Bs. (Stock: $item->stock)" }}</option> 
+                                  @else
+                                    <option value="{{ $item->id_producto }}" disabled> {{ "$item->nombre_producto - $item->talla - $item->precio Bs. (Stock: $item->stock)" }}</option> 
+                                  @endif
                                 @else
-                                  <option value="{{ $item->id_evento_user_sucursal }}" disabled>{{ "$item->nombre_producto - $item->talla -  $item->precio ... (deshabilitado)" }}</option>
+                                  <option value="{{ $item->id_evento_user_sucursal }}" disabled>{{ "$item->nombre_producto - $item->talla - $item->precio ... (deshabilitado)" }}</option>
                                @endif
                             @endforeach
                      </select>
@@ -93,7 +93,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2"> {{ $request }} </div>
+    <div class="col-md-2"></div>
 </div>
 <br>
 
@@ -110,7 +110,7 @@
                       <th style="width: 10%; border-left: solid 2px black;">Subtotal [Bs.]</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="itemsEliminar">
                     {{-- <tr class="text-center" style="border-bottom: solid 1px black;" ></tr> --}}
                     
                     <tr style="border: 0;" id="contenidoItemsProductos">
@@ -146,6 +146,42 @@
         </div>
     </div>
 </div>
+
+<div class="row text-center">
+    <div class="col-md-12" >
+        <button type="button" class="btn btn-outline-primary" style="width: 30%;" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Realizar Venta</button> 
+        {{-- id="realizarVenta" --}}
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Seleccione el Tipo de Pago: </h5>
+          <button type="button" class="btn-close modalBtnCerrar" data-bs-dismiss="modal" aria-label="Close" id=""></button>
+        </div>
+        <div class="modal-body">
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="inputGroupSelect01">Tipo de Pago:</label>
+                <select class="form-select" id="selectTipoPago">
+                  <option value="seleccionarTipoPago" selected disabled>Seleccione una opcion ....</option>
+                  @foreach ($tipoPagos as $tipopago)
+                    <option value="{{ $tipopago->id }}">{{ $tipopago->tipo }}</option>    
+                  @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modalBtnCerrar" data-bs-dismiss="modal" id="">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="realizarVenta">Guardar</button>
+        </div>
+      </div>
+    </div>
+</div>
 @endsection
 
 
@@ -167,7 +203,7 @@
                    url: "/numeros_a_letras",
                    data: {"efectivo" : parseFloat(efectivo) },
                    success: function (response) {
-                   console.log(response);
+                   // console.log(response);
                    $("#efectivoLiteral").text(response);
                 }
             });
@@ -204,12 +240,12 @@
                             arrayProductosVenta.push(objetoProductoVenta);
                         }
 
-                        console.log(arrayProductosVenta);
+                        // console.log(arrayProductosVenta);
 
                         $(".itemProductoVenta").remove();
                         $.each(arrayProductosVenta, function (indexInArray, valueOfElement) { 
                              $("#contenidoItemsProductos").before(' \
-                                <tr class="text-center itemProductoVenta" style="border-bottom: solid 1px black;"> \
+                                <tr class="text-center itemProductoVenta" style="border-bottom: solid 1px black;" data-producto="'+valueOfElement.id_producto+'"> \
                                     <th scope="row">'+valueOfElement.cantidad+'</th> \
                                     <td>'+valueOfElement.nombre_producto + ' ' + valueOfElement.talla_producto +'</td> \
                                     <td> ' +valueOfElement.precio_producto+ '</td> \
@@ -220,7 +256,7 @@
                         });
 
                         $('.subtotal').each(function(index) {
-                            console.log(index + ": " + $(this).text());
+                            // console.log(index + ": " + $(this).text());
                             sumaTotal = sumaTotal + parseFloat($(this).text());
                             $("#total").text(sumaTotal.toFixed(2));
                         });
@@ -264,6 +300,124 @@
                 $( "#cambio" ).text((parseFloat(efectivo_recibido)-parseFloat(total_compra)).toFixed(2));
             }
         });
+
+        /**
+         * Alterna entre rojo y transparente los resgistros a eliminar
+        */
+        $("#itemsEliminar").on('click',"tr.itemProductoVenta",function(event){
+            
+            if($(this).css("background-color") == 'rgb(255, 0, 0)')
+            {
+                $(this).css("background-color","");
+            }else{
+                $(this).css("background-color","red");
+            }
+        });
+
+
+        /**
+         * Captura la tecla del o suprimir para eliminar los registros seleccionados 
+        */
+        $('html').keyup(function(e){ 
+            if(e.keyCode == 46){
+                if( e.target.tagName != 'INPUT')
+                {
+                    // alert(e.target.tagName);
+                    let auxArray = [];
+                    $.each($("tr.itemProductoVenta"), function (indexInArray, valueOfElement) { 
+                        console.log($(valueOfElement).css("background-color"));
+                        if ($(valueOfElement).css('background-color') != 'rgb(255, 0, 0)' ) {
+                            let producto = $(valueOfElement).attr("data-producto");
+                            let elemtoProductoArray = arrayProductosVenta.find((elemento) => elemento.id_producto == producto);
+                            auxArray.push(elemtoProductoArray);
+                        } 
+                    });
+
+                    arrayProductosVenta = auxArray;
+
+                    $(".itemProductoVenta").remove();
+                    $.each(arrayProductosVenta, function (indexInArray, valueOfElement) { 
+                        $("#contenidoItemsProductos").before(' \
+                        <tr class="text-center itemProductoVenta" style="border-bottom: solid 1px black;" data-producto="'+valueOfElement.id_producto+'"> \
+                        <th scope="row">'+valueOfElement.cantidad+'</th> \
+                        <td>'+valueOfElement.nombre_producto + ' ' + valueOfElement.talla_producto +'</td> \
+                        <td> ' +valueOfElement.precio_producto+ '</td> \
+                        <td>'+ 0 +'</td> \
+                        <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto - valueOfElement.cantidad * valueOfElement.precio_producto * 13/100 ).toFixed(2) +'</td> \
+                        </tr> \
+                        ');
+                    });
+                }
+            } 
+        });
+
+        /**
+         * Realizar la Venta BOTON
+        */
+        $("#realizarVenta").click(function(){
+            $("#staticBackdrop").modal('hide');
+            Swal.fire({
+                title: "Esta seguro de realizar la venta?",
+                // text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Si, estoy seguro"
+                }).then((result) => {
+                   if (result.isConfirmed) {
+                      if (arrayProductosVenta.length > 0) 
+                      {
+                        if ( parseInt($("#selectTipoPago").val()) > 0) {
+                            $.ajax({
+                                type: "POST",
+                                url: "/realizar_venta",
+                                data: {"productos":arrayProductosVenta, "idTipoPago":$("#selectTipoPago").val()},
+                                success: function (response) {
+                                    if (response == 1) {
+                                        Swal.fire({
+                                            title: "Venta Realizada Exitosamente!",
+                                            // text: "You clicked the button!",
+                                            icon: "success",
+                                            timer: 1500
+                                        });
+                                        setTimeout(() => {
+                                            $(location).attr('href','/detalle_venta');                            
+                                        }, 1600);
+                                        
+                                    } else {
+                                        Swal.fire({
+                                            title: "Hubo un Error!",
+                                            text: "Contactese con el administrador",
+                                            icon: "error"
+                                        }); 
+                                    }
+                                }
+                            }); 
+                        } else {
+                            Swal.fire({
+                                title: "No selecciono un tipo de pago",
+                                // text: "That thing is still around?",
+                                icon: "error",
+                            });  
+                        }
+                        
+                      } else {
+                        Swal.fire({
+                            title: "No Existe items registrados para la venta",
+                            // text: "That thing is still around?",
+                            icon: "error",
+                        });
+                      }
+                    }
+                });
+        });
+
+
+        $(".modalBtnCerrar").on("click", function(){
+            $("#selectTipoPago").val("seleccionarTipoPago");
+        });
+        
 
     </script>
 @endpush

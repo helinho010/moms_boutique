@@ -13,8 +13,10 @@ class ProductoController extends Controller
         $productos = Producto::selectRaw('productos.id,
                                         productos.codigo_producto,
                                         productos.nombre,
+                                        productos.costo,
                                         productos.precio,
                                         productos.talla,
+                                        productos.descripcion,
                                         productos.estado,
                                         productos.created_at,
                                         productos.updated_at, 
@@ -34,8 +36,10 @@ class ProductoController extends Controller
         {
             $productos = Producto::orwhere("codigo_producto", "like", '%'.$request->buscar.'%')
                                     ->orwhere('nombre','like','%'.$request->buscar.'%')
+                                    ->orwhere('costo','like','%'.$request->buscar.'%')
                                     ->orwhere('precio','like','%'.$request->buscar.'%')
                                     ->orwhere('talla','like','%'.$request->buscar.'%')
+                                    ->orwhere('descripcion','like','%'.$request->buscar.'%')
                                    ->orderBy('updated_at','desc')
                                    ->paginate(10);
         }else {
@@ -50,14 +54,17 @@ class ProductoController extends Controller
         $request->validate([
             'id_categoria' => 'required|numeric',
             'nombre' => 'required',
+            'costo' => 'required',
             'precio' => 'required',
             'talla' => 'required',
         ]);
 
         $nuevoProducto = new Producto();
         $nuevoProducto->nombre = $request->nombre;
+        $nuevoProducto->costo = $request->costo;
         $nuevoProducto->precio = $request->precio;
         $nuevoProducto->talla = $request->talla;
+        $nuevoProducto->descripcion = $request->descripcion;
         $nuevoProducto->id_categoria = $request->id_categoria;
 
         $estado = 0;
@@ -78,8 +85,11 @@ class ProductoController extends Controller
 
         $actualizarProducto = Producto::where("id",$request->id)->first();
         $actualizarProducto->nombre = $request->nombre;
+        $actualizarProducto->costo = $request->costo;
         $actualizarProducto->precio = $request->precio;
         $actualizarProducto->talla = $request->talla;
+        $actualizarProducto->descripcion = $request->descripcion;
+
         if (isset($request->id_categoria)) 
         {
             $actualizarProducto->id_categoria = $request->id_categoria;

@@ -1,6 +1,6 @@
 @extends('layouts.plantillabase')
 
-@section('title','Roles')
+@section('title','Proveedor')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('DataTables/datatables.min.css') }}">
@@ -47,11 +47,11 @@
 @section('card-title')
     <div class="row">
         <div class="col">
-            <h4>Lista de Roles - Usuarios</h4>
+            <h4>Lista de Proveedores</h4>
         </div>
         <div class="col text-end">
             <button type="button" class="btn btn-success" id="modalCategoria" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <i class="fas fa-plus"></i> Agregar Rol 
+                <i class="fas fa-plus"></i> Agregar Proveedor 
             </button>
         </div>
     </div>
@@ -78,34 +78,35 @@
             <thead>
                 <tr>
                   <th scope="col">Opciones</th>
-                  <th scope="col">Rol</th>
-                  <th scope="col">Opciones Habilitadas</th>
-                  <th scope="col">Fecha de Creacion/Modificacion</th>
+                  <th scope="col">Nombre Proveedor</th>
+                  <th scope="col">Telefonos</th>
+                  <th scope="col">Ciudad</th>
+                  <th scope="col">Observacion</th>
                   <th scope="col">Estado</th>
                 </tr>
               </thead>
               <tbody>
-                @foreach ($roles as $rol)
+                @foreach ($proveedores as $proveedor)
                   <tr>
                     <th scope="row">
                       <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
-                        "id"=>$rol->id,
-                        "nombre"=>$rol->nombre,
-                        "telefono"=>$rol->telefono,
-                        "ciudad" =>$rol->ciudad,
-                        "observacion" => $rol->observacion,
-                        "estado" => $rol->estado,
+                        "id"=>$proveedor->id,
+                        "nombre"=>$proveedor->nombre,
+                        "telefono"=>$proveedor->telefono,
+                        "ciudad" =>$proveedor->ciudad,
+                        "observacion" => $proveedor->observacion,
+                        "estado" => $proveedor->estado,
                         ]); @endphp)'></i>
                       @php
                         $dataProveedor = json_encode([
-                            "id"=>$rol->id,
-                            "nombre"=>$rol->nombre,
-                            "telefono"=>$rol->telefono,
-                            "ciudad" =>$rol->ciudad,
-                            "observacion" => $rol->observacion,
-                            "estado" => $rol->estado,
+                            "id"=>$proveedor->id,
+                            "nombre"=>$proveedor->nombre,
+                            "telefono"=>$proveedor->telefono,
+                            "ciudad" =>$proveedor->ciudad,
+                            "observacion" => $proveedor->observacion,
+                            "estado" => $proveedor->estado,
                         ]);
-                        if ($rol->estado == 1) 
+                        if ($proveedor->estado == 1) 
                         {
                             echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataProveedor.')\'></i>'; 
                         }else{
@@ -114,12 +115,12 @@
                       @endphp
 
                     </th>
-                    <td>{{ $rol->type }}</td>
-                    <td>{{ $opciones_habilitadas }}</td>
-                    <td>{{ $rol->updated_at }}</td>
-
+                    <td>{{ $proveedor->nombre }}</td>
+                    <td>{{ $proveedor->telefono }}</td>
+                    <td>{{ $proveedor->ciudad }}</td>
+                    <td>{{ $proveedor->observacion }}</td>
                     <td> 
-                        @if ( $rol->estado == 1 )
+                        @if ( $proveedor->estado == 1 )
                             <span class="badge bg-success">Activo</span>    
                         @else
                             <span class="badge bg-warning">Inactivo</span>    
@@ -129,7 +130,7 @@
                 @endforeach
               </tbody>
         </table>
-        {{ $roles->links() }}
+        {{ $proveedores->links() }}
     </div>
 
         <!-- Modal -->

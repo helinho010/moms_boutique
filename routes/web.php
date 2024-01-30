@@ -9,6 +9,9 @@ use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\InventarioInternoController;
 use App\Http\Controllers\InventarioExternoController;
 use App\Http\Controllers\DetalleVentaController;
+use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\UsertypeOpcController;
+use App\Http\Controllers\UsuariosController;
 use Illuminate\Support\Facades\Route;
 
 require(base_path('routes/route-list/route-auth.php'));
@@ -16,6 +19,13 @@ require(base_path('routes/route-list/route-auth.php'));
 Route::group(['middleware' => 'auth'], function () {
     // Home
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    // Proveedor
+    Route::get('/proveedor', [ProveedorController::class,'index'])->name('home_proveedor');
+    Route::post('/proveedor', [ProveedorController::class,'buscar'])->name('buscar_proveedor');
+    Route::post('/nuevo_proveedor', [ProveedorController::class,'store'])->name('nuevo_proveedor');
+    Route::post('/actualizar_proveedor',[ProveedorController::class,'update'])->name('actualizar_proveedor');
+    Route::post('/actualizar_estado_proveedor',[ProveedorController::class,'update_estado'])->name('actualizar_estado_proveedor');
 
     // Categoria
     Route::get('/categoria', [CategoriaController::class,'index'])->name('home_categoria');
@@ -79,6 +89,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/actualizar_estado_detalle_venta',[DetalleVentaController::class,'update_estado'])->name('actualizar_estado_detalle_venta');
     Route::post('/seleccion_sucursal_venta',[DetalleVentaController::class,'seleccionSucursalVenta'])->name('seleccion_sucursal_venta'); 
     Route::post('/numeros_a_letras',[DetalleVentaController::class,'numeroALetras'])->name('numeros_a_letras');
+    Route::post('/realizar_venta',[DetalleVentaController::class,'realizarVenta'])->name('realizar_venta_detalle_venta');
+
     
     // Tipo Pago
     Route::get('/tipo_pago', [TipoPagoController::class,'index'])->name('home_tipo_pago');
@@ -86,6 +98,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/nuevo_tipo_pago',[TipoPagoController::class,'store'])->name('nuevo_tipo_pago');
     Route::post('/actualizar_tipo_pago',[TipoPagoController::class,'update'])->name('actualizar_tipo_pago');
     Route::post('/actualizar_estado_tipo_pago',[TipoPagoController::class,'update_estado'])->name('actualizar_estado_tipo_pago');
+
+    // Usuarios
+    Route::get('/usuarios', [UsuariosController::class,'index'])->name('home_usuarios');
+
+    // Roles 
+    Route::get('/rol_usuarios', [UsertypeOpcController::class,'index'])->name('home_rol_usuarios');
+
 
 });
 

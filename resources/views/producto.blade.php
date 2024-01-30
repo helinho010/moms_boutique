@@ -7,6 +7,9 @@
         table > tbody > tr > th > i{
             font-size: 20px;
         }
+        #descripcion{
+            width: 20%;
+        }
     </style>
 @endsection
 
@@ -32,12 +35,14 @@
 
         if ($errors->first('id_categoria') != '' ||
             $errors->first('nombre') != '' ||
+            $errors->first('costo') != '' ||
             $errors->first('precio') != '' ||
             $errors->first('talla') != '') 
             {
                 echo '<div class="alert alert-danger" role="alert">'.
                 $errors->first('id_categoria')."<br>".
                 $errors->first('nombre')."<br>".
+                $errors->first('costo')."<br>".
                 $errors->first('precio')."<br>".
                 $errors->first('talla')."<br>"
                 .'</div>';
@@ -80,10 +85,12 @@
                 <tr>
                   <th scope="col">Opciones</th>
                   <th scope="col">Codigo_producto</th>
-                  <th scope="col">Nombre Social</th>
-                  <th scope="col">Precio</th>
+                  <th scope="col">Nombre del Producto</th>
+                  <th scope="col">Costo [Bs]</th>
+                  <th scope="col">Precio [Bs]</th>
                   <th scope="col">Talla</th>
                   <th scope="col">Categoria</th>
+                  <th scope="col" id="descripcion">Descripcion</th>
                   <th scope="col">Estado</th>
                 </tr>
               </thead>
@@ -95,8 +102,10 @@
                             "id"=>$aux->id,
                             "codigo"=>$aux->codigo_producto,
                             "nombre"=>$aux->nombre,
+                            "costo"=>$aux->costo,
                             "precio"=>$aux->precio,
                             "talla"=>$aux->talla,
+                            "descripcion"=>$aux->descripcion,
                             "id_categoria"=>$aux->id_categoria,
                             "arrayCategorias" => $categorias,
                             ]); @endphp)'>
@@ -106,8 +115,10 @@
                             "id"=>$aux->id,
                             "codigo"=>$aux->codigo_producto,
                             "nombre"=>$aux->nombre,
+                            "costo"=>$aux->costo,
                             "precio"=>$aux->precio,
                             "talla"=>$aux->talla,
+                            "descripcion"=>$aux->descripcion,
                             "estado"=>$aux->estado,
                             "id_categoria"=>$aux->id_categoria,
                             ]);
@@ -122,9 +133,11 @@
                     </th>
                     <th>{{$aux->codigo_producto}}</th>
                     <th>{{$aux->nombre}}</th>
+                    <th>{{$aux->costo}}</th>
                     <th>{{$aux->precio}}</th>
                     <th>{{$aux->talla}}</th>
                     <th>{{$aux->nombre_categoria}}</th>
+                    <th style="text-align: justify;">{{$aux->descripcion}}</th>
                     <td> 
                         @if ( $aux->estado == 1 )
                             <span class="badge bg-success">Activo</span>    
@@ -173,14 +186,29 @@
                           <label for="nombre_producto" class="form-label">Nombre:</label>
                           <input type="text" class="form-control" name="nombre" id="nombre_producto" aria-describedby="emailHelp" placeholder="Introduzca el Nombre del producto"> 
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="costo_producto" class="form-label">Costo:</label>
+                                    <input type="number" class="form-control" name="costo" id="costo_producto" placeholder="Costo del Producto"> 
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="precio_producto" class="form-label">Precio:</label>
+                                    <input type="number" class="form-control" name="precio" id="precio_producto" placeholder="Precio del Producto"> 
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="mb-3">
-                            <label for="precio_producto" class="form-label">Precio:</label>
-                            <input type="number" class="form-control" name="precio" id="precio_producto" aria-describedby="emailHelp" placeholder="Introduzca el Precio del Producto"> 
-                          </div>
-                          <div class="mb-3">
                             <label for="talla_producto" class="form-label">Talla:</label>
                             <input type="text" class="form-control" name="talla" id="talla_producto" aria-describedby="emailHelp" placeholder="Introduzca la Talla del Producto"> 
-                          </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="talla_producto" class="form-label">Descripcion:</label>
+                            <textarea class="form-control" name="descripcion" id="descripcion_producto" rows="3" placeholder="Introduzca una Descripcion del Producto"></textarea>
+                        </div>
                       </form>
                 </div>
                 <div class="modal-footer">
@@ -222,8 +250,10 @@
         $("#formularioTipoIngresoSalida").attr("action","{{ route('nuevo_producto') }}");
         $("#id_categoria_producto").val('seleccionado');
         $("#nombre_producto").val('');
+        $("#costo_producto").val('');
         $("#precio_producto").val('');
         $("#talla_producto").val('');
+        $("#descripcion_producto").val('');
         $("#btnGuardarActualizar").val("Guardar");     
     }
 
@@ -235,8 +265,10 @@
         $("#formularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
         $("#id_categoria_producto").val(item.id_categoria);
         $("#nombre_producto").val(item.nombre);
+        $("#costo_producto").val(item.costo);
         $("#precio_producto").val(item.precio);
         $("#talla_producto").val(item.talla);
+        $("#descripcion_producto").val(item.descripcion);
         $("#btnGuardarActualizar").val("Actualizar");
         $("#btnGuardarActualizar").on('click',function(){
             $("#formularioRegistroActualizacion").submit();

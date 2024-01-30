@@ -15,39 +15,63 @@ class OpcionesSistemaSeeder extends Seeder
     {
         $opciones = [
 
-            ['opcion' => "Categoria",  
+            ['opcion' => "Categoria",
+             'icono' => "far fa-copyright",
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 
-             ['opcion' => "Tipo Ingreso Salida",  
+             ['opcion' => "Tipo Ingreso Salida",
+             'icono' => "fas fa-people-carry",  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 
-             ['opcion' => "Evento",  
+             ['opcion' => "Evento",
+             'icono' => "far fa-calendar-alt",  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 
-             ['opcion' => "Producto",  
+             ['opcion' => "Producto",
+             'icono' => "fab fa-product-hunt",  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 
-             ['opcion' => "Sucursal",  
+             ['opcion' => "Sucursal",
+             'icono' => "fas fa-building",  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 
-             ['opcion' => "Inventario Interno",  
+             ['opcion' => "Inventario Interno",
+             'icono' => "fas fa-boxes",  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 
-             ['opcion' => "Inventario Externo",  
+             ['opcion' => "Inventario Externo",
+             'icono' => "fas fa-dolly-flatbed",  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 
-             ['opcion' => "Venta",  
+             ['opcion' => "Traspaso Productos",
+             'icono' => "fas fa-shipping-fast",  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 
-             ['opcion' => "Tipo Pago",  
+             ['opcion' => "Venta",
+             'icono' => "fas fa-cart-arrow-down", 
+             'created_at' => date("Y/m/d H:i"), 
+             'updated_at' => date("Y/m/d H:i")],
+
+             ['opcion' => "Tipo Pago",
+             'icono' => "far fa-money-bill-alt",  
+             'created_at' => date("Y/m/d H:i"), 
+             'updated_at' => date("Y/m/d H:i")],
+             
+             ['opcion' => "Usuarios",
+             'icono' => "fas fa-user",  
+             'created_at' => date("Y/m/d H:i"), 
+             'updated_at' => date("Y/m/d H:i")],
+
+             ['opcion' => "Rol Usuarios",
+             'icono' => "as fa-briefcase",  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 		];

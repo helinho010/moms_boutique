@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetalleVenta;
 use Luecano\NumeroALetras\NumeroALetras;
-
 use App\Models\InventarioInterno;
 use App\Models\Sucursal;
+use App\Models\TipoPago;
 use App\Models\UserSucursal;
 use Illuminate\Http\Request;
 
@@ -49,6 +50,7 @@ class DetalleVentaController extends Controller
     public function seleccionSucursalVenta(Request $request)
     {
         $sucursal = Sucursal::where('id',$request->id_sucursal)->get();
+        $tipoPagos = TipoPago::where('estado',1)->get();
         $productosSucursal = InventarioInterno::selectRaw(' inventario_internos.id as id_inventario_interno,
                                                             inventario_internos.stock,
                                                             inventario_internos.estado as estado_inventario_interno,
@@ -77,12 +79,12 @@ class DetalleVentaController extends Controller
                                                ->where('sucursals.activo',1) 
                                                ->get();
 
-        // session('sucursalSeleccionadoParaVenta',$request->id_sucursal);
+        session(['sucursalSeleccionadoParaVenta' => $request->id_sucursal]);
 
         return view('Venta.venta',[
-            'request'=>$request->id_sucursal,
             'sucursal'=>$sucursal,
             'productos' => $productosSucursal,
+            'tipoPagos' => $tipoPagos,
         ]);
     }
 
@@ -97,5 +99,36 @@ class DetalleVentaController extends Controller
         } 
     }
 
+    public function realizarVenta(Request $request)
+    {
+        // try {
+            foreach ($request->productos as $key => $value) {
+                $reducirInventario = InventarioInterno::where('id_producto',$value["id_producto"])
+                                                      ->where('id_sucursal',session('sucursalSeleccionadoParaVenta'))
+                                                      ->where('estado',1)
+                                                      ->first();
+                if ($value['cantidad'] <= $reducirInventario->stock) 
+                {
+                    $reducirInventario->stock = $reducirInventario->stock - $value['cantidad'];
+                    $reducirInventario->save();
+                }else{
+                    return false;
+                }
+                
+                $newVenta = new DetalleVenta();
+                $newVenta->id_producto = $value["id_producto"]; 
+                $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
+                $newVenta->id_usuario = auth()->user()->id;
+                $newVenta->id_tipo_pago = $request->idTipoPago;
+                $newVenta->cantidad = $value["cantidad"];
+                $newVenta->save();
+            }
+            return true;
 
+        // } catch (\Throwable $th) {
+        //     report($th);
+ 
+        //     return false;
+        // }
+    }
 }
