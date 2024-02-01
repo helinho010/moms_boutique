@@ -90,6 +90,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/seleccion_sucursal_venta',[DetalleVentaController::class,'seleccionSucursalVenta'])->name('seleccion_sucursal_venta'); 
     Route::post('/numeros_a_letras',[DetalleVentaController::class,'numeroALetras'])->name('numeros_a_letras');
     Route::post('/realizar_venta',[DetalleVentaController::class,'realizarVenta'])->name('realizar_venta_detalle_venta');
+    Route::get('/exportar_venta_detalle_venta',[DetalleVentaController::class,'exportVentaPdf'])->name('exportar_venta_detalle_venta');
 
     
     // Tipo Pago

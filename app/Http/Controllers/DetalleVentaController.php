@@ -9,6 +9,7 @@ use App\Models\Sucursal;
 use App\Models\TipoPago;
 use App\Models\UserSucursal;
 use Illuminate\Http\Request;
+use Dompdf\Dompdf;
 
 class DetalleVentaController extends Controller
 {
@@ -130,5 +131,17 @@ class DetalleVentaController extends Controller
  
         //     return false;
         // }
+    }
+
+    public function exportVentaPdf()
+    {
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml('hello world');
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser
+        $dompdf->stream();
+        return ('Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veritatis id maiores officiis soluta unde exercitationem quo dolor repellendus beatae vero. Qui veritatis inventore omnis, laudantium dolor cupiditate saepe pariatur error?') ;
     }
 }
