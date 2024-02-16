@@ -161,12 +161,20 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Seleccione el Tipo de Pago: </h5>
+          <h5 class="modal-title" id="staticBackdropLabel">Datos del Cliente: </h5>
           <button type="button" class="btn-close modalBtnCerrar" data-bs-dismiss="modal" aria-label="Close" id=""></button>
         </div>
         <div class="modal-body">
             <div class="input-group mb-3">
-                <label class="input-group-text" for="inputGroupSelect01">Tipo de Pago:</label>
+                <label class="input-group-text" for="nit_cliente">Nit del Cliente:</label>
+                <input type="text" class="form-control" id="nit_cliente" placeholder="0">
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="nombre_cliente">Nombre Cliente:</label>
+                <input type="text" class="form-control" id="nombre_cliente" placeholder="S/N">
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="selectTipoPago">Tipo de Pago:</label>
                 <select class="form-select" id="selectTipoPago">
                   <option value="seleccionarTipoPago" selected disabled>Seleccione una opcion ....</option>
                   @foreach ($tipoPagos as $tipopago)
@@ -334,6 +342,7 @@
                     });
 
                     arrayProductosVenta = auxArray;
+                    let sumaTotal = 0;
 
                     $(".itemProductoVenta").remove();
                     $.each(arrayProductosVenta, function (indexInArray, valueOfElement) { 
@@ -346,7 +355,9 @@
                         <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto - valueOfElement.cantidad * valueOfElement.precio_producto * 13/100 ).toFixed(2) +'</td> \
                         </tr> \
                         ');
+                        sumaTotal = sumaTotal + (valueOfElement.cantidad * valueOfElement.precio_producto - valueOfElement.cantidad * valueOfElement.precio_producto * 13/100 ).toFixed(2);
                     });
+                    $("#total").text(parseFloat(sumaTotal));
                 }
             } 
         });
@@ -372,9 +383,19 @@
                             $.ajax({
                                 type: "POST",
                                 url: "/realizar_venta",
-                                data: {"productos":arrayProductosVenta, "idTipoPago":$("#selectTipoPago").val()},
+                                data: {
+                                        "productos":arrayProductosVenta, 
+                                        "idTipoPago":$("#selectTipoPago").val(), 
+                                        "nit_cliente":$("#nit_cliente").val(),
+                                        "nombre_cliente":$("#nombre_cliente").val(),
+                                        "totalVenta":$("#total").text(),
+                                        "efectivo_recibido":$("#efectivoRecebido").val(),
+                                      },
                                 success: function (response) {
-                                    if (response == 1) {
+                                    var respuesta = JSON.stringify(response);
+                                    var respuesta = JSON.parse(respuesta);
+                                    console.log(respuesta);
+                                    if (respuesta.estado == 1) {
                                         Swal.fire({
                                             title: "Venta Realizada Exitosamente!",
                                             // text: "You clicked the button!",
@@ -382,6 +403,7 @@
                                             timer: 1500
                                         });
                                         setTimeout(() => {
+                                            var win = window.open('/'+respuesta.nombreArchivo, '_blank');
                                             $(location).attr('href','/detalle_venta');                            
                                         }, 1600);
                                         
