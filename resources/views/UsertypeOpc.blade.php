@@ -47,7 +47,7 @@
 @section('card-title')
     <div class="row">
         <div class="col">
-            <h4>Lista de Roles - Usuarios</h4>
+            <h4>Usuarios</h4>
         </div>
         <div class="col text-end">
             <button type="button" class="btn btn-success" id="modalCategoria" data-bs-toggle="modal" data-bs-target="#exampleModal">
