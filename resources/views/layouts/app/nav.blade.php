@@ -7,7 +7,7 @@
             <li class="sidebar-header">
                 Opciones
             </li>
-            <li class="sidebar-item active">
+            <li class="sidebar-item">
                 <a class="sidebar-link" href="{{ route('home') }}">
                     <i class="fa fa-house"></i>
                     <span class="align-middle">Dashboards</span>
@@ -90,11 +90,16 @@
                 </a>
             </li>
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_detalle_venta')}}">
+            <li class="sidebar-item active">
+                <a data-bs-target="#ui" data-bs-toggle="collapse" class="sidebar-link collapsed"
+                aria-expanded="false">
                     <i class="fas fa-cart-arrow-down"></i>
                     <span class="align-middle">Venta</span>
                 </a>
+                <ul id="ui" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                    <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_detalle_venta') }}">Realizar Venta</a></li>
+                    <li class="sidebar-item"><a class="sidebar-link" href="#">Detalle Ventas</a></li>
+                </ul>
             </li>
 
             <li class="sidebar-item">
@@ -119,9 +124,10 @@
             </li>
             
 
-            {{-- <li class="sidebar-header">
+            <li class="sidebar-header">
                 Components
             </li>
+
             <li class="sidebar-item">
                 <a data-bs-target="#ui" data-bs-toggle="collapse" class="sidebar-link collapsed"
                     aria-expanded="false">
@@ -145,7 +151,7 @@
                 </ul>
             </li>
 
-            <li class="sidebar-header">
+            {{-- <li class="sidebar-header">
                 Plugins &amp; Addons
             </li>
             <li class="sidebar-item">
