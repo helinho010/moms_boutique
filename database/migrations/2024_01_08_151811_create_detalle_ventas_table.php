@@ -12,19 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('detalle_ventas', function (Blueprint $table) {
+            
             $table->id();
-            $table->unsignedBigInteger('id_producto');
-            $table->unsignedBigInteger('id_sucursal');
-            $table->unsignedBigInteger('id_usuario');
-            // $table->unsignedBigInteger('id_factura');
-            $table->unsignedBigInteger('id_tipo_pago');
+            $table->unsignedBigInteger('id_venta');
+            //$table->unsignedBigInteger('id_producto');
             $table->integer('cantidad');
-            $table->boolean('estado')->default(1)->comment('0 = inactivo, 1 = activo');
-            $table->foreign('id_producto')->references('id')->on('productos')->onUpdate('cascade');
-            $table->foreign('id_sucursal')->references('id')->on('sucursals')->onUpdate('cascade');
-            $table->foreign('id_usuario')->references('id')->on('users')->onUpdate('cascade');
-            // $table->foreign('id_factura')->references('id')->on('productos')->onUpdate('cascade');
-            $table->foreign('id_tipo_pago')->references('id')->on('tipo_pagos')->onUpdate('cascade');
+            $table->string('descripcion')->comment('nombre completo mas la categoia del producto');
+            $table->double('precio_unitario',8,2); 
+            $table->double('subtotal',8,2);
+            $table->foreign('id_venta')->references('id')->on('venta')->onUpdate('cascade');
+            //$table->foreign('id_producto')->references('id')->on('productos')->onUpdate('cascade');
             $table->timestamps();
         });
     }

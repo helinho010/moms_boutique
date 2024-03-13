@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cliente;
-use App\Models\DetalleVenta;
-use Luecano\NumeroALetras\NumeroALetras;
-use App\Models\InventarioInterno;
-use App\Models\Sucursal;
-use App\Models\TipoPago;
-use App\Models\UserSucursal;
 use Illuminate\Http\Request;
+use App\Models\Sucursal;
+use App\Models\UserSucursal;
 use Dompdf\Dompdf;
+use App\Models\InventarioInterno;
+use App\Models\DetalleVenta;
+use App\Models\Cliente;
+use App\Models\TipoPago;
+use App\Models\Venta;
+use Luecano\NumeroALetras\NumeroALetras;
 
-class DetalleVentaController extends Controller
+class VentaController extends Controller
 {
-    /**
-     * Esta variable es para tener acceso al archivo pdf de la venta realizada
-     */
     private $nombre_archivo = "";
 
     public function index()
@@ -95,6 +93,7 @@ class DetalleVentaController extends Controller
         ]);
     }
 
+
     public function numeroALetras(Request $request)
     {
         $formatter = new NumeroALetras();
@@ -108,47 +107,60 @@ class DetalleVentaController extends Controller
 
     public function realizarVenta(Request $request)
     {
+        dd($request);
+        $newVenta = new Venta();
+        $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
+        $newVenta->id_tipo_pago = $request->idTipoPago;
+        $newVenta->id_usuario = auth()->user()->id;
+        $newVenta->descuento = $request->descuento;
+        $newVenta->total_venta = $request->total_venta;
+        $newVenta->efectivo_revibido = $request->efectivo_recibido;
+        $newVenta->cambio = $request->cambio;
+        $newVenta->save();
+        
         try {
-            foreach ($request->productos as $key => $value) {
-                $reducirInventario = InventarioInterno::where('id_producto',$value["id_producto"])
-                                                      ->where('id_sucursal',session('sucursalSeleccionadoParaVenta'))
-                                                      ->where('estado',1)
-                                                      ->first();
-                if ($value['cantidad'] <= $reducirInventario->stock) 
+                foreach ($request->productos as $key => $value) 
                 {
-                    $reducirInventario->stock = $reducirInventario->stock - $value['cantidad'];
-                    $reducirInventario->save();
-                }else{
-                    return false;
+                    $reducirInventario = InventarioInterno::where('id_producto',$value["id_producto"])
+                                                        ->where('id_sucursal',session('sucursalSeleccionadoParaVenta'))
+                                                        ->where('estado',1)
+                                                        ->first();
+                    if ($value['cantidad'] <= $reducirInventario->stock) 
+                    {
+                        $reducirInventario->stock = $reducirInventario->stock - $value['cantidad'];
+                        $reducirInventario->save();
+                    }else{
+                        return false;
+                    }
+                    
+                    $newVenta = new Venta();
+                    $newVenta->id_producto = $value["id_producto"]; 
+                    $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
+                    $newVenta->id_usuario = auth()->user()->id;
+                    $newVenta->id_tipo_pago = $request->idTipoPago;
+                    $newVenta->cantidad = $value["cantidad"];
+                    $newVenta->save();
                 }
-                
-                $newVenta = new DetalleVenta();
-                $newVenta->id_producto = $value["id_producto"]; 
-                $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
-                $newVenta->id_usuario = auth()->user()->id;
-                $newVenta->id_tipo_pago = $request->idTipoPago;
-                $newVenta->cantidad = $value["cantidad"];
-                $newVenta->save();
-            }
 
-            $existeCliente = Cliente::where('nit_ci',$request->nit_cliente)->get();
-            if($existeCliente->count() == 0 && $request->nit_cliente != '' && $request->nombre_cliente != '')
-            {
-                $nuevoCliente = new Cliente();
-                $nuevoCliente->nit_ci = $request->nit_cliente;
-                $nuevoCliente->razon_social = $request->nombre_cliente;
-                $nuevoCliente->save();
-            }
+                $existeCliente = Cliente::where('nit_ci',$request->nit_cliente)->get();
+                if($existeCliente->count() == 0 && $request->nit_cliente != '' && $request->nombre_cliente != '')
+                {
+                    $nuevoCliente = new Cliente();
+                    $nuevoCliente->nit_ci = $request->nit_cliente;
+                    $nuevoCliente->razon_social = $request->nombre_cliente;
+                    $nuevoCliente->save();
+                }
 
-            $this->exportVentaPdf($request->totalVenta, $request->productos, $request->nit_cliente, $request->nombre_cliente, $request->efectivo_recibido, session('sucursalSeleccionadoParaVenta'));
-            // Aqui se debe borrar la variable de session "session('sucursalSeleccionadoParaVenta')" ya que no se utilizara mas
-            // session()->forget('sucursalSeleccionadoParaVenta');
-            //Fin
-            return ['estado'=>true, 'nombreArchivo'=>$this->nombre_archivo];
-
-        } catch (\Throwable $th) {
+                $this->exportVentaPdf($request->totalVenta, $request->productos, $request->nit_cliente, $request->nombre_cliente, $request->efectivo_recibido, session('sucursalSeleccionadoParaVenta'));
+                // Aqui se debe borrar la variable de session "session('sucursalSeleccionadoParaVenta')" ya que no se utilizara mas
+                // session()->forget('sucursalSeleccionadoParaVenta');
+                //Fin
+                return ['estado'=>true, 'nombreArchivo'=>$this->nombre_archivo];
+        } 
+        
+        catch (\Throwable $th) 
+        {
             report($th);
- 
             return ['estado'=>$th->getMessage()];
         }
     }

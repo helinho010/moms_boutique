@@ -12,6 +12,7 @@ use App\Http\Controllers\DetalleVentaController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\UsertypeOpcController;
 use App\Http\Controllers\UsuariosController;
+use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 
 require(base_path('routes/route-list/route-auth.php'));
@@ -82,15 +83,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/actualizar_estado_inventario_externo',[InventarioExternoController::class,'update_estado'])->name('actualizar_estado_inventario_externo');
 
     // Detalle Venta
-    Route::get('/detalle_venta', [DetalleVentaController::class,'index'])->name('home_detalle_venta');
+    Route::get('/venta', [VentaController::class,'index'])->name('home_venta');
     Route::post('/detalle_venta', [DetalleVentaController::class,'buscar'])->name('buscar_detalle_venta');
     Route::post('/nuevo_detalle_venta',[DetalleVentaController::class,'store'])->name('nuevo_detalle_venta');
     Route::post('/actualizar_detalle_venta',[DetalleVentaController::class,'update'])->name('actualizar_detalle_venta');
     Route::post('/actualizar_estado_detalle_venta',[DetalleVentaController::class,'update_estado'])->name('actualizar_estado_detalle_venta');
-    Route::post('/seleccion_sucursal_venta',[DetalleVentaController::class,'seleccionSucursalVenta'])->name('seleccion_sucursal_venta'); 
-    Route::post('/numeros_a_letras',[DetalleVentaController::class,'numeroALetras'])->name('numeros_a_letras');
-    Route::post('/realizar_venta',[DetalleVentaController::class,'realizarVenta'])->name('realizar_venta_detalle_venta');
-    Route::get('/exportar_venta_detalle_venta',[DetalleVentaController::class,'exportVentaPdf'])->name('exportar_venta_detalle_venta');
+    Route::post('/seleccion_sucursal_venta',[VentaController::class,'seleccionSucursalVenta'])->name('seleccion_sucursal_venta'); 
+    Route::post('/numeros_a_letras',[VentaController::class,'numeroALetras'])->name('numeros_a_letras');
+    Route::post('/realizar_venta',[VentaController::class,'realizarVenta'])->name('realizar_venta');
+    Route::get('/exportar_venta_detalle_venta',[VentaController::class,'exportVentaPdf'])->name('exportar_venta_detalle_venta');
+    Route::get('/detalle_ventas_rango_fechas',[DetalleVentaController::class,'detalleVentasRangoFechas'])->name('detalle_ventas_rango_fechas');
+
 
     
     // Tipo Pago

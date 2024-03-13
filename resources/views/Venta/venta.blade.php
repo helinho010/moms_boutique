@@ -20,12 +20,12 @@
             border-left: solid 2px black;
             border-right: solid 1px black;
         }
-        #efectivoRecebido{
+        #efectivoRecebido, #descuentoVenta{
            border: 0;
            width: 100%;
            height: auto;
         }
-        #efectivoRecebido:focus{
+        #efectivoRecebido:focus , #descuentoVenta:focus{
            border: 0;
            outline: none;
            width: 100%;
@@ -103,11 +103,11 @@
             <table class="table table-bordered">
                 <thead>
                     <tr class="text-center">
-                      <th style="width: 10%;">Cantidad</th>
+                      <th style="width: 20%;">Cantidad</th>
                       <th style="width: 40%; border-left: solid 2px black;">Descripcion</th>
-                      <th style="width: 10%; border-left: solid 2px black;">Precio Unitario [Bs.]</th>
-                      <th style="width: 10%; border-left: solid 2px black;">Descuento [%]</th>
-                      <th style="width: 10%; border-left: solid 2px black;">Subtotal [Bs.]</th>
+                      <th style="width: 20%; border-left: solid 2px black;">Precio Unitario [Bs.]</th>
+                      <!--th style="width: 10%; border-left: solid 2px black;">Descuento [%]</th-->
+                      <th style="width: 20%; border-left: solid 2px black;">Subtotal [Bs.]</th>
                     </tr>
                   </thead>
                   <tbody id="itemsEliminar">
@@ -118,17 +118,22 @@
                     </tr>
                     {{-- Suma de Items --}}
                     <tr class="sinMargen">
-                      <th colspan="3" ></th>
+                        <th colspan="2" ></th>
+                        <td style="font-weight: bold;">Descuento [%]: </td> 
+                        <td><input type="text" placeholder="0" id="descuentoVenta"></td>
+                      </tr>
+                    <tr class="sinMargen">
+                      <th colspan="2" ></th>
                       <td style="font-weight: bold;">Total [Bs.]: </td> 
                       <td id="total">0</td>
                     </tr>
                     <tr class="sinMargen">
-                        <th colspan="3"></th>
+                        <th colspan="2"></th>
                         <td style="font-weight: bold">Efectivo Recibido [Bs.]: </td> 
                         <td><input type="text" placeholder="0" id="efectivoRecebido"></td>
                     </tr>
                     <tr class="sinMargen">
-                        <th colspan="3"></th>
+                        <th colspan="2"></th>
                         <td style="font-weight: bold">Cambio [Bs.]: </td> 
                         <td id="cambio">0</td>
                     </tr>
@@ -251,23 +256,28 @@
                         // console.log(arrayProductosVenta);
 
                         $(".itemProductoVenta").remove();
+
                         $.each(arrayProductosVenta, function (indexInArray, valueOfElement) { 
                              $("#contenidoItemsProductos").before(' \
                                 <tr class="text-center itemProductoVenta" style="border-bottom: solid 1px black;" data-producto="'+valueOfElement.id_producto+'"> \
                                     <th scope="row">'+valueOfElement.cantidad+'</th> \
                                     <td>'+valueOfElement.nombre_producto + ' ' + valueOfElement.talla_producto +'</td> \
                                     <td> ' +valueOfElement.precio_producto+ '</td> \
-                                    <td>'+ 0 +'</td> \
-                                    <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto - valueOfElement.cantidad * valueOfElement.precio_producto * 13/100 ).toFixed(2) +'</td> \
+                                    <!--td>'+ 0 +'</td--> \
+                                    <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto ).toFixed(2) +'</td> \
                                 </tr> \
                             ');
                         });
 
+                        // Se esta calculando el total de la venta
                         $('.subtotal').each(function(index) {
-                            // console.log(index + ": " + $(this).text());
                             sumaTotal = sumaTotal + parseFloat($(this).text());
                             $("#total").text(sumaTotal.toFixed(2));
                         });
+
+                        let descuento_venta = $("#descuentoVenta").val() == '' ? 0 : $("#descuentoVenta").val();
+                        let total_venta = (parseFloat(sumaTotal)-parseFloat(sumaTotal)*parseFloat(descuento_venta)/100).toFixed(2);
+                        $("#total").text(total_venta);
 
                         cambiarNumeroALiterarEfectivo($("#total").text());
 
@@ -309,6 +319,27 @@
             }
         });
 
+        $( "#descuentoVenta" ).on( "keydown", function( event ) {
+            let total_venta = 0;
+
+            if( event.which == 13 )
+            {
+                let descuento_venta = $("#descuentoVenta").val();
+
+                $('.subtotal').each(function(index) {
+                  total_venta = total_venta + parseFloat($(this).text());
+                });
+
+                total_venta = (parseFloat(total_venta)-parseFloat(total_venta)*parseFloat(descuento_venta)/100).toFixed(2)
+                $("#total").text(total_venta);
+
+                let efectivo_recibido = $("#efectivoRecebido").val() == '' ? 0:$("#efectivoRecebido").val();
+                $( "#cambio" ).text((parseFloat(efectivo_recibido)-parseFloat(total_venta)).toFixed(2));
+            }
+
+            cambiarNumeroALiterarEfectivo($("#total").text());
+        });
+
         /**
          * Alterna entre rojo y transparente los resgistros a eliminar
         */
@@ -324,7 +355,7 @@
 
 
         /**
-         * Captura la tecla del o suprimir para eliminar los registros seleccionados 
+         * Captura la tecla del o suprimir para eliminar los registros seleccionados y recalcula los datos de Total, cambio
         */
         $('html').keyup(function(e){ 
             if(e.keyCode == 46){
@@ -351,13 +382,21 @@
                         <th scope="row">'+valueOfElement.cantidad+'</th> \
                         <td>'+valueOfElement.nombre_producto + ' ' + valueOfElement.talla_producto +'</td> \
                         <td> ' +valueOfElement.precio_producto+ '</td> \
-                        <td>'+ 0 +'</td> \
-                        <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto - valueOfElement.cantidad * valueOfElement.precio_producto * 13/100 ).toFixed(2) +'</td> \
+                        <!--td>'+ 0 +'</td--> \
+                        <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto).toFixed(2) +'</td> \
                         </tr> \
                         ');
-                        sumaTotal = sumaTotal + (valueOfElement.cantidad * valueOfElement.precio_producto - valueOfElement.cantidad * valueOfElement.precio_producto * 13/100 ).toFixed(2);
+                        sumaTotal = sumaTotal + (valueOfElement.cantidad * valueOfElement.precio_producto).toFixed(2);
                     });
-                    $("#total").text(parseFloat(sumaTotal));
+                    //$("#total").text(parseFloat(sumaTotal));
+                    
+                    let descuento_venta = $("#descuentoVenta").val() == '' ? 0 : $("#descuentoVenta").val();
+                    let total_venta = (parseFloat(sumaTotal)-parseFloat(sumaTotal)*parseFloat(descuento_venta)/100).toFixed(2);
+                    $("#total").text(total_venta);
+                    cambiarNumeroALiterarEfectivo(total_venta);
+                    let efectivo_recibido = $("#efectivoRecebido").val() == '' ? 0:$("#efectivoRecebido").val();
+                    $( "#cambio" ).text((parseFloat(efectivo_recibido)-parseFloat(total_venta)).toFixed(2));
+
                 }
             } 
         });
