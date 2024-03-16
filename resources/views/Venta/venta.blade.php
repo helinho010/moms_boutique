@@ -428,7 +428,9 @@
                                         "nit_cliente":$("#nit_cliente").val(),
                                         "nombre_cliente":$("#nombre_cliente").val(),
                                         "totalVenta":$("#total").text(),
-                                        "efectivo_recibido":$("#efectivoRecebido").val(),
+                                        "efectivo_recibido":$("#efectivoRecebido").val() == '' ? 0:$("#efectivoRecebido").val(),
+                                        "descuento_venta":$("#descuentoVenta").val() == '' ? 0:$("#descuentoVenta").val(),
+                                        "cambio_venta":$("#cambio").text(),
                                       },
                                 success: function (response) {
                                     var respuesta = JSON.stringify(response);
@@ -443,7 +445,7 @@
                                         });
                                         setTimeout(() => {
                                             var win = window.open('/'+respuesta.nombreArchivo, '_blank');
-                                            $(location).attr('href','/detalle_venta');                            
+                                            $(location).attr('href','/detalle_ventas_rango_fechas');                            
                                         }, 1600);
                                         
                                     } else {

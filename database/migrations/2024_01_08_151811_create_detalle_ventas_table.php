@@ -15,13 +15,13 @@ return new class extends Migration
             
             $table->id();
             $table->unsignedBigInteger('id_venta');
-            //$table->unsignedBigInteger('id_producto');
+            $table->unsignedBigInteger('id_producto');
             $table->integer('cantidad');
             $table->string('descripcion')->comment('nombre completo mas la categoia del producto');
             $table->double('precio_unitario',8,2); 
             $table->double('subtotal',8,2);
             $table->foreign('id_venta')->references('id')->on('venta')->onUpdate('cascade');
-            //$table->foreign('id_producto')->references('id')->on('productos')->onUpdate('cascade');
+            $table->foreign('id_producto')->references('id')->on('productos')->onUpdate('cascade');
             $table->timestamps();
         });
     }

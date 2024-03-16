@@ -16,7 +16,7 @@
 @section('card-title')
     <div class="row">
         <div class="col">
-            <h4>Detalle de Ventas</h4>
+            <h4>Ventas</h4>
         </div>
         {{-- <div class="col text-end">
             <button type="button" class="btn btn-success" id="btnModalRegistroActualizacion" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
@@ -28,6 +28,12 @@
 @endsection
 
 @section('content')
+    @php
+        if (isset($datos)) 
+        {
+            var_dump($datos);
+        }
+    @endphp
     <div class="row">
         <div class="col-md-5">
             <div class="row">
@@ -35,7 +41,7 @@
                     <label for="inputPassword6" class="col-form-label">Sucursal: </label>
                 </div>
                 <div class="col-md-8">
-                    <form action="{{ route('data_inventario_interno') }}" method="POST" id="dataformInventario">
+                    <form action="{{ route('buscar_detalle_venta') }}" method="POST" id="dataformDetalleVenta">
                         @method('POST')
                         @csrf
                         <div class="input-group">
@@ -43,9 +49,15 @@
                                 <option value="seleccionado" @if (!isset($id_sucursal)) selected  @endif disabled>Seleccione una opcion...</option>
                                     @foreach ($sucursales as $item)
                                        @if ($item->estado_sucursal == 1)
-                                          <option value="{{ $item->id_sucursal_user_sucursal }}" @if (isset($id_sucursal) && $item->id_sucursal_user_sucursal == $id_sucursal ) selected  @endif>{{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,40)."..." }}</option>
+                                          <option value="{{ $item->id }}" 
+                                            @if (isset($id_sucursal) && $item->id_sucursal_user_sucursal == $id_sucursal ) 
+                                                selected  
+                                            @endif>{{ "$item->razon_social_sucursal - $item->ciudad - ".substr($item->direccion_sucursal,0,40)."..." }}
+                                          </option>
                                         @else
-                                          <option value="{{ $item->id_sucursal_user_sucursal }}" disabled>{{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,30)."... (deshabilitado)" }}</option>
+                                          <option value="{{ $item->id_sucursal_user_sucursal }}" disabled>
+                                            {{ "$item->razon_social - $item->ciudad - ".substr($item->direccion,0,30)."... (deshabilitado)" }}
+                                          </option>
                                        @endif
                                     @endforeach
                              </select>
@@ -79,16 +91,16 @@
             <thead>
                 <tr>
                   <th scope="col">Opciones</th>
-                  <th scope="col">Cantidad</th>
-                  <th scope="col">Producto</th>
-                  <th scope="col">Sucursal</th>
+                  <th scope="col">Fecha de Venta</th>
+                  <th scope="col">Total Venta</th>
+                  <th scope="col">Descuento</th>
+                  <th scope="col">Tipo de Pago</th>
                   <th scope="col">Usuario</th>
-                  <th scope="col">Tipo Pago</th>
                   <th scope="col">Estado</th>
                 </tr>
               </thead>
               <tbody>
-                @foreach ($inventariosInternos as $aux)
+                @foreach ($ventas as $item)
                   <tr>
                     <th scope="row">
                         {{-- <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
@@ -103,15 +115,18 @@
                         </i> --}}
                         @php
                         $auxdata = json_encode([
-                            "id"=>$aux->id_inventario_interno,
-                            "id_producto"=>$aux->id_producto,
-                            "id_sucursal"=>$aux->id_sucursal,
-                            "id_tipo_ingreso_salida"=>$aux->id_tipo_ingreso_salida,
-                            "stock"=>$aux->stock,
-                            "cantidad_ingreso,"=>$aux->cantidad_ingreso,
-                            "estado"=>$aux->estado_inventario_interno,
+                            "id"=>$item->id,
+                            "id_sucursal"=>$item->id_sucursal,
+                            "id_tipo_pago"=>$item->id_tipo_pago,
+                            "id_usuario"=>$item->id_usuario,
+                            "descuento"=>$item->descuento,
+                            "total_venta,"=>$item->total_venta,
+                            "efectivo_recivido"=>$item->efectivo_recibido,
+                            "cambio"=>$item->cambio,
+                            "estado"=>$item->estado,
+                            "fecha_venta"=>$item->updated_at,
                             ]);
-                        if ($aux->estado_inventario_interno == 1) 
+                        if ($item->estado == 1) 
                         {
                             echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>'; 
                         }else{

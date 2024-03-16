@@ -92,7 +92,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/numeros_a_letras',[VentaController::class,'numeroALetras'])->name('numeros_a_letras');
     Route::post('/realizar_venta',[VentaController::class,'realizarVenta'])->name('realizar_venta');
     Route::get('/exportar_venta_detalle_venta',[VentaController::class,'exportVentaPdf'])->name('exportar_venta_detalle_venta');
-    Route::get('/detalle_ventas_rango_fechas',[DetalleVentaController::class,'detalleVentasRangoFechas'])->name('detalle_ventas_rango_fechas');
+    Route::get('/detalle_ventas_rango_fechas',[VentaController::class,'detalleVentasRangoFechas'])->name('detalle_ventas_rango_fechas');
 
 
     

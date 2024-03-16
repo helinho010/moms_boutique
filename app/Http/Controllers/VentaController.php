@@ -107,18 +107,18 @@ class VentaController extends Controller
 
     public function realizarVenta(Request $request)
     {
-        dd($request);
-        $newVenta = new Venta();
-        $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
-        $newVenta->id_tipo_pago = $request->idTipoPago;
-        $newVenta->id_usuario = auth()->user()->id;
-        $newVenta->descuento = $request->descuento;
-        $newVenta->total_venta = $request->total_venta;
-        $newVenta->efectivo_revibido = $request->efectivo_recibido;
-        $newVenta->cambio = $request->cambio;
-        $newVenta->save();
         
         try {
+                $newVenta = new Venta();
+                $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
+                $newVenta->id_tipo_pago = $request->idTipoPago;
+                $newVenta->id_usuario = auth()->user()->id;
+                $newVenta->descuento = $request->descuento_venta;
+                $newVenta->total_venta = $request->totalVenta;
+                $newVenta->efectivo_recibido = $request->efectivo_recibido;
+                $newVenta->cambio = $request->cambio_venta;
+                $newVenta->save();
+
                 foreach ($request->productos as $key => $value) 
                 {
                     $reducirInventario = InventarioInterno::where('id_producto',$value["id_producto"])
@@ -130,16 +130,17 @@ class VentaController extends Controller
                         $reducirInventario->stock = $reducirInventario->stock - $value['cantidad'];
                         $reducirInventario->save();
                     }else{
-                        return false;
+                        return ['estado'=>false, 'mensaje'=>'Error al disminuir la cantidad en el inventario interno de la sucursal'];
                     }
-                    
-                    $newVenta = new Venta();
-                    $newVenta->id_producto = $value["id_producto"]; 
-                    $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
-                    $newVenta->id_usuario = auth()->user()->id;
-                    $newVenta->id_tipo_pago = $request->idTipoPago;
-                    $newVenta->cantidad = $value["cantidad"];
-                    $newVenta->save();
+        
+                    $newDetalleVenta = new DetalleVenta();
+                    $newDetalleVenta->id_venta = $newVenta->id;
+                    $newDetalleVenta->id_producto = $value['id_producto'];
+                    $newDetalleVenta->cantidad = $value['cantidad'];
+                    $newDetalleVenta->descripcion = $value['nombre_producto'].'-'.$value['talla_producto'].' ';
+                    $newDetalleVenta->precio_unitario = $value['precio_producto'];
+                    $newDetalleVenta->subtotal = floatval($value['cantidad'])*floatval($value['precio_producto']);
+                    $newDetalleVenta->save();
                 }
 
                 $existeCliente = Cliente::where('nit_ci',$request->nit_cliente)->get();
@@ -151,7 +152,13 @@ class VentaController extends Controller
                     $nuevoCliente->save();
                 }
 
-                $this->exportVentaPdf($request->totalVenta, $request->productos, $request->nit_cliente, $request->nombre_cliente, $request->efectivo_recibido, session('sucursalSeleccionadoParaVenta'));
+                $this->exportVentaPdf($request->totalVenta,
+                                      $request->productos, 
+                                      $request->nit_cliente, 
+                                      $request->nombre_cliente, 
+                                      $request->efectivo_recibido, 
+                                      session('sucursalSeleccionadoParaVenta'));
+
                 // Aqui se debe borrar la variable de session "session('sucursalSeleccionadoParaVenta')" ya que no se utilizara mas
                 // session()->forget('sucursalSeleccionadoParaVenta');
                 //Fin
@@ -185,7 +192,7 @@ class VentaController extends Controller
             <td>'.$producto["nombre_producto"]." ".$producto["talla_producto"].'</td>
             <td>'.$producto["precio_producto"].'</td>
             <td>0</td>
-            <td>'.((float) $producto["cantidad"] * (float) $producto["precio_producto"] - (float) $producto["cantidad"] * (float) $producto["precio_producto"] * 13/100).'</td>
+            <td>'.((float) $producto["cantidad"] * (float) $producto["precio_producto"]).'</td>
           </tr>';
         }
 
