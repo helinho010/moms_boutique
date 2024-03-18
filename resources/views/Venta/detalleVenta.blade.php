@@ -28,12 +28,6 @@
 @endsection
 
 @section('content')
-    @php
-        if (isset($datos)) 
-        {
-            var_dump($datos);
-        }
-    @endphp
     <div class="row">
         <div class="col-md-5">
             <div class="row">
@@ -46,17 +40,18 @@
                         @csrf
                         <div class="input-group">
                             <select class="form-select" aria-describedby="" name="id_sucursal" id="select_sucursal">
-                                <option value="seleccionado" @if (!isset($id_sucursal)) selected  @endif disabled>Seleccione una opcion...</option>
+                                <option value="seleccionado" @if (!isset($id_sucursal_seleccionado)) selected  @endif disabled>Seleccione una opcion...</option>
                                     @foreach ($sucursales as $item)
                                        @if ($item->estado_sucursal == 1)
-                                          <option value="{{ $item->id }}" 
-                                            @if (isset($id_sucursal) && $item->id_sucursal_user_sucursal == $id_sucursal ) 
+                                          <option value="{{ $item->id_sucursal }}" 
+                                            @if (isset($id_sucursal_seleccionado) && $item->id_sucursal_user_sucursal == $id_sucursal_seleccionado ) 
                                                 selected  
-                                            @endif>{{ "$item->razon_social_sucursal - $item->ciudad - ".substr($item->direccion_sucursal,0,40)."..." }}
+                                            @endif>
+                                            {{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,40)."..." }}
                                           </option>
                                         @else
-                                          <option value="{{ $item->id_sucursal_user_sucursal }}" disabled>
-                                            {{ "$item->razon_social - $item->ciudad - ".substr($item->direccion,0,30)."... (deshabilitado)" }}
+                                          <option value="{{ $item->id_sucursal }}" disabled>
+                                            {{ "$item->razon_social - $item->ciudad_sucursal - ".substr($item->direccion,0,30)."... (deshabilitado)" }}
                                           </option>
                                        @endif
                                     @endforeach
@@ -103,30 +98,34 @@
                 @foreach ($ventas as $item)
                   <tr>
                     <th scope="row">
-                        {{-- <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
-                            "id"=>$aux->id,
-                            "codigo"=>$aux->codigo_producto,
-                            "nombre"=>$aux->nombre,
-                            "precio"=>$aux->precio,
-                            "talla"=>$aux->talla,
-                            "id_categoria"=>$aux->id_categoria,
-
+                        <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(
+                            @php echo json_encode([
+                                "id"=>$item->id_venta,
+                                "id_sucursal"=>$item->id_sucursal,
+                                "id_tipo_pago"=>$item->id_tipo_pago,
+                                "id_usuario"=>$item->id_usuario,
+                                "descuento"=>$item->descuento_venta,
+                                "total_venta,"=>$item->total_venta,
+                                "efectivo_recivido"=>$item->efectivo_recibido_venta,
+                                "cambio"=>$item->cambio_venta,
+                                "estado"=>$item->estado_venta,
+                                "fecha_venta"=>$item->updated_at_venta,
                             ]); @endphp)'>
-                        </i> --}}
+                        </i>
                         @php
                         $auxdata = json_encode([
-                            "id"=>$item->id,
-                            "id_sucursal"=>$item->id_sucursal,
-                            "id_tipo_pago"=>$item->id_tipo_pago,
-                            "id_usuario"=>$item->id_usuario,
-                            "descuento"=>$item->descuento,
-                            "total_venta,"=>$item->total_venta,
-                            "efectivo_recivido"=>$item->efectivo_recibido,
-                            "cambio"=>$item->cambio,
-                            "estado"=>$item->estado,
-                            "fecha_venta"=>$item->updated_at,
+                                "id"=>$item->id_venta,
+                                "id_sucursal"=>$item->id_sucursal,
+                                "id_tipo_pago"=>$item->id_tipo_pago,
+                                "id_usuario"=>$item->id_usuario,
+                                "descuento"=>$item->descuento_venta,
+                                "total_venta,"=>$item->total_venta,
+                                "efectivo_recivido"=>$item->efectivo_recibido_venta,
+                                "cambio"=>$item->cambio_venta,
+                                "estado"=>$item->estado_venta,
+                                "fecha_venta"=>$item->updated_at_venta,
                             ]);
-                        if ($item->estado == 1) 
+                        if ($item->estado_venta == 1) 
                         {
                             echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>'; 
                         }else{
@@ -135,13 +134,13 @@
                       @endphp
 
                     </th>
-                    <th>{{"$aux->nombre_producto - $aux->talla - $aux->precio Bs"}}</th>
-                    <th>{{"$aux->razon_social_sucursal - $aux->ciudad_sucursal"}}</th>
-                    <th>{{"$aux->nombre_tipo_ingreso_salida"}}</th>
-                    <th>{{$aux->stock}}</th>
-                    <th>{{"$aux->nombre_usuario"}}</th>
+                    <th>{{"$item->updated_at_venta"}}</th>
+                    <th>{{"$item->total_venta"}} Bs</th>
+                    <th>{{"$item->descuento_venta"}}%</th>
+                    <th>{{$item->tipo_pago}}</th>
+                    <th>{{"$item->nombre_usuario"}}</th>
                     <td> 
-                        @if ( $aux->estado_inventario_interno == 1 )
+                        @if ( $item->estado_venta == 1 )
                             <span class="badge bg-success">Activo</span>    
                         @else
                             <span class="badge bg-warning">Inactivo</span>    
@@ -151,7 +150,7 @@
                 @endforeach
               </tbody>
         </table>
-        {{ $inventariosInternos->links() }}
+        {{ $ventas->links() }}
     </div>
 
         <!-- Modal -->
@@ -159,7 +158,7 @@
             <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Nuevo Item para el Inventario: </h5>
+                <h5 class="modal-title" id="exampleModalLabel">Editar Venta: </h5>
                 <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close" onclick="resestablecerValoresModal()"></button>
                 </div>
                 <div class="modal-body">
@@ -253,5 +252,22 @@
 @push('scripts')
 <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function editar(item)
+    {
+        console.log(item);
+        $("#exampleModal").modal("show");
+        // $("#exampleModalLabel").html("<h3>Editar Evento</h3>");
+        // $("#formularioRegistroActualizacion").attr("action","{{ route('actualizar_evento') }}");
+        // $("#formularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
+        // $("#nombre_evento").val(item.nombre);
+        // $("#fecha_evento").val(item.fecha_evento);
+        // $("#btnGuardarActualizar").val("Actualizar");
+        // $("#btnGuardarActualizar").on('click',function(){
+        //     $("#formularioRegistroActualizacion").submit();
+        //     resestablecerValoresModal();
+        // });
+    }
+</script>
 @endpush
 

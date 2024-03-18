@@ -57,6 +57,7 @@ class DetalleVentaController extends Controller
 
     public function buscar(Request $request)
     {
+
         if (auth()->user()->usertype_id == 1) {
             $sucursales = Sucursal::selectRaw(' sucursals.id as id_sucursal,
                                                 sucursals.id as id_sucursal_user_sucursal,
@@ -85,16 +86,80 @@ class DetalleVentaController extends Controller
                                        ->get();
         }
 
-        $ventas = Venta::where("id_sucursal",$request->id_sucursal)
-                       ->where("estado",1); 
+        if (isset($request->id_sucursal)) 
+        {
+            $ventas = Venta::selectRaw('
+                                        venta.id as id_venta,
+                                        venta.descuento as descuento_venta,
+                                        venta.total_venta,
+                                        venta.efectivo_recibido as efectivo_recibido_venta,
+                                        venta.cambio as cambio_venta,
+                                        venta.estado as estado_venta,
+                                        venta.created_at as created_at_venta,
+                                        venta.updated_at as updated_at_venta,
+                                        sucursals.id  as id_sucursal,
+                                        sucursals.nit as nit_sucursal,
+                                        sucursals.razon_social as razon_social_sucursal,
+                                        sucursals.direccion as direccion_sucursal,
+                                        sucursals.ciudad as ciudad_sucursal,
+                                        sucursals.activo as estado_sucursal,
+                                        tipo_pagos.id as id_tipo_pago,
+                                        tipo_pagos.tipo as tipo_pago,
+                                        tipo_pagos.estado as estado_tipo_pago,
+                                        users.id as id_usuario,
+                                        users.name as nombre_usuario')
+                       ->join('sucursals' ,'sucursals.id','venta.id_sucursal')
+                       ->join('tipo_pagos','tipo_pagos.id','venta.id_tipo_pago')
+                       ->join('users','users.id','venta.id_usuario')
+                       ->where("id_sucursal", $request->id_sucursal)
+                       ->where("venta.estado",1)
+                       ->orderBy('venta.updated_at','desc')
+                       ->paginate(10);
+        }else{
+            $ventas = Venta::selectRaw('
+                                        venta.id as id_venta,
+                                        venta.descuento as descuento_venta,
+                                        venta.total_venta,
+                                        venta.efectivo_recibido as efectivo_recibido_venta,
+                                        venta.cambio as cambio_venta,
+                                        venta.estado as estado_venta,
+                                        venta.created_at as created_at_venta,
+                                        venta.updated_at as updated_at_venta,
+                                        sucursals.id  as id_sucursal,
+                                        sucursals.nit as nit_sucursal,
+                                        sucursals.razon_social as razon_social_sucursal,
+                                        sucursals.direccion as direccion_sucursal,
+                                        sucursals.ciudad as ciudad_sucursal,
+                                        sucursals.activo as estado_sucursal,
+                                        tipo_pagos.id as id_tipo_pago,
+                                        tipo_pagos.tipo as tipo_pago,
+                                        tipo_pagos.estado as estado_tipo_pago,
+                                        users.id as id_usuario,
+                                        users.name as nombre_usuario')
+                       ->join('sucursals' ,'sucursals.id','venta.id_sucursal')
+                       ->join('tipo_pagos','tipo_pagos.id','venta.id_tipo_pago')
+                       ->join('users','users.id','venta.id_usuario')
+                       ->where("id_sucursal", $request->id_sucursal)
+                       ->where("venta.estado",1)
+                       ->where("created_at","0000-00-00 00:00")
+                       ->paginate(10);
+        } 
     
-        $inventariosInternos = InventarioInterno::where("estado",1)->paginate(10);
-        return view('Venta.detalleVenta',[
-            "datos"=>$request->id_sucursal,            
-            "sucursales"=>$sucursales,
-            "ventas"=>$ventas,
-            "inventariosInternos"=>$inventariosInternos,
-        ]);
+        
+        if (isset($request->id_sucursal)) 
+        {
+            return view('Venta.detalleVenta',[
+                "id_sucursal_seleccionado"=>$request->id_sucursal,
+                "sucursales"=>$sucursales,
+                "ventas"=>$ventas,
+            ]);
+
+        }else{
+            return view('Venta.detalleVenta',[
+                "sucursales"=>$sucursales,
+                "ventas"=>$ventas,
+            ]);
+        }
     }
 
     public function seleccionSucursalVenta(Request $request)
@@ -4481,7 +4546,8 @@ class DetalleVentaController extends Controller
         // $dompdf->stream(date('Ymd-His').".pdf");
     }
 
-    public function detalleVentasRangoFechas(Request $request){
+    public function detalleVentasRangoFechas(Request $request)
+    {
         $sucursales = Sucursal::where("activo",1)->get();
         $inventariosInternos = InventarioInterno::where("estado",1)->paginate(10);
         return view('Venta.detalleVenta',[

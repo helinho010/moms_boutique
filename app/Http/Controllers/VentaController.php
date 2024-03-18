@@ -4457,12 +4457,60 @@ class VentaController extends Controller
         // $dompdf->stream(date('Ymd-His').".pdf");
     }
 
-    public function detalleVentasRangoFechas(Request $request){
-        $sucursales = Sucursal::where("activo",1)->get();
-        $inventariosInternos = InventarioInterno::where("estado",1)->paginate(10);
-        return view('Venta.detalleVenta',[
-            "sucursales"=>$sucursales,
-            "inventariosInternos"=>$inventariosInternos,
-        ]);
+    public function detalleVentasRangoFechas(Request $request)
+    {
+        if (auth()->user()->usertype_id == 1) {
+            $sucursales = Sucursal::selectRaw(' sucursals.id as id_sucursal,
+                                                sucursals.id as id_sucursal_user_sucursal,
+                                                sucursals.razon_social as razon_social_sucursal,
+                                                sucursals.direccion as direccion_sucursal,
+                                                sucursals.ciudad as ciudad_sucursal,
+                                                sucursals.activo as estado_sucursal')
+                                    ->where('sucursals.activo',1)
+                                    ->get();
+        } else {
+            $sucursales = UserSucursal::selectRaw('user_sucursals.id as id_user_sucursal,
+                                                user_sucursals.id_usuario as id_usuario_user_sucursal,
+                                                user_sucursals.id_sucursal as id_sucursal_user_sucursal,
+                                                user_sucursals.estado as estado_user_sucursal,
+                                                sucursals.id as id_sucursal,
+                                                sucursals.razon_social as razon_social_sucursal,
+                                                sucursals.direccion as direccion_sucursal,
+                                                sucursals.ciudad as ciudad_sucursal,
+                                                sucursals.activo as estado_sucursal,
+                                                users.name as nombre_usuario,
+                                                users.usertype_id as tipo_usuario')
+                                       ->join('sucursals','sucursals.id','user_sucursals.id_sucursal')
+                                       ->join('users', 'users.id','user_sucursals.id_usuario')
+                                       ->where('user_sucursals.id_usuario',auth()->user()->id)
+                                       ->where('sucursals.activo',1)
+                                       ->get();
+        }
+
+        if (isset($request->id_sucursal)) 
+        {
+            $ventas = Venta::where("id_sucursal", $request->id_sucursal)
+                       ->where("estado",1)
+                       ->paginate(10);
+        }else{
+            $ventas = Venta::where("created_at","0000-00-00 00:00")
+                       ->where("estado",1)
+                       ->paginate(10);
+        }
+        
+        if (isset($request->id_sucursal)) 
+        {
+            return view('Venta.detalleVenta',[
+                "id_sucursal_seleccionado"=>$request->id_sucursal,
+                "sucursales"=>$sucursales,
+                "ventas"=>$ventas,
+            ]);
+        }else{
+            return view('Venta.detalleVenta',[
+                "sucursales"=>$sucursales,
+                "ventas"=>$ventas,
+            ]);
+        }
+        
     }
 }
