@@ -1,6 +1,6 @@
 @extends('layouts.plantillabase')
 
-@section('title','Roles')
+@section('title','Usuarios')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('DataTables/datatables.min.css') }}">
@@ -51,7 +51,7 @@
         </div>
         <div class="col text-end">
             <button type="button" class="btn btn-success" id="modalCategoria" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <i class="fas fa-plus"></i> Agregar Rol 
+                <i class="fas fa-plus"></i> Agregar Usuario 
             </button>
         </div>
     </div>
@@ -78,34 +78,36 @@
             <thead>
                 <tr>
                   <th scope="col">Opciones</th>
-                  <th scope="col">Rol</th>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">Usuario</th>
                   <th scope="col">Opciones Habilitadas</th>
                   <th scope="col">Fecha de Creacion/Modificacion</th>
+                  <th scope="col">Rol</th>
                   <th scope="col">Estado</th>
                 </tr>
               </thead>
               <tbody>
-                @foreach ($roles as $rol)
+                @foreach ($usuarios as $usuario)
                   <tr>
                     <th scope="row">
                       <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
-                        "id"=>$rol->id,
-                        "nombre"=>$rol->nombre,
-                        "telefono"=>$rol->telefono,
-                        "ciudad" =>$rol->ciudad,
-                        "observacion" => $rol->observacion,
-                        "estado" => $rol->estado,
+                        "id"=>$usuario->id,
+                        "nombre"=>$usuario->nombre,
+                        "telefono"=>$usuario->telefono,
+                        "ciudad" =>$usuario->ciudad,
+                        "observacion" => $usuario->observacion,
+                        "estado" => $usuario->estado,
                         ]); @endphp)'></i>
                       @php
                         $dataProveedor = json_encode([
-                            "id"=>$rol->id,
-                            "nombre"=>$rol->nombre,
-                            "telefono"=>$rol->telefono,
-                            "ciudad" =>$rol->ciudad,
-                            "observacion" => $rol->observacion,
-                            "estado" => $rol->estado,
+                            "id"=>$usuario->id,
+                            "nombre"=>$usuario->nombre,
+                            "telefono"=>$usuario->telefono,
+                            "ciudad" =>$usuario->ciudad,
+                            "observacion" => $usuario->observacion,
+                            "estado" => $usuario->estado,
                         ]);
-                        if ($rol->estado == 1) 
+                        if ($usuario->estado_usuario == 1) 
                         {
                             echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataProveedor.')\'></i>'; 
                         }else{
@@ -114,12 +116,13 @@
                       @endphp
 
                     </th>
-                    <td>{{ $rol->type }}</td>
+                    <td>{{ $usuario->nombre_usuario }}</td>
+                    <td>{{ $usuario->usuario }}</td>
                     <td>{{ $opciones_habilitadas }}</td>
-                    <td>{{ $rol->updated_at }}</td>
-
+                    <td>{{ $usuario->updated_at_usuario }}</td>
+                    <td>{{ $usuario->tipo_usuario }}</td>    
                     <td> 
-                        @if ( $rol->estado == 1 )
+                        @if ( $usuario->estado_usuario == 1 )
                             <span class="badge bg-success">Activo</span>    
                         @else
                             <span class="badge bg-warning">Inactivo</span>    
@@ -129,7 +132,7 @@
                 @endforeach
               </tbody>
         </table>
-        {{ $roles->links() }}
+        {{ $usuarios->links() }}
     </div>
 
         <!-- Modal -->
@@ -137,7 +140,7 @@
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Nuevo Proveedor</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Nuevo Usuario</h5>
                 <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -145,21 +148,41 @@
                         @csrf
                         @method('POST')
                         <div class="mb-3">
-                          <label for="nombre_proveedor" class="form-label">Nombre del Proveedor:</label>
-                          <input type="text" class="form-control" name="nombre" id="nombre_proveedor" placeholder="Introduzca el nombre del Proveedor"> 
+                          <label for="nombre_usuario" class="form-label">Nombre de Usuario:</label>
+                          <input type="text" class="form-control" name="nombre_usuario" id="nombre_usuario" placeholder="Introduzca el nombre del usuario"> 
                         </div>
                         <div class="mb-3">
-                            <label for="telefono_proveedor" class="form-label">Telefono del Proveedor:</label>
-                            <input type="text" class="form-control" name="telefono" id="telefono_proveedor" placeholder="Introduzca el nombre del Proveedor"> 
-                          </div>
-                          <div class="mb-3">
-                            <label for="ciudad_proveedor" class="form-label">Ciudad:</label>
-                            <input type="text" class="form-control" name="ciudad" id="ciudad_proveedor" placeholder="Introduzca el nombre del Proveedor"> 
-                          </div>
-                          <div class="mb-3">
-                            <label for="observacion_proveedor" class="form-label">Observacion:</label>
-                            <textarea class="form-control" name="observacion" id="observacion_proveedor" rows="3" placeholder="Observacion.."></textarea>
-                          </div>
+                            <label for="usuario" class="form-label">Usuario:</label>
+                            <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Introduzca el usuario"> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="ciudad_proveedor" class="form-label">Tipo de Usuario:</label>
+                            <div class="row">
+                                <div class="col-10">
+                                    <select class="form-select" aria-label="Default select example" name="tipo_usuario">
+                                        <option selected disabled>Seleccione una opcion...</option>
+                                        @foreach ($roles as $rol)
+                                            <option value="{{ $rol->id }}">{{ $rol->type}}</option>    
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-2"><i class="fa fa-square-plus" style="font-size: 2vw;" onclick="agregarRol()"></i></div>
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Correo Electronico:</label>
+                            <input type="email" class="form-control" name="correo" id="correo" placeholder="Introduzca el Correo Electronico"> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="contrasenia" class="form-label">Contraseña:</label>
+                            <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Introduzca la Contraseña"> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="contrasenia" class="form-label">Repita la Contraseña:</label>
+                            <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Confirmar Contraseña"> 
+                        </div>
                       </form>
                 </div>
                 <div class="modal-footer">
@@ -169,6 +192,7 @@
             </div>
             </div>
         </div>
+        <!-- Fin Modal -->
 @endsection
 
 
@@ -266,6 +290,11 @@
             }, 5000);
         } 
     });
+
+    function agregarRol()
+    {
+        alert("Nicola Tesla");
+    }
     
 
 </script>

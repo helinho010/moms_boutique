@@ -10,12 +10,28 @@ class UsuariosController extends Controller
 {
     public function index()
     {
-        $roles = Usertype::where('estado',1)->paginate(10);
-        $usuarios = User::where('estado',1)->paginate(10);
+        
+        $usuarios = User::selectRaw('
+                                    users.id as id_usuario,
+                                    users.name as nombre_usuario,
+                                    users.username as usuario,
+                                    users.email as email_usuario,
+                                    users.estado as estado_usuario,
+                                    users.updated_at as updated_at_usuario,
+                                    usertypes.id as id_tipo_usuario,
+                                    usertypes.`type` as tipo_usuario
+                                    ')
+                        ->join('usertypes', 'usertypes.id', 'users.usertype_id')
+                        // ->where('estado',1)
+                        ->paginate(10);
+               
+        $roles = Usertype::where('estado',1)
+                         ->get();
+        
         return view('UsertypeOpc', 
             [
-                'roles'=>$roles,
                 'usuarios'=>$usuarios,
+                'roles'=>$roles,
                 'opciones_habilitadas'=>'a,b,c,d',
             ]);
     }

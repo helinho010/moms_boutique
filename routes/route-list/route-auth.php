@@ -7,10 +7,10 @@ Route::controller(App\Http\Controllers\Auth\LoginController::class)->group(funct
 });
 
 // Auth Register
-// Route::controller(App\Http\Controllers\Auth\RegisterController::class)->group(function(){
-//     Route::get('register', 'showRegistrationForm')->name('register');
-//     Route::post('register', 'register');
-// });
+Route::controller(App\Http\Controllers\Auth\RegisterController::class)->group(function(){
+    Route::get('register', 'showRegistrationForm')->name('register');
+    Route::post('register', 'register');
+});
 
 // Auth Forgot Password
 Route::controller(App\Http\Controllers\Auth\ForgotPasswordController::class)->group(function(){
