@@ -112,7 +112,7 @@ class DetalleVentaController extends Controller
                        ->join('tipo_pagos','tipo_pagos.id','venta.id_tipo_pago')
                        ->join('users','users.id','venta.id_usuario')
                        ->where("id_sucursal", $request->id_sucursal)
-                       ->where("venta.estado",1)
+                    //    ->where("venta.estado",1)
                        ->orderBy('venta.updated_at','desc')
                        ->paginate(10);
         }else{
@@ -140,7 +140,7 @@ class DetalleVentaController extends Controller
                        ->join('tipo_pagos','tipo_pagos.id','venta.id_tipo_pago')
                        ->join('users','users.id','venta.id_usuario')
                        ->where("id_sucursal", $request->id_sucursal)
-                       ->where("venta.estado",1)
+                    //    ->where("venta.estado",1)/
                        ->where("created_at","0000-00-00 00:00")
                        ->paginate(10);
         } 

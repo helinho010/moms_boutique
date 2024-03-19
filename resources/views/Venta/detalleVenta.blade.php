@@ -131,8 +131,9 @@
                         }else{
                             echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>';
                         }
-                      @endphp
-
+                            echo '<i class="fas fa-file-pdf" style="color:#FC2631; font-size: 22px; padding-left: 8px;" onclick=\'exportPdf('.$auxdata.')\'></i>';
+                       @endphp
+                       
                     </th>
                     <th>{{"$item->updated_at_venta"}}</th>
                     <th>{{"$item->total_venta"}} Bs</th>
@@ -253,6 +254,12 @@
 <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     function editar(item)
     {
         console.log(item);
@@ -267,6 +274,69 @@
         //     $("#formularioRegistroActualizacion").submit();
         //     resestablecerValoresModal();
         // });
+    }
+
+    function habilitarDesabilitar(venta)
+    {
+        let mensaje = '';
+        if(venta.estado == 1){
+            mensaje = 'Esta seguro de deshabilitar la venta?';
+        }else{
+            mensaje = 'Esta seguro de habilitar la venta?';
+        }
+
+        Swal.fire({
+                title: mensaje,
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Si",
+                denyButtonText: `No`
+                }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) 
+                {
+                    $.ajax({
+                        type: "POST",
+                        url: '/actualizar_estado_venta',
+                        data: {
+                               "id":venta.id, 
+                               "estado":venta.estado
+                              },
+                        success: function (response) {
+                          if (response == 1) 
+                          {
+                            Swal.fire("Cambio Guardado!", "", "success");        
+                            location.reload();  
+                          } else {
+                            Swal.fire("Hubo un error, Contactese con el administrador", "", "success");        
+                          }
+                          
+                        }
+                    });
+                } else if (result.isDenied) {
+                    // Swal.fire("Changes are not saved", "", "info");
+                }
+            });
+    }
+
+    function exportPdf(venta)
+    {
+        $.ajax({
+            type: "POST",
+            url: '/reimprimir_pdf',
+            data: {
+                    "id":venta.id, 
+                  },
+            success: function (response) {
+                if (response[0].nombre_pdf == '') 
+                {
+                    console.log('no tiene nombre');
+                } else {
+                    console.log(response[0].nombre_pdf);    
+                    window.open('/'+response[0].nombre_pdf, '_blank');
+                }     
+            }
+        });
     }
 </script>
 @endpush

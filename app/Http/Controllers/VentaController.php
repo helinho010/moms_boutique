@@ -109,6 +109,8 @@ class VentaController extends Controller
     {
         
         try {
+                $this->nombre_archivo = date('Ymd-His').".pdf";
+                
                 $newVenta = new Venta();
                 $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
                 $newVenta->id_tipo_pago = $request->idTipoPago;
@@ -117,6 +119,7 @@ class VentaController extends Controller
                 $newVenta->total_venta = $request->totalVenta;
                 $newVenta->efectivo_recibido = $request->efectivo_recibido;
                 $newVenta->cambio = $request->cambio_venta;
+                $newVenta->nombre_pdf = $this->nombre_archivo;
                 $newVenta->save();
 
                 foreach ($request->productos as $key => $value) 
@@ -152,7 +155,9 @@ class VentaController extends Controller
                     $nuevoCliente->save();
                 }
 
-                $this->exportVentaPdf($request->totalVenta,
+                $this->exportVentaPdf(
+                                      $request->descuento_venta,  
+                                      $request->totalVenta,
                                       $request->productos, 
                                       $request->nit_cliente, 
                                       $request->nombre_cliente, 
@@ -172,7 +177,7 @@ class VentaController extends Controller
         }
     }
 
-    public function exportVentaPdf($TotalVenta=0, $productos=[], $nit='0', $senores='S/N', $efectivoRecibido=0, $idSucursal)
+    public function exportVentaPdf($descuentoVenta=0, $TotalVenta=0, $productos=[], $nit='0', $senores='S/N', $efectivoRecibido=0, $idSucursal)
     {
         // Instaciamos el objeto Request para enviar a la funcion numeroALetras
         $requestObj = new Request(array('efectivo' =>$TotalVenta));
@@ -191,7 +196,7 @@ class VentaController extends Controller
             <td>'.$producto["cantidad"].'</td>
             <td>'.$producto["nombre_producto"]." ".$producto["talla_producto"].'</td>
             <td>'.$producto["precio_producto"].'</td>
-            <td>0</td>
+            <!--td>0</td-->
             <td>'.((float) $producto["cantidad"] * (float) $producto["precio_producto"]).'</td>
           </tr>';
         }
@@ -4407,12 +4412,19 @@ class VentaController extends Controller
                       <th style="width: 10%;">Cantidad</th>
                       <th style="width: 45%;">Descripcion</th>
                       <th style="width: 15%;">Precio Unitario [Bs]</th>
-                      <th style="width: 15%;">Descuento [%]</th>
+                      <!--th style="width: 15%;">Descuento [%]</th-->
                       <th style="width: 15%;">Subtotal [Bs]</th>
                     </tr>
                     '.$htmlProductos.'
                 </table>
                 <table class="totales">
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="rotulo">Descuento [%]</td>
+                      <td class="cantidades">'.$descuentoVenta.'</td>
+                    </tr>
                     <tr>
                       <td></td>
                       <td></td>
@@ -4451,7 +4463,7 @@ class VentaController extends Controller
         // Render the HTML as PDF
         $dompdf->render();
         
-        $this->nombre_archivo = date('Ymd-His').".pdf";
+        // $this->nombre_archivo = date('Ymd-His').".pdf";
         file_put_contents($this->nombre_archivo, $dompdf->output());
         // Output the generated PDF to Browser
         // $dompdf->stream(date('Ymd-His').".pdf");
@@ -4490,11 +4502,11 @@ class VentaController extends Controller
         if (isset($request->id_sucursal)) 
         {
             $ventas = Venta::where("id_sucursal", $request->id_sucursal)
-                       ->where("estado",1)
+                       //->where("estado",1)
                        ->paginate(10);
         }else{
             $ventas = Venta::where("created_at","0000-00-00 00:00")
-                       ->where("estado",1)
+                       //->where("estado",1)
                        ->paginate(10);
         }
         
@@ -4512,5 +4524,35 @@ class VentaController extends Controller
             ]);
         }
         
+    }
+
+    public function update_estado(Request $request)
+    {
+        switch ($request->estado) 
+        {
+            case 0:
+                $venta = Venta::where("id",$request->id)->first();
+                $venta->estado = 1;
+                return $venta->save();
+            break;
+
+            case 1:
+                $venta = Venta::where("id",$request->id)->first();
+                $venta->estado = 0;
+                return $venta->save();
+            break;
+            
+            default:
+                
+            break;
+        }
+        
+    }
+
+    public function reImprimirPdf(Request $request)
+    {
+        $venta = Venta::where('id',$request->id)
+                      ->get();
+        return $venta;
     }
 }
