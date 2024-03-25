@@ -50,7 +50,7 @@
             <h4>Usuarios</h4>
         </div>
         <div class="col text-end">
-            <button type="button" class="btn btn-success" id="modalCategoria" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <button type="button" class="btn btn-success" id="modalUsuario" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <i class="fas fa-plus"></i> Agregar Usuario 
             </button>
         </div>
@@ -144,7 +144,7 @@
     </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -216,15 +216,18 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-1"></div>
-                                <div class="col-md-10" id="sucursalesHabilitadas">
-                                    @foreach ($sucursales as $sucursal)
-                                        <div class="form-check">
-                                            <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id}}" id="flexCheckChecked" name=sucursales_seleccionadas[]>
-                                            <label class="form-check-label" for="flexCheckChecked">
-                                                {{ $sucursal->ciudad}} - {{substr($sucursal->direccion,0,30)}}... 
-                                            </label>
-                                        </div>
-                                    @endforeach
+                                <div class="col-md-10">
+                                    <div id="sucursalesHabilitadas">
+                                        @foreach ($sucursales as $sucursal)
+                                            <div class="form-check">
+                                                <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id}}" id="flexCheckChecked" name=sucursales_seleccionadas[]>
+                                                <label class="form-check-label" for="flexCheckChecked">
+                                                    {{ $sucursal->ciudad}} - {{substr($sucursal->direccion,0,30)}}... 
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div id="sucursalesHabilitadas1"></div>
                                 </div>
                                 <div class="col-md-1"></div>
                             </div>                              
@@ -268,15 +271,25 @@
 
     function editar(usuario){
         console.log(usuario);
-        console.log();
+        console.log(usuario.sucursales_habilitadas);
         $("#exampleModalLabel").html("<h3>Editar Usuario</h3>");
         $("#nuevo_usuario").attr("action","{{ route('editar_usuario') }}");
         $("#nuevo_usuario").append('<input type="text" name="id" '+ 'value="'+ usuario.id +'"' +'hidden>');
         $("#nombre_usuario").val(usuario.nombre_usuario);
         $("#usuario").val(usuario.usuario);
+        $("#contrasenia").val();
+        $("confirmar_contrasenia").val();
         $("#correo").val(usuario.correo);
         $("#tipo_usuario").val(usuario.tipo_usuario);
-        $('#sucursalesHabilitadas').append('<h1>Buenos dias</h1>');
+        $('#sucursalesHabilitadas').remove();
+        usuario.sucursales_habilitadas.forEach(element => {
+            $('#sucursalesHabilitadas1').append('<div class="form-check">\
+                                                    <input class="form-check-input soloLectura" type="checkbox" value="'+element.id_sucursal+'" id="flexCheckChecked'+element.id_sucursal+'" name=sucursales_seleccionadas[] checked>\
+                                                    <label class="form-check-label" for="flexCheckChecked'+element.id_sucursal+'">\
+                                                        '+element.ciudad_sucursal+' '+ element.direccion_sucursal+'\
+                                                    </label>\
+                                                </div>');
+        });
         $("#btnGuardarActualizar").val("Actualizar");
         $("#exampleModal").modal("show");
     }
@@ -419,6 +432,11 @@
         }   
 
     }
+
+    $('.cerrarModal').on('click',function(){
+        $('#sucursalesHabilitadas1').remove();
+        alert('Borrado');
+    });
     
 
 </script>
