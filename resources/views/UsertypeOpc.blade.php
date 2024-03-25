@@ -76,11 +76,11 @@
     <div class="row">
         <table class="table table-striped"> 
             <thead>
-                <tr>
+                <tr class="text-center">
                   <th scope="col">Opciones</th>
                   <th scope="col">Nombre</th>
                   <th scope="col">Usuario</th>
-                  <th scope="col">Opciones Habilitadas</th>
+                  <th scope="col">Sucursales Habilitadas</th>
                   <th scope="col">Fecha de Creacion/Modificacion</th>
                   <th scope="col">Rol</th>
                   <th scope="col">Estado</th>
@@ -88,15 +88,15 @@
               </thead>
               <tbody>
                 @foreach ($usuarios as $usuario)
-                  <tr>
+                  <tr class="text-center">
                     <th scope="row">
                       <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
-                        "id"=>$usuario->id,
-                        "nombre"=>$usuario->nombre,
-                        "telefono"=>$usuario->telefono,
-                        "ciudad" =>$usuario->ciudad,
-                        "observacion" => $usuario->observacion,
-                        "estado" => $usuario->estado,
+                            "id" => $usuario->id_usuario,
+                            "nombre_usuario" => $usuario->nombre_usuario,
+                            "usuario" => $usuario->usuario,
+                            "correo" => $usuario->email_usuario,
+                            "tipo_usuario" => $usuario->id_tipo_usuario,
+                            "sucursales_habilitadas" => $sucursales_habilitadas,
                         ]); @endphp)'></i>
                       @php
                         $dataProveedor = json_encode([
@@ -118,7 +118,15 @@
                     </th>
                     <td>{{ $usuario->nombre_usuario }}</td>
                     <td>{{ $usuario->usuario }}</td>
-                    <td>{{ $opciones_habilitadas }}</td>
+                    <td>
+                        @foreach ($sucursales_habilitadas as $sucursal)
+                            @if ( $sucursal->id_usuario == $usuario->id_usuario)
+                                {{ $sucursal->razon_social_sucursal }} - {{ $sucursal->ciudad_sucursal }} - {{ $sucursal->direccion_sucursal }} <br>    
+                            @else      
+                                
+                            @endif
+                        @endforeach
+                    </td>
                     <td>{{ $usuario->updated_at_usuario }}</td>
                     <td>{{ $usuario->tipo_usuario }}</td>    
                     <td> 
@@ -137,57 +145,95 @@
 
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Nuevo Usuario</h5>
                 <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{{ route('nuevo_proveedor') }}" id="nuevo_proveedor">
+                    <form method="POST" action="{{ route('nuevo_usuario') }}" id="nuevo_usuario">
                         @csrf
                         @method('POST')
-                        <div class="mb-3">
-                          <label for="nombre_usuario" class="form-label">Nombre de Usuario:</label>
-                          <input type="text" class="form-control" name="nombre_usuario" id="nombre_usuario" placeholder="Introduzca el nombre del usuario"> 
-                        </div>
-                        <div class="mb-3">
-                            <label for="usuario" class="form-label">Usuario:</label>
-                            <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Introduzca el usuario"> 
-                        </div>
-                        <div class="mb-3">
-                            <label for="ciudad_proveedor" class="form-label">Tipo de Usuario:</label>
-                            <div class="row">
-                                <div class="col-10">
-                                    <select class="form-select" aria-label="Default select example" name="tipo_usuario">
-                                        <option selected disabled>Seleccione una opcion...</option>
-                                        @foreach ($roles as $rol)
-                                            <option value="{{ $rol->id }}">{{ $rol->type}}</option>    
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-2"><i class="fa fa-square-plus" style="font-size: 2vw;" onclick="agregarRol()"></i></div>
+                        <div class="row">
+                            <div class="col-md">
+                                <div class="mb-3">
+                                    <label for="nombre_usuario" class="form-label">Nombre de Usuario:</label>
+                                    <input type="text" class="form-control" name="nombre_usuario" id="nombre_usuario" placeholder="Introduzca el nombre del usuario"> 
+                                  </div>
                             </div>
-                            
-                            
+                            <div class="col-md">
+                                <div class="mb-3">
+                                    <label for="usuario" class="form-label">Usuario:</label>
+                                    <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Introduzca el usuario"> 
+                                    <span id="existeUsuarioBdComentario" style="display: none;">Usuario ya existe</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="correo" class="form-label">Correo Electronico:</label>
-                            <input type="email" class="form-control" name="correo" id="correo" placeholder="Introduzca el Correo Electronico"> 
+
+                        <div class="row">
+                            <div class="col-md">
+                                <div class="mb-3">
+                                    <label for="contrasenia" class="form-label">Contraseña:</label>
+                                    <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Introduzca la Contraseña"> 
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="mb-3">
+                                    <label for="confirmar_contrasenia" class="form-label">Repita la Contraseña:</label>
+                                    <input type="password" class="form-control" name="confirmar_contrasenia" id="confirmar_contrasenia" placeholder="Confirmar Contraseña"> 
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="contrasenia" class="form-label">Contraseña:</label>
-                            <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Introduzca la Contraseña"> 
-                        </div>
-                        <div class="mb-3">
-                            <label for="contrasenia" class="form-label">Repita la Contraseña:</label>
-                            <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Confirmar Contraseña"> 
+                        <div class="row">
+                            <div class="col-md">
+                                <div class="mb-3">
+                                    <label for="correo" class="form-label">Correo Electronico:</label>
+                                    <input type="email" class="form-control" name="correo" id="correo" placeholder="Introduzca el Correo Electronico"> 
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="mb-3">
+                                    <label for="ciudad_proveedor" class="form-label">Tipo de Usuario:</label>
+                                    <div class="row">
+                                        <div class="col-10">
+                                            <select class="form-select" aria-label="Default select example" name="tipo_usuario" id="tipo_usuario">
+                                                <option value="0" selected disabled>Seleccione una opcion...</option>
+                                                @foreach ($roles as $rol)
+                                                    <option value="{{ $rol->id }}">{{ $rol->type}}</option>    
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-2"><i class="fa fa-square-plus" style="font-size: 2vw;" onclick="agregarRol()"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr><br>
+                            <div class="row">
+                                <div class="col-md text-center">
+                                    <h5>Seleccione Sucursales a Habilitar</h5>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-10" id="sucursalesHabilitadas">
+                                    @foreach ($sucursales as $sucursal)
+                                        <div class="form-check">
+                                            <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id}}" id="flexCheckChecked" name=sucursales_seleccionadas[]>
+                                            <label class="form-check-label" for="flexCheckChecked">
+                                                {{ $sucursal->ciudad}} - {{substr($sucursal->direccion,0,30)}}... 
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>                              
                         </div>
                       </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger cerrarModal" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-success" id="btnGuardarActualizar">Guardar</button>
+                    <button type="button" class="btn btn-success" id="btnGuardarActualizar" onclick="guardarActualizarUsuario()">Guardar</button>
                 </div>
             </div>
             </div>
@@ -220,20 +266,24 @@
         }
     });
 
-    function editar(proveedor){
-        $("#exampleModal").modal("show");
-        $("#exampleModalLabel").html("<h3>Editar Proveedor</h3>");
-        $("#nuevo_proveedor").attr("action","{{ route('actualizar_proveedor') }}");
-        $("#nuevo_proveedor").append('<input type="text" name="id" '+ 'value="'+ proveedor.id +'"' +'hidden>');
-        $("#nombre_proveedor").val(proveedor.nombre);
-        $("#telefono_proveedor").val(proveedor.telefono);
-        $("#ciudad_proveedor").val(proveedor.ciudad);
-        $("#observacion_proveedor").val(proveedor.observacion);
+    function editar(usuario){
+        console.log(usuario);
+        console.log();
+        $("#exampleModalLabel").html("<h3>Editar Usuario</h3>");
+        $("#nuevo_usuario").attr("action","{{ route('editar_usuario') }}");
+        $("#nuevo_usuario").append('<input type="text" name="id" '+ 'value="'+ usuario.id +'"' +'hidden>');
+        $("#nombre_usuario").val(usuario.nombre_usuario);
+        $("#usuario").val(usuario.usuario);
+        $("#correo").val(usuario.correo);
+        $("#tipo_usuario").val(usuario.tipo_usuario);
+        $('#sucursalesHabilitadas').append('<h1>Buenos dias</h1>');
         $("#btnGuardarActualizar").val("Actualizar");
-        $("#btnGuardarActualizar").on('click',function(){
-            $("#nuevo_proveedor").submit();
-        });
+        $("#exampleModal").modal("show");
     }
+
+    $("#btnGuardarActualizar").on('click',function(){
+       $("#nuevo_usuario").submit();
+    });
 
     function habilitarDesabilitar(proveedor)
     {
@@ -291,9 +341,83 @@
         } 
     });
 
+    $("#tipo_usuario").on('change',function (){ 
+        if ($('#tipo_usuario').val()==1) 
+        {
+            $('.soloLectura').prop("disabled", true);
+            $('.soloLectura').prop('checked', true);
+        } else {
+            $('.soloLectura').prop('checked', false);
+            $('.soloLectura').prop("disabled", false);
+        }
+    });
+
     function agregarRol()
     {
         alert("Nicola Tesla");
+    }
+
+
+
+    function guardarActualizarUsuario()
+    {
+        let nombre_usuario = $("#nombre_usuario").val();
+        let usuario = $("#usuario").val();
+        let contrasenia = $("#contrasenia").val();
+        let confirmar_contrasenia = $("#confirmar_contrasenia").val();
+        let correo = $("#correo").val();
+        let tipo_usuario = $("#tipo_usuario").val();
+        let contadorControl = 0;
+        var existeUsuarioBd = 0;
+
+        $("input:checkbox").each(function(){
+            if ($(this).is(':checked') == true) {
+                contadorControl++;
+            }
+        });
+
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/consultar_usuario",
+            data: {'usuario':usuario},
+            success: function (response) {
+                existeUsuarioBd = response; 
+            }
+        });
+
+        if(existeUsuarioBd == 0)
+        {
+            $('#usuario').attr('style','border:2px green solid');
+            $('#existeUsuarioBdComentario').attr('style','display:block; color:green;');
+            $('#existeUsuarioBdComentario').text('Usuario Correcto');
+
+            if(contrasenia === confirmar_contrasenia)
+            {
+                if (contadorControl > 0 && nombre_usuario != '' &&
+                    usuario != '' && contrasenia != '' &&  confirmar_contrasenia != '' && 
+                    correo != '' && tipo_usuario != 0) 
+                {
+                    console.log(nombre_usuario +
+                                usuario +
+                                contrasenia +
+                                confirmar_contrasenia +
+                                correo +
+                                tipo_usuario +
+                                contadorControl);
+                    $('#nuevo_usuario').submit();   
+                } else {
+                    alert("Por favor Rellene los campos y seleccione las Sucursales para asignar al usuario ");
+                }
+            }else{
+                alert("Las contraseñas no son iguales, por favor vuelva a intentar");
+            }
+        }else{
+            $('#usuario').attr('style','border:2px red solid');
+            $('#existeUsuarioBdComentario').attr('style','display:block; color:red;');
+            $('#existeUsuarioBdComentario').text("El susuario ya existe");
+        }   
+
     }
     
 

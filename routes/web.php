@@ -106,6 +106,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Usuarios
     Route::get('/usuarios', [UsuariosController::class,'index'])->name('home_usuarios');
+    Route::post('/nuevo_usuario', [UsuariosController::class,'create'])->name('nuevo_usuario');
+    Route::post('/consultar_usuario', [UsuariosController::class,'consulta'])->name('consulta_usuario');
+    Route::post('/editar_usuario', [UsuariosController::class,'editar'])->name('editar_usuario');
+
 
     // Roles 
     Route::get('/rol_usuarios', [UsertypeOpcController::class,'index'])->name('home_rol_usuarios');
