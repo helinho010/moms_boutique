@@ -133,4 +133,25 @@ class UsuariosController extends Controller
     {
        return $request;     
     }
+
+    public function update_estado(Request $request)
+    {
+        switch ($request->estado) 
+        {
+            case 0:
+                $User = User::where("id",$request->id)->first();
+                $User->estado = 1;
+            break;
+
+            case 1:
+                $User = User::where("id",$request->id)->first();
+                $User->estado = 0;
+            break;
+            
+            default:
+                
+            break;
+        }
+        $User->save();
+    }
 }

@@ -109,6 +109,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/nuevo_usuario', [UsuariosController::class,'create'])->name('nuevo_usuario');
     Route::post('/consultar_usuario', [UsuariosController::class,'consulta'])->name('consulta_usuario');
     Route::post('/editar_usuario', [UsuariosController::class,'editar'])->name('editar_usuario');
+    Route::post('/actualizar_estado_usuario', [UsuariosController::class,'update_estado'])->name('actualizar_estado_usuario');
 
 
     // Roles 

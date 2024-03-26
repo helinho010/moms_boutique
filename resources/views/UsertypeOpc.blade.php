@@ -16,18 +16,18 @@
         if (isset($_GET['exito'])) 
         {
             if ($_GET['exito'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El Proveedor se registro correctamente</div>';
+                echo '<div class="alert alert-success" role="alert">El usuario se registro correctamente</div>';
             }else{
-                echo '<div class="alert alert-danger" role="alert">Error al registrar al Proveedor</div>';
+                echo '<div class="alert alert-danger" role="alert">Error al registrar al usuario</div>';
             }
         }
 
         if (isset($_GET['actualizado'])) 
         {
             if ($_GET['actualizado'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El Proveedor fue actualizado correctamente</div>';
+                echo '<div class="alert alert-success" role="alert">El usuario fue actualizado correctamente</div>';
             }else{
-                echo '<div class="alert alert-danger" role="alert">Error al actualizar el Proveedor</div>';
+                echo '<div class="alert alert-danger" role="alert">Error al actualizar el usuario</div>';
             }
         }
 
@@ -96,16 +96,19 @@
                             "usuario" => $usuario->usuario,
                             "correo" => $usuario->email_usuario,
                             "tipo_usuario" => $usuario->id_tipo_usuario,
+                            "sucursales" => $sucursales,
                             "sucursales_habilitadas" => $sucursales_habilitadas,
                         ]); @endphp)'></i>
                       @php
                         $dataProveedor = json_encode([
-                            "id"=>$usuario->id,
-                            "nombre"=>$usuario->nombre,
-                            "telefono"=>$usuario->telefono,
-                            "ciudad" =>$usuario->ciudad,
-                            "observacion" => $usuario->observacion,
-                            "estado" => $usuario->estado,
+                            "id" => $usuario->id_usuario,
+                            "nombre_usuario" => $usuario->nombre_usuario,
+                            "usuario" => $usuario->usuario,
+                            "correo" => $usuario->email_usuario,
+                            "tipo_usuario" => $usuario->id_tipo_usuario,
+                            "estado" => $usuario->estado_usuario,
+                            "sucursales" => $sucursales,
+                            "sucursales_habilitadas" => $sucursales_habilitadas,
                         ]);
                         if ($usuario->estado_usuario == 1) 
                         {
@@ -217,6 +220,7 @@
                             <div class="row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-10">
+                                    <div id="sucursalesHabilitadas0"></div>
                                     <div id="sucursalesHabilitadas">
                                         @foreach ($sucursales as $sucursal)
                                             <div class="form-check">
@@ -270,8 +274,8 @@
     });
 
     function editar(usuario){
-        console.log(usuario);
-        console.log(usuario.sucursales_habilitadas);
+        // console.log(usuario);
+        // console.log(usuario.sucursales_habilitadas);
         $("#exampleModalLabel").html("<h3>Editar Usuario</h3>");
         $("#nuevo_usuario").attr("action","{{ route('editar_usuario') }}");
         $("#nuevo_usuario").append('<input type="text" name="id" '+ 'value="'+ usuario.id +'"' +'hidden>');
@@ -282,14 +286,44 @@
         $("#correo").val(usuario.correo);
         $("#tipo_usuario").val(usuario.tipo_usuario);
         $('#sucursalesHabilitadas').remove();
-        usuario.sucursales_habilitadas.forEach(element => {
-            $('#sucursalesHabilitadas1').append('<div class="form-check">\
-                                                    <input class="form-check-input soloLectura" type="checkbox" value="'+element.id_sucursal+'" id="flexCheckChecked'+element.id_sucursal+'" name=sucursales_seleccionadas[] checked>\
-                                                    <label class="form-check-label" for="flexCheckChecked'+element.id_sucursal+'">\
-                                                        '+element.ciudad_sucursal+' '+ element.direccion_sucursal+'\
-                                                    </label>\
-                                                </div>');
+        let sucursalUsuarioHabilitado = usuario.sucursales_habilitadas.filter(element => {
+            return element.id_usuario == usuario.id 
         });
+        console.log(sucursalUsuarioHabilitado);
+        usuario.sucursales.forEach(sucursal => {
+            sucursalUsuarioHabilitado.forEach( element => {
+                if (sucursal.id == element.id_sucursal) 
+                {
+                  $('#sucursalesHabilitadas1').append('<div class="form-check">\
+                                                        <input class="form-check-input soloLectura" type="checkbox" value="'+element.id_sucursal+'" id="flexCheckChecked'+element.id_sucursal+'" name=sucursales_seleccionadas[] checked>\
+                                                        <label class="form-check-label" for="flexCheckChecked'+element.id_sucursal+'">\
+                                                         '+element.ciudad_sucursal+' '+ element.direccion_sucursal+'\
+                                                        </label>\
+                                                      </div>');      
+                } else {
+                    
+                }
+            })
+        });
+        // usuario.sucursales_habilitadas.forEach(element => {
+        //     if (element.id_usuario == usuario.id) 
+        //     {
+        //         $('#sucursalesHabilitadas1').append('<div class="form-check">\
+        //                                             <input class="form-check-input soloLectura" type="checkbox" value="'+element.id_sucursal+'" id="flexCheckChecked'+element.id_sucursal+'" name=sucursales_seleccionadas[] checked>\
+        //                                             <label class="form-check-label" for="flexCheckChecked'+element.id_sucursal+'">\
+        //                                                 '+element.ciudad_sucursal+' '+ element.direccion_sucursal+'\
+        //                                             </label>\
+        //                                         </div>');
+        //     } else {
+        //         $('#sucursalesHabilitadas1').append('<div class="form-check">\
+        //                                             <input class="form-check-input soloLectura" type="checkbox" value="'+element.id_sucursal+'" id="flexCheckChecked'+element.id_sucursal+'" name=sucursales_seleccionadas[] checked>\
+        //                                             <label class="form-check-label" for="flexCheckChecked'+element.id_sucursal+'">\
+        //                                                 '+element.ciudad_sucursal+' '+ element.direccion_sucursal+'\
+        //                                             </label>\
+        //                                         </div>');
+        //     }
+            
+        // });
         $("#btnGuardarActualizar").val("Actualizar");
         $("#exampleModal").modal("show");
     }
@@ -298,13 +332,13 @@
        $("#nuevo_usuario").submit();
     });
 
-    function habilitarDesabilitar(proveedor)
+    function habilitarDesabilitar(usuario)
     {
         let mensaje = '';
-        if(proveedor.estado == 1){
-            mensaje = 'Esta seguro de deshabilitar al proveedor?';
+        if(usuario.estado == 1){
+            mensaje = 'Esta seguro de deshabilitar al Usuario?';
         }else{
-            mensaje = 'Esta seguro de habilitar al proveedor?';
+            mensaje = 'Esta seguro de habilitar al Usuario?';
         }
 
         Swal.fire({
@@ -319,8 +353,8 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_proveedor',
-                        data: {"id":proveedor.id, "estado":proveedor.estado},
+                        url: '/actualizar_estado_usuario',
+                        data: {"id":usuario.id, "estado":usuario.estado},
                         success: function (response) {
                           Swal.fire("Cambio Guardado!", "", "success");        
                           location.reload();
@@ -435,7 +469,8 @@
 
     $('.cerrarModal').on('click',function(){
         $('#sucursalesHabilitadas1').remove();
-        alert('Borrado');
+        $('#sucursalesHabilitadas0').append('<div id="sucursalesHabilitadas1"></div>');
+        
     });
     
 
