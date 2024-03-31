@@ -1,6 +1,6 @@
 @extends('layouts.plantillabase')
 
-@section('title','Usuarios')
+@section('title','Roles')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('DataTables/datatables.min.css') }}">
@@ -16,18 +16,18 @@
         if (isset($_GET['exito'])) 
         {
             if ($_GET['exito'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El usuario se registro correctamente</div>';
+                echo '<div class="alert alert-success" role="alert">El Rol se registro correctamente</div>';
             }else{
-                echo '<div class="alert alert-danger" role="alert">Error al registrar al usuario</div>';
+                echo '<div class="alert alert-danger" role="alert">Error al registrar al Rol</div>';
             }
         }
 
         if (isset($_GET['actualizado'])) 
         {
             if ($_GET['actualizado'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El usuario fue actualizado correctamente</div>';
+                echo '<div class="alert alert-success" role="alert">El Rol fue actualizado correctamente</div>';
             }else{
-                echo '<div class="alert alert-danger" role="alert">Error al actualizar el usuario</div>';
+                echo '<div class="alert alert-danger" role="alert">Error al actualizar el Rol</div>';
             }
         }
 
@@ -47,11 +47,11 @@
 @section('card-title')
     <div class="row">
         <div class="col">
-            <h4>Usuarios</h4>
+            <h4>Roles</h4>
         </div>
         <div class="col text-end">
-            <button type="button" class="btn btn-success" id="modalUsuario" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <i class="fas fa-plus"></i> Agregar Usuario 
+            <button type="button" class="btn btn-success" id="modalRol" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <i class="fas fa-plus"></i> Agregar Rol 
             </button>
         </div>
     </div>
@@ -78,62 +78,44 @@
             <thead>
                 <tr class="text-center">
                   <th scope="col">Opciones</th>
-                  <th scope="col">Nombre</th>
-                  <th scope="col">Usuario</th>
-                  <th scope="col">Sucursales Habilitadas</th>
-                  <th scope="col">Fecha de Creacion/Modificacion</th>
                   <th scope="col">Rol</th>
+                  <th scope="col">Opciones Habilitadas</th>
+                  <th scope="col">Fecha de Creacion/Modificacion</th>
                   <th scope="col">Estado</th>
                 </tr>
               </thead>
               <tbody>
-                @foreach ($usuarios as $usuario)
+                @foreach ($roles as $rol)
                   <tr class="text-center">
                     <th scope="row">
-                      <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
-                            "id" => $usuario->id_usuario,
-                            "nombre_usuario" => $usuario->nombre_usuario,
-                            "usuario" => $usuario->usuario,
-                            "correo" => $usuario->email_usuario,
-                            "tipo_usuario" => $usuario->id_tipo_usuario,
-                            "sucursales" => $sucursales,
-                            "sucursales_habilitadas" => $sucursales_habilitadas,
-                        ]); @endphp)'></i>
+                        <a href="{{ route('editar_rol',['id'=>$rol->id]) }}"><i class="fas fa-edit fa-xl i" style="color:#6BA9FA"></i></a>
                       @php
-                        $dataProveedor = json_encode([
-                            "id" => $usuario->id_usuario,
-                            "nombre_usuario" => $usuario->nombre_usuario,
-                            "usuario" => $usuario->usuario,
-                            "correo" => $usuario->email_usuario,
-                            "tipo_usuario" => $usuario->id_tipo_usuario,
-                            "estado" => $usuario->estado_usuario,
-                            "sucursales" => $sucursales,
-                            "sucursales_habilitadas" => $sucursales_habilitadas,
-                        ]);
-                        if ($usuario->estado_usuario == 1) 
+                        $dataRol = json_encode(["id" => $rol->id, "nombre_rol" => $rol->type, "estado" => $rol->estado, ]);
+
+                        if ($rol->estado == 1) 
                         {
-                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataProveedor.')\'></i>'; 
+                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataRol.')\'></i>'; 
                         }else{
-                            echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataProveedor.')\'></i>';
+                            echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataRol.')\'></i>';
                         }
                       @endphp
 
                     </th>
-                    <td>{{ $usuario->nombre_usuario }}</td>
-                    <td>{{ $usuario->usuario }}</td>
+                    <td>{{ $rol->type }}</td>
                     <td>
-                        @foreach ($sucursales_habilitadas as $sucursal)
-                            @if ( $sucursal->id_usuario == $usuario->id_usuario)
-                                {{ $sucursal->razon_social_sucursal }} - {{ $sucursal->ciudad_sucursal }} - {{ $sucursal->direccion_sucursal }} <br>    
-                            @else      
-                                
+                        @foreach ($opciones_habilitadas as $opcion)
+                            @if ($opcion->id_usertypes == $rol->id)
+                             <div class="row">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-2 text-end">  <i class="{{ $opcion->icono_opciones_sistemas}}" style="color:#6BA9FA"></i> </div>
+                                <div class="col-md-7" style="text-align: left">{{ $opcion->opcion_opciones_sistemas }}</div>
+                             </div>
                             @endif
                         @endforeach
                     </td>
-                    <td>{{ $usuario->updated_at_usuario }}</td>
-                    <td>{{ $usuario->tipo_usuario }}</td>    
+                    <td>{{ $rol->updated_at }}</td>
                     <td> 
-                        @if ( $usuario->estado_usuario == 1 )
+                        @if ( $rol->estado == 1 )
                             <span class="badge bg-success">Activo</span>    
                         @else
                             <span class="badge bg-warning">Inactivo</span>    
@@ -143,7 +125,7 @@
                 @endforeach
               </tbody>
         </table>
-        {{ $usuarios->links() }}
+        {{ $roles->links() }}
     </div>
 
         <!-- Modal -->
@@ -151,70 +133,28 @@
             <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Nuevo Usuario</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Nuevo Rol</h5>
                 <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{{ route('nuevo_usuario') }}" id="nuevo_usuario">
+                    <form method="POST" action="{{ route('nuevo_rol') }}" id="form_nuevo_rol">
                         @csrf
                         @method('POST')
                         <div class="row">
-                            <div class="col-md">
+                            <div class="col-md-8">
                                 <div class="mb-3">
-                                    <label for="nombre_usuario" class="form-label">Nombre de Usuario:</label>
-                                    <input type="text" class="form-control" name="nombre_usuario" id="nombre_usuario" placeholder="Introduzca el nombre del usuario"> 
+                                    <label for="nuevo_rol" class="form-label">Nuevo Rol:</label>
+                                    <input type="text" class="form-control" name="nuevo_rol" id="nuevo_rol" placeholder="Introduzca el nuevo Rol">
+                                    <span id="mensaje_rol_span" style="display: none; color:red">*Error de Rol </span> 
                                   </div>
-                            </div>
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="usuario" class="form-label">Usuario:</label>
-                                    <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Introduzca el usuario"> 
-                                    <span id="existeUsuarioBdComentario" style="display: none;">Usuario ya existe</span>
-                                </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="contrasenia" class="form-label">Contraseña:</label>
-                                    <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Introduzca la Contraseña"> 
-                                </div>
-                            </div>
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="confirmar_contrasenia" class="form-label">Repita la Contraseña:</label>
-                                    <input type="password" class="form-control" name="confirmar_contrasenia" id="confirmar_contrasenia" placeholder="Confirmar Contraseña"> 
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="correo" class="form-label">Correo Electronico:</label>
-                                    <input type="email" class="form-control" name="correo" id="correo" placeholder="Introduzca el Correo Electronico"> 
-                                </div>
-                            </div>
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="ciudad_proveedor" class="form-label">Tipo de Usuario:</label>
-                                    <div class="row">
-                                        <div class="col-10">
-                                            <select class="form-select" aria-label="Default select example" name="tipo_usuario" id="tipo_usuario">
-                                                <option value="0" selected disabled>Seleccione una opcion...</option>
-                                                @foreach ($roles as $rol)
-                                                    <option value="{{ $rol->id }}">{{ $rol->type}}</option>    
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-2"><i class="fa fa-square-plus" style="font-size: 2vw;" onclick="agregarRol()"></i></div>
-                                    </div>
-                                </div>
-                            </div>
                             <hr><br>
                             <div class="row">
                                 <div class="col-md text-center">
-                                    <h5>Seleccione Sucursales a Habilitar</h5>
+                                    <h5>Seleccione las Opciones a Habilitar</h5>
                                 </div>
                             </div>
                             <div class="row">
@@ -222,11 +162,11 @@
                                 <div class="col-md-10">
                                     <div id="sucursalesHabilitadas0"></div>
                                     <div id="sucursalesHabilitadas">
-                                        @foreach ($sucursales as $sucursal)
+                                        @foreach ($opciones as $opcion)
                                             <div class="form-check">
-                                                <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id}}" id="flexCheckChecked" name=sucursales_seleccionadas[]>
-                                                <label class="form-check-label" for="flexCheckChecked">
-                                                    {{ $sucursal->ciudad}} - {{substr($sucursal->direccion,0,30)}}... 
+                                                <input class="form-check-input soloLectura" type="checkbox" value="{{ $opcion->id}}" id="flexCheckChecked{{$opcion->id}}" name=opciones_seleccionadas[]>
+                                                <label class="form-check-label" for="flexCheckChecked{{$opcion->id}}">
+                                                    {{ $opcion->opcion}} <i class="{{ $opcion->icono }}" style="color:#6BA9FA"></i>
                                                 </label>
                                             </div>
                                         @endforeach
@@ -260,26 +200,14 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    
-    $('button').on('click',function() 
-    {   
-        event.preventDefault();
-        if ($(this).attr('id') == 'inputBuscar') 
-        {
-            $("#buscarformulario").submit();
-        } else if ($(this).attr('id') == 'btnGuardarActualizar') 
-        {
-            $("#nuevo_proveedor").submit();
-        }
-    });
 
     function editar(usuario){
         // console.log(usuario);
         // console.log(usuario.sucursales_habilitadas);
         $("#exampleModalLabel").html("<h3>Editar Usuario</h3>");
-        $("#nuevo_usuario").attr("action","{{ route('editar_usuario') }}");
-        $("#nuevo_usuario").append('<input type="text" name="id" '+ 'value="'+ usuario.id +'"' +'hidden>');
-        $("#nombre_usuario").val(usuario.nombre_usuario);
+        $("#nuevo_rol").attr("action","{{ route('editar_usuario') }}");
+        $("#nuevo_rol").append('<input type="text" name="id" '+ 'value="'+ usuario.id +'"' +'hidden>');
+        $("#nuevo_rol").val(usuario.nuevo_rol);
         $("#usuario").val(usuario.usuario);
         $("#contrasenia").val();
         $("confirmar_contrasenia").val();
@@ -328,17 +256,13 @@
         $("#exampleModal").modal("show");
     }
 
-    $("#btnGuardarActualizar").on('click',function(){
-       $("#nuevo_usuario").submit();
-    });
-
-    function habilitarDesabilitar(usuario)
+    function habilitarDesabilitar(rol)
     {
         let mensaje = '';
-        if(usuario.estado == 1){
-            mensaje = 'Esta seguro de deshabilitar al Usuario?';
+        if(rol.estado == 1){
+            mensaje = 'Esta seguro de deshabilitar el Rol?';
         }else{
-            mensaje = 'Esta seguro de habilitar al Usuario?';
+            mensaje = 'Esta seguro de habilitar el Rol?';
         }
 
         Swal.fire({
@@ -353,11 +277,19 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_usuario',
-                        data: {"id":usuario.id, "estado":usuario.estado},
+                        url: '/actualizar_estado_rol',
+                        data: {"id":rol.id, "estado":rol.estado},
                         success: function (response) {
-                          Swal.fire("Cambio Guardado!", "", "success");        
-                          location.reload();
+                          if (response.respuesta) {
+                            Swal.fire("Cambio Guardado!", "", "success");    
+                            location.reload();
+                          } else {
+                            Swal.fire({
+                            icon: "error",
+                            title: "hubo un error" ,
+                            text: response.mensaje,
+                            });  
+                          }
                         }
                     });
                 } else if (result.isDenied) {
@@ -399,23 +331,11 @@
         }
     });
 
-    function agregarRol()
-    {
-        alert("Nicola Tesla");
-    }
-
-
-
     function guardarActualizarUsuario()
     {
-        let nombre_usuario = $("#nombre_usuario").val();
-        let usuario = $("#usuario").val();
-        let contrasenia = $("#contrasenia").val();
-        let confirmar_contrasenia = $("#confirmar_contrasenia").val();
-        let correo = $("#correo").val();
-        let tipo_usuario = $("#tipo_usuario").val();
+        let nuevo_rol = $("#nuevo_rol").val();
         let contadorControl = 0;
-        var existeUsuarioBd = 0;
+        var existeRolBd = 0;
 
         $("input:checkbox").each(function(){
             if ($(this).is(':checked') == true) {
@@ -423,56 +343,56 @@
             }
         });
 
-        $.ajax({
-            async: false,
-            type: "POST",
-            url: "/consultar_usuario",
-            data: {'usuario':usuario},
-            success: function (response) {
-                existeUsuarioBd = response; 
-            }
-        });
-
-        if(existeUsuarioBd == 0)
+        if (nuevo_rol != '') 
         {
-            $('#usuario').attr('style','border:2px green solid');
-            $('#existeUsuarioBdComentario').attr('style','display:block; color:green;');
-            $('#existeUsuarioBdComentario').text('Usuario Correcto');
-
-            if(contrasenia === confirmar_contrasenia)
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "/consultar_rol",
+                data: {'rol':nuevo_rol},
+                success: function (response) {
+                    existeRolBd = response; 
+                }
+            });
+            if(existeRolBd == 0)
             {
-                if (contadorControl > 0 && nombre_usuario != '' &&
-                    usuario != '' && contrasenia != '' &&  confirmar_contrasenia != '' && 
-                    correo != '' && tipo_usuario != 0) 
+                $('#nuevo_rol').attr('style','border:2px green solid');
+                $('#mensaje_rol_span').attr('style','display:block; color:green;');
+                $('#mensaje_rol_span').text('Rol Correcto');
+
+                if(contadorControl > 0)
                 {
-                    console.log(nombre_usuario +
-                                usuario +
-                                contrasenia +
-                                confirmar_contrasenia +
-                                correo +
-                                tipo_usuario +
-                                contadorControl);
-                    $('#nuevo_usuario').submit();   
-                } else {
-                    alert("Por favor Rellene los campos y seleccione las Sucursales para asignar al usuario ");
+                    console.log("Si esta correcto");
+                    $('#form_nuevo_rol').submit();
+                }else{
+                    alert("Seleccione opciones del sistema");
                 }
             }else{
-                alert("Las contraseñas no son iguales, por favor vuelva a intentar");
-            }
-        }else{
-            $('#usuario').attr('style','border:2px red solid');
-            $('#existeUsuarioBdComentario').attr('style','display:block; color:red;');
-            $('#existeUsuarioBdComentario').text("El susuario ya existe");
-        }   
+                $('#nuevo_rol').attr('style','border:2px red solid');
+                $('#mensaje_rol_span').attr('style','display:block; color:red;');
+                $('#mensaje_rol_span').text("El Rol ya existe");
+            } 
 
+        } else {
+            $('#nuevo_rol').attr('style','border:2px red solid');
+            $('#mensaje_rol_span').attr('style','display:block; color:red;');
+            $('#mensaje_rol_span').text('Campo de Rol vacio');
+        }
     }
 
     $('.cerrarModal').on('click',function(){
-        $('#sucursalesHabilitadas1').remove();
-        $('#sucursalesHabilitadas0').append('<div id="sucursalesHabilitadas1"></div>');
-        
+        $('#nuevo_rol').val('');
+        $('#nuevo_rol').removeAttr('style');
+        $('#mensaje_rol_span').attr('style','display:none;');
+        $("input:checkbox").each(function(){
+            if ($(this).is(':checked') == true) {
+                $(this).prop('checked', false);
+            }
+        });
     });
-    
 
+    $(document).ready(function(){
+        $("#rol\\ usuarios").addClass('active');
+    });
 </script>
 @endpush

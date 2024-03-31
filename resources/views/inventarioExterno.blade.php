@@ -441,6 +441,11 @@
             }, 10000);
         } 
     });
+
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#inventario\\ externo").addClass('active');
+    });
     
 </script>
 @endpush

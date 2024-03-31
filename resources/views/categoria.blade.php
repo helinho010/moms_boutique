@@ -193,8 +193,12 @@
                     // Swal.fire("Changes are not saved", "", "info");
                 }
             });
-
     }
+
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#categoria").addClass('active');
+    });
 
 </script>
 @endpush

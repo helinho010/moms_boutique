@@ -20,4 +20,18 @@
       <div class="alert alert-success" role="alert">
         A simple success alert—check it out!
       </div>
+      
 @endsection
+
+
+@push('scripts')
+  <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
+  <script src="{{ asset('DataTables/datatables.min.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    $(document).ready(function(){
+        $("#home").addClass('active');
+    });   
+  </script>
+      
+@endpush

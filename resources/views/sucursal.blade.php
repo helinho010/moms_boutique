@@ -293,6 +293,11 @@
             }, 10000);
         } 
     });
+
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#sucursal").addClass('active');
+    });
     
 </script>
 @endpush

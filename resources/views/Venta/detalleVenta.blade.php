@@ -338,6 +338,12 @@
             }
         });
     }
+
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#venta").addClass('active');
+    });
+
 </script>
 @endpush
 

@@ -269,5 +269,10 @@
     });
     
 
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#proveedor").addClass('active');
+    });
+
 </script>
 @endpush

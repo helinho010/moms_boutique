@@ -222,6 +222,11 @@
             }, 10000);
         } 
     });
+
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#tipo\\ pago").addClass('active');
+    });
     
 </script>
 @endpush

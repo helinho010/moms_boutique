@@ -332,6 +332,11 @@
             }, 10000);
         } 
     });
+
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#producto").addClass('active');
+    });
     
 </script>
 @endpush

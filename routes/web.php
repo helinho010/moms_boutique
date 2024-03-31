@@ -95,7 +95,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/detalle_ventas_rango_fechas',[VentaController::class,'detalleVentasRangoFechas'])->name('detalle_ventas_rango_fechas');
     Route::post('/reimprimir_pdf',[VentaController::class,'reImprimirPdf'])->name('reimprimir_pdf');
 
-
     
     // Tipo Pago
     Route::get('/tipo_pago', [TipoPagoController::class,'index'])->name('home_tipo_pago');
@@ -104,6 +103,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/actualizar_tipo_pago',[TipoPagoController::class,'update'])->name('actualizar_tipo_pago');
     Route::post('/actualizar_estado_tipo_pago',[TipoPagoController::class,'update_estado'])->name('actualizar_estado_tipo_pago');
 
+   
     // Usuarios
     Route::get('/usuarios', [UsuariosController::class,'index'])->name('home_usuarios');
     Route::post('/nuevo_usuario', [UsuariosController::class,'create'])->name('nuevo_usuario');
@@ -114,7 +114,11 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Roles 
     Route::get('/rol_usuarios', [UsertypeOpcController::class,'index'])->name('home_rol_usuarios');
-
+    Route::post('/nuevo_rol', [UsertypeOpcController::class,'store'])->name('nuevo_rol');
+    Route::get('/editar_rol', [UsertypeOpcController::class,'editar'])->name('editar_rol');
+    Route::post('/update_rol', [UsertypeOpcController::class,'update'])->name('update_rol');
+    Route::post('/consultar_rol', [UsertypeOpcController::class,'consultaRol'])->name('consultar_rol');
+    Route::post('/actualizar_estado_rol', [UsertypeOpcController::class,'actualizarEstadoRol'])->name('actualizar_estado_rol');
 
 });
 

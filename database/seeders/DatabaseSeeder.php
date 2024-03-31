@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-
+use App\Models\UsertypeOpc;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             SucursalSeeder::class,
             ProductoSeeder::class,
             OpcionesSistemaSeeder::class,
+            UsertypeOpcSeeder::class,
             // UserOpcSucSeeder::class,
     	]);
     }

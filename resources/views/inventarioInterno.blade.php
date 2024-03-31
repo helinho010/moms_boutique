@@ -403,6 +403,11 @@
             }, 10000);
         } 
     });
+
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#inventario\\ interno").addClass('active');
+    });
     
 </script>
 @endpush

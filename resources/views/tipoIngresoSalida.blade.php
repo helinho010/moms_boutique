@@ -204,5 +204,10 @@
 
     }
 
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#tipo\\ ingreso\\ salida").addClass('active');
+    });
+
 </script>
 @endpush

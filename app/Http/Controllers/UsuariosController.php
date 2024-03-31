@@ -27,7 +27,7 @@ class UsuariosController extends Controller
                         ->join('usertypes', 'usertypes.id', 'users.usertype_id')
                         // ->where('estado',1)
                         ->orderBy('users.updated_at','desc')
-                        ->paginate(10);
+                        ->paginate(5);
                
         $roles = Usertype::where('estado',1)
                          ->get();
@@ -53,7 +53,7 @@ class UsuariosController extends Controller
                                                         ->where('sucursals.activo',1)
                                                         ->get();
         
-        return view('UsertypeOpc', 
+        return view('UserOpcSuc', 
             [
                 'usuarios' => $usuarios,
                 'roles' => $roles,

@@ -230,6 +230,11 @@
             }, 10000);
         } 
     });
+
+    $(document).ready(function(){
+        $("#home").removeClass('active');
+        $("#evento").addClass('active');
+    });
     
 </script>
 @endpush
