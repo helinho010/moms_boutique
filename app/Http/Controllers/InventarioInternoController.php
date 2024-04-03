@@ -54,9 +54,41 @@ class InventarioInternoController extends Controller
 
     public function listarInventraio(Request $request)
     {
+        // dd($request);
         if (isset($request->id_sucursal)) 
         {
-            $inventariosInternos = InventarioInterno::selectRaw('inventario_internos.id as id_inventario_interno,
+            if ($request->id_sucursal == 999) 
+            {
+                $inventariosInternos = InventarioInterno::selectRaw('inventario_internos.id as id_inventario_interno,
+                                                    inventario_internos.stock,
+                                                    inventario_internos.cantidad_ingreso,
+                                                    inventario_internos.estado as estado_inventario_interno,
+                                                    inventario_internos.created_at as created_at_inventario_interno, 
+                                                    inventario_internos.updated_at as updated_at_inventario_interno, 
+                                                    productos.id as id_producto,
+                                                    productos.codigo_producto,
+                                                    productos.nombre as nombre_producto,
+                                                    productos.precio,
+                                                    productos.talla,
+                                                    productos.estado as estado_producto,
+                                                    sucursals.id as id_sucursal,
+                                                    sucursals.razon_social as razon_social_sucursal,
+                                                    sucursals.ciudad as ciudad_sucursal,
+                                                    sucursals.activo as estado_sucursal,
+                                                    users.name as nombre_usuario,
+                                                    users.id as id_usuario,
+                                                    tipo_ingreso_salidas.id as id_tipo_ingreso_salida,
+                                                    tipo_ingreso_salidas.tipo as nombre_tipo_ingreso_salida,
+                                                    tipo_ingreso_salidas.estado as estado_tipo_ingreso_salida')
+                               ->join('productos','productos.id','inventario_internos.id_producto')
+                               ->join('sucursals','sucursals.id','inventario_internos.id_sucursal')
+                               ->join('users','users.id','inventario_internos.id_usuario')
+                               ->join('tipo_ingreso_salidas','tipo_ingreso_salidas.id','inventario_internos.id_tipo_ingreso_salida')
+                               ->orderBy('updated_at_inventario_interno','desc')
+                               ->paginate(10); 
+            }else{
+
+                $inventariosInternos = InventarioInterno::selectRaw('inventario_internos.id as id_inventario_interno,
                                                     inventario_internos.stock,
                                                     inventario_internos.cantidad_ingreso,
                                                     inventario_internos.estado as estado_inventario_interno,
@@ -84,6 +116,7 @@ class InventarioInternoController extends Controller
                                ->where('sucursals.id',$request->id_sucursal)
                                ->orderBy('updated_at_inventario_interno','desc')
                                ->paginate(10);    
+            }
         } else {
             $inventariosInternos = InventarioInterno::where('updated_at','0000-00-00')->paginate(10);
         }
