@@ -12,36 +12,7 @@
 @endsection
 
 @section('h-title')
-    @php
-        if (isset($_GET['exito'])) 
-        {
-            if ($_GET['exito'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El Rol se registro correctamente</div>';
-            }else{
-                echo '<div class="alert alert-danger" role="alert">Error al registrar al Rol</div>';
-            }
-        }
-
-        if (isset($_GET['actualizado'])) 
-        {
-            if ($_GET['actualizado'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El Rol fue actualizado correctamente</div>';
-            }else{
-                echo '<div class="alert alert-danger" role="alert">Error al actualizar el Rol</div>';
-            }
-        }
-
-        if ($errors->first('nombre') != '' ||
-            $errors->first('telefono') != '' ||
-            $errors->first('ciudad') != '' ) 
-        {
-            echo '<div class="alert alert-danger" role="alert">'.
-                $errors->first('nombre')."<br>".
-                $errors->first('telefono')."<br>".
-                $errors->first('ciudad')."<br>".
-                '</div>';
-        }   
-    @endphp
+   
 @endsection
 
 @section('card-title')
@@ -88,18 +59,19 @@
                 @foreach ($roles as $rol)
                   <tr class="text-center">
                     <th scope="row">
-                        <a href="{{ route('editar_rol',['id'=>$rol->id]) }}"><i class="fas fa-edit fa-xl i" style="color:#6BA9FA"></i></a>
-                      @php
-                        $dataRol = json_encode(["id" => $rol->id, "nombre_rol" => $rol->type, "estado" => $rol->estado, ]);
+                        @if ($rol->id != 1)
+                            <a href="{{ route('editar_rol',['id'=>$rol->id]) }}"><i class="fas fa-edit fa-xl i" style="color:#6BA9FA"></i></a>
+                            @php
+                                $dataRol = json_encode(["id" => $rol->id, "nombre_rol" => $rol->type, "estado" => $rol->estado, ]);
 
-                        if ($rol->estado == 1) 
-                        {
-                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataRol.')\'></i>'; 
-                        }else{
-                            echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataRol.')\'></i>';
-                        }
-                      @endphp
-
+                                if ($rol->estado == 1) 
+                                {
+                                    echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataRol.')\'></i>'; 
+                                }else{
+                                    echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataRol.')\'></i>';
+                                }
+                            @endphp
+                        @endif
                     </th>
                     <td>{{ $rol->type }}</td>
                     <td>

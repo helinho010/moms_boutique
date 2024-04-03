@@ -5,7 +5,7 @@
     <div class="col-md">
         <div class="mb-3">
             <label for="nombre_rol" class="form-label">Rol:</label>
-            <input type="text" class="form-control" name="nombre_rol" id="nombre_rol" placeholder="Introduzca el nombre del Rol" value="{{ $rol[0]->type }}"> 
+            <input type="text" class="form-control" name="nombre_rol" id="nombre_rol" placeholder="Introduzca el nombre del Rol" value="{{ $rol[0]->type }}" readonly> 
           </div>
     </div>
 </div>

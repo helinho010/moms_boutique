@@ -90,34 +90,35 @@
                 @foreach ($usuarios as $usuario)
                   <tr class="text-center">
                     <th scope="row">
-                      <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
-                            "id" => $usuario->id_usuario,
-                            "nombre_usuario" => $usuario->nombre_usuario,
-                            "usuario" => $usuario->usuario,
-                            "correo" => $usuario->email_usuario,
-                            "tipo_usuario" => $usuario->id_tipo_usuario,
-                            "sucursales" => $sucursales,
-                            "sucursales_habilitadas" => $sucursales_habilitadas,
-                        ]); @endphp)'></i>
-                      @php
-                        $dataProveedor = json_encode([
-                            "id" => $usuario->id_usuario,
-                            "nombre_usuario" => $usuario->nombre_usuario,
-                            "usuario" => $usuario->usuario,
-                            "correo" => $usuario->email_usuario,
-                            "tipo_usuario" => $usuario->id_tipo_usuario,
-                            "estado" => $usuario->estado_usuario,
-                            "sucursales" => $sucursales,
-                            "sucursales_habilitadas" => $sucursales_habilitadas,
-                        ]);
-                        if ($usuario->estado_usuario == 1) 
-                        {
-                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataProveedor.')\'></i>'; 
-                        }else{
-                            echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataProveedor.')\'></i>';
-                        }
-                      @endphp
-
+                      @if ($usuario->id_usuario != 1)
+                            <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
+                                    "id" => $usuario->id_usuario,
+                                    "nombre_usuario" => $usuario->nombre_usuario,
+                                    "usuario" => $usuario->usuario,
+                                    "correo" => $usuario->email_usuario,
+                                    "tipo_usuario" => $usuario->id_tipo_usuario,
+                                    "sucursales" => $sucursales,
+                                    "sucursales_habilitadas" => $sucursales_habilitadas,
+                                ]); @endphp)'></i>
+                            @php
+                                $dataProveedor = json_encode([
+                                    "id" => $usuario->id_usuario,
+                                    "nombre_usuario" => $usuario->nombre_usuario,
+                                    "usuario" => $usuario->usuario,
+                                    "correo" => $usuario->email_usuario,
+                                    "tipo_usuario" => $usuario->id_tipo_usuario,
+                                    "estado" => $usuario->estado_usuario,
+                                    "sucursales" => $sucursales,
+                                    "sucursales_habilitadas" => $sucursales_habilitadas,
+                                ]);
+                                if ($usuario->estado_usuario == 1) 
+                                {
+                                    echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataProveedor.')\'></i>'; 
+                                }else{
+                                    echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataProveedor.')\'></i>';
+                                }
+                            @endphp
+                      @endif
                     </th>
                     <td>{{ $usuario->nombre_usuario }}</td>
                     <td>{{ $usuario->usuario }}</td>
@@ -267,10 +268,7 @@
         if ($(this).attr('id') == 'inputBuscar') 
         {
             $("#buscarformulario").submit();
-        } else if ($(this).attr('id') == 'btnGuardarActualizar') 
-        {
-            $("#nuevo_proveedor").submit();
-        }
+        } 
     });
 
     function editar(usuario){
@@ -328,10 +326,7 @@
         $("#exampleModal").modal("show");
     }
 
-    $("#btnGuardarActualizar").on('click',function(){
-       $("#nuevo_usuario").submit();
-    });
-
+    
     function habilitarDesabilitar(usuario)
     {
         let mensaje = '';
@@ -445,13 +440,6 @@
                     usuario != '' && contrasenia != '' &&  confirmar_contrasenia != '' && 
                     correo != '' && tipo_usuario != 0) 
                 {
-                    console.log(nombre_usuario +
-                                usuario +
-                                contrasenia +
-                                confirmar_contrasenia +
-                                correo +
-                                tipo_usuario +
-                                contadorControl);
                     $('#nuevo_usuario').submit();   
                 } else {
                     alert("Por favor Rellene los campos y seleccione las Sucursales para asignar al usuario ");

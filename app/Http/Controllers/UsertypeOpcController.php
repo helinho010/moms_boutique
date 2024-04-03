@@ -114,7 +114,6 @@ class UsertypeOpcController extends Controller
     public function update(Request $request)
     {
         // dd($request->opciones_seleccionadas);
-
         try 
         {
             $rol = Usertype::find($request->id_rol);

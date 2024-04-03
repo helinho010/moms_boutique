@@ -61,7 +61,7 @@
                 @method('POST')
                 @include('roles._form') 
                 <br>   
-                <input type="submit" class="btn btn-success"></input>
+                <button type="button" class="btn btn-success" onclick="guardarActualizar()">Enviar</button>
                 <a class="btn btn-warning" href="{{ route('home_rol_usuarios'); }}" style="color: black">Volver</a>
             </form>
         </div>
@@ -83,24 +83,30 @@
         }
     });
 
-    function validarNombreRol(nombreRol)
-    {
-        let nombreValido = false;
-        $.ajax({
-            type: "POST",
-            url: "/consultar_rol",
-            data: {'rol':nombreRol},
-            success: function (response) {
-                if (response == 0) {
-                    $("#nombre_rol").attr('style', 'border: 2px green solid');
-                }
-            }
-        });
-    }
+    // function validarNombreRol(nombreRol)
+    // {
+    //     let nombreValido = false;
+    //     $.ajax({
+    //         async: false,
+    //         type: "POST",
+    //         url: "/consultar_rol",
+    //         data: {'rol':nombreRol},
+    //         success: function (response) {
+    //             console.log(response);
+    //             if (response == 0) {
+    //                 $("#nombre_rol").attr('style', 'border: 2px green solid');
+    //                 nombreValido = true;
+    //             }
+    //         }
+    //     });
 
-    $("#nombre_rol").change(function(){
-        validarNombreRol($("#nombre_rol").val());
-    });
+    //     return nombreValido;
+    // }
+
+    function guardarActualizar()
+    {
+       $('#update_rol').submit(); 
+    }
 
     $(document).ready(function(){        
         $("#rol\\ usuarios").addClass('active');
