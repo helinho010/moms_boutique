@@ -64,7 +64,7 @@
         <div class="col-md-5">
             <div class="row">
                 <div class="col-md-2">
-                    <label for="inputPassword6" class="col-form-label">Sucursal: </label>
+                    <label for="inputPassword6" class="col-form-label">Sucursal:</label>
                 </div>
                 <div class="col-md-8">
                     <form action="{{ route('data_inventario_interno') }}" method="POST" id="dataformInventario">
@@ -73,7 +73,9 @@
                         <div class="input-group">
                             <select class="form-select" aria-describedby="" name="id_sucursal" id="select_sucursal">
                                 <option value="seleccionado" @if (!isset($id_sucursal)) selected  @endif disabled>Seleccione una opcion...</option>
-                                <option value="999">Todas las Sucursales</option>
+                                @if (auth()->user()->usertype_id == 1)
+                                  <option value="999">Todas las Sucursales</option>    
+                                @endif
                                     @foreach ($sucursales as $item)
                                        @if ($item->estado_sucursal == 1)
                                           <option value="{{ $item->id_sucursal_user_sucursal }}" @if (isset($id_sucursal) && $item->id_sucursal_user_sucursal == $id_sucursal ) selected  @endif>{{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,40)."..." }}</option>
