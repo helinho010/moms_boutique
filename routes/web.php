@@ -106,9 +106,11 @@ Route::group(['middleware' => 'auth'], function () {
    
     // Usuarios
     Route::get('/usuarios', [UsuariosController::class,'index'])->name('home_usuarios');
+    Route::post('/buscar_usuarios', [UsuariosController::class,'buscar'])->name('buscar_usuario');
     Route::post('/nuevo_usuario', [UsuariosController::class,'create'])->name('nuevo_usuario');
     Route::post('/consultar_usuario', [UsuariosController::class,'consulta'])->name('consulta_usuario');
-    Route::post('/editar_usuario', [UsuariosController::class,'editar'])->name('editar_usuario');
+    Route::get('/editar_usuario', [UsuariosController::class,'editar'])->name('editar_usuario');
+    Route::post('/update_usuario', [UsuariosController::class,'update'])->name('update_usuario');
     Route::post('/actualizar_estado_usuario', [UsuariosController::class,'update_estado'])->name('actualizar_estado_usuario');
 
 

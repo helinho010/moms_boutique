@@ -13,7 +13,6 @@ class UsuariosController extends Controller
 {
     public function index()
     {
-        // dd(auth()->user()->usertype_id);
         $usuarios = User::selectRaw('
                                     users.id as id_usuario,
                                     users.name as nombre_usuario,
@@ -53,13 +52,71 @@ class UsuariosController extends Controller
                                                         ->where('sucursals.activo',1)
                                                         ->get();
         
-        return view('UserOpcSuc', 
+        return view('usuario.UserOpcSuc', 
             [
                 'usuarios' => $usuarios,
                 'roles' => $roles,
                 'sucursales' => $sucursales,
                 'sucursales_habilitadas' => $sucursalesHabilitadasUsuario,
             ]);
+    }
+
+    public function buscar(Request $request)
+    {
+        if ($request->buscar != '') 
+        {
+            $usuarios = User::selectRaw('
+                                        users.id as id_usuario,
+                                        users.name as nombre_usuario,
+                                        users.username as usuario,
+                                        users.email as email_usuario,
+                                        users.estado as estado_usuario,
+                                        users.updated_at as updated_at_usuario,
+                                        usertypes.id as id_tipo_usuario,
+                                        usertypes.`type` as tipo_usuario
+                                       ')
+                        ->join('usertypes', 'usertypes.id', 'users.usertype_id')
+                        ->where('users.name','like', '%'.$request->buscar.'%')
+                        ->orWhere('users.username', 'like','%'.$request->buscar.'%')
+                        ->orWhere('users.created_at', 'like','%'.$request->buscar.'%')
+                        ->orWhere('users.updated_at', 'like','%'.$request->buscar.'%')
+                        ->orWhere('usertypes.type', "like", '%'.$request->buscar.'%')
+                        ->orderBy('users.updated_at','desc')
+                        ->paginate(5);    
+        }else {
+            return redirect()->route('home_usuarios');
+        }
+
+        $roles = Usertype::where('estado',1)
+                         ->get();
+
+        $sucursales = Sucursal::where('activo',1)->get();
+        
+        $sucursalesHabilitadasUsuario = UserSucursal::selectRaw('
+                                                                    user_sucursals.id as id_user_sucursals,
+                                                                    user_sucursals.estado as estado_user_sucursals,
+                                                                    user_sucursals.updated_at as updated_at_user_sucursals,
+                                                                    sucursals.id as id_sucursal,
+                                                                    sucursals.razon_social as razon_social_sucursal,
+                                                                    sucursals.ciudad as ciudad_sucursal,
+                                                                    sucursals.activo as estado_sucursal,
+                                                                    sucursals.direccion as direccion_sucursal,
+                                                                    users.id as id_usuario,
+                                                                    users.name as nombre_usuario,
+                                                                    users.username as usuario,
+                                                                    users.estado as estado_usuario
+                                                                    ')
+                                                        ->join('sucursals', 'sucursals.id', 'user_sucursals.id_sucursal')
+                                                        ->join('users', 'users.id', 'user_sucursals.id_usuario')
+                                                        ->where('sucursals.activo',1)
+                                                        ->get();
+        return view('usuario.UserOpcSuc',
+        [
+            'usuarios' => $usuarios,
+            'roles' => $roles,
+            'sucursales' => $sucursales,
+            'sucursales_habilitadas' => $sucursalesHabilitadasUsuario,
+        ]);
     }
 
     public function create(Request $request)
@@ -131,7 +188,33 @@ class UsuariosController extends Controller
 
     public function editar(Request $request)
     {
-       return $request;     
+       if ($request->id_usuario != 1) 
+       {
+            $usuario = User::selectRaw('
+                                    users.id as id_usuario,
+                                    users.name as name_usuario,
+                                    users.username as username_usuario,
+                                    users.email as email_usario,
+                                    users.estado as estado_usuario,
+                                    users.created_at as created_at_usuario,
+                                    users.updated_at as updated_at_usuario,
+                                    usertypes.id as id_tipo_usuario,
+                                    usertypes.`type` as tipo_usuario
+                                ')
+                            ->join('usertypes', 'usertypes.id', 'users.usertype_id')
+                            ->where('users.id',$request->id_usuario)
+                            ->get();
+            $roles = Usertype::where('estado',1)
+                                    ->get();
+
+            return view('usuario.edit',[
+                'usuario' => $usuario,
+                'roles' => $roles,
+            ]);  
+       }
+       else{
+          return redirect()->route('home_usuarios');
+       }  
     }
 
     public function update_estado(Request $request)

@@ -61,7 +61,7 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <form action="{{ route('buscar_proveedor') }}" method="POST" id="buscarformulario">
+            <form action="{{ route('buscar_usuario') }}" method="POST" id="buscarformulario">
                 @method('POST')
                 @csrf
                 <div class="input-group flex-nowrap">
@@ -91,15 +91,7 @@
                   <tr class="text-center">
                     <th scope="row">
                       @if ($usuario->id_usuario != 1)
-                            <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
-                                    "id" => $usuario->id_usuario,
-                                    "nombre_usuario" => $usuario->nombre_usuario,
-                                    "usuario" => $usuario->usuario,
-                                    "correo" => $usuario->email_usuario,
-                                    "tipo_usuario" => $usuario->id_tipo_usuario,
-                                    "sucursales" => $sucursales,
-                                    "sucursales_habilitadas" => $sucursales_habilitadas,
-                                ]); @endphp)'></i>
+                            <a href="{{ route('editar_usuario',['id_usuario'=>$usuario->id_usuario]) }}"><i class="fas fa-edit fa-xl i" style="color:#6BA9FA"></i></a>
                             @php
                                 $dataProveedor = json_encode([
                                     "id" => $usuario->id_usuario,
@@ -268,19 +260,24 @@
         if ($(this).attr('id') == 'inputBuscar') 
         {
             $("#buscarformulario").submit();
+        }
+        else if ($(this).attr('id') == 'modalUsuario') {
+            $("#contrasenia").val('');
+            $("#confirmar_contrasenia").val('');
+            $("#exampleModal").show();
+        }{
+
         } 
     });
 
     function editar(usuario){
-        // console.log(usuario);
-        // console.log(usuario.sucursales_habilitadas);
         $("#exampleModalLabel").html("<h3>Editar Usuario</h3>");
         $("#nuevo_usuario").attr("action","{{ route('editar_usuario') }}");
         $("#nuevo_usuario").append('<input type="text" name="id" '+ 'value="'+ usuario.id +'"' +'hidden>');
         $("#nombre_usuario").val(usuario.nombre_usuario);
         $("#usuario").val(usuario.usuario);
-        $("#contrasenia").val();
-        $("confirmar_contrasenia").val();
+        $("#contrasenia").val('');
+        $("confirmar_contrasenia").val('');
         $("#correo").val(usuario.correo);
         $("#tipo_usuario").val(usuario.tipo_usuario);
         $('#sucursalesHabilitadas').remove();
@@ -303,25 +300,6 @@
                 }
             })
         });
-        // usuario.sucursales_habilitadas.forEach(element => {
-        //     if (element.id_usuario == usuario.id) 
-        //     {
-        //         $('#sucursalesHabilitadas1').append('<div class="form-check">\
-        //                                             <input class="form-check-input soloLectura" type="checkbox" value="'+element.id_sucursal+'" id="flexCheckChecked'+element.id_sucursal+'" name=sucursales_seleccionadas[] checked>\
-        //                                             <label class="form-check-label" for="flexCheckChecked'+element.id_sucursal+'">\
-        //                                                 '+element.ciudad_sucursal+' '+ element.direccion_sucursal+'\
-        //                                             </label>\
-        //                                         </div>');
-        //     } else {
-        //         $('#sucursalesHabilitadas1').append('<div class="form-check">\
-        //                                             <input class="form-check-input soloLectura" type="checkbox" value="'+element.id_sucursal+'" id="flexCheckChecked'+element.id_sucursal+'" name=sucursales_seleccionadas[] checked>\
-        //                                             <label class="form-check-label" for="flexCheckChecked'+element.id_sucursal+'">\
-        //                                                 '+element.ciudad_sucursal+' '+ element.direccion_sucursal+'\
-        //                                             </label>\
-        //                                         </div>');
-        //     }
-            
-        // });
         $("#btnGuardarActualizar").val("Actualizar");
         $("#exampleModal").modal("show");
     }
@@ -393,13 +371,6 @@
             $('.soloLectura').prop("disabled", false);
         }
     });
-
-    function agregarRol()
-    {
-        alert("Nicola Tesla");
-    }
-
-
 
     function guardarActualizarUsuario()
     {
