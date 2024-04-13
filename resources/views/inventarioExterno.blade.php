@@ -91,6 +91,7 @@
                                     @endforeach
                              </select>
                              <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-search"></i></button>
+                             <button class="input-group-text" id="btnFormDataExportPdf"><i class="fas fa-file-pdf" style="font-size: 19px; color:#F52220"></i></a>
                         </div>
                     </form>
                 </div>
@@ -353,6 +354,9 @@
         } else if ($(this).attr('id') == 'btnFormDataInventario'){
             $("#dataformInventario").submit();
 
+        }else if($(this).attr('id') == 'btnFormDataExportPdf'){
+            $(this).attr('action',"route('inventario_externo_pdf_lista')")
+            // $("#dataformInventario").submit();
         }
     });
 

@@ -369,4 +369,9 @@ class InventarioExternoController extends Controller
         }
         $itemInventarioExterno->save();
     }
+
+    public function exportPdfLista(Request $request)
+    {
+        dd($request);
+    }
 }

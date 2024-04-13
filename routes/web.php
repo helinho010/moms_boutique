@@ -81,6 +81,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/nuevo_inventario_externo',[InventarioExternoController::class,'store'])->name('nuevo_inventario_externo');
     Route::post('/actualizar_inventario_externo',[InventarioExternoController::class,'update'])->name('actualizar_inventario_externo');
     Route::post('/actualizar_estado_inventario_externo',[InventarioExternoController::class,'update_estado'])->name('actualizar_estado_inventario_externo');
+    Route::post('/inventario_externo_pdf', [InventarioExternoController::class,'exportPdfLista'])->name('inventario_externo_pdf_lista');
+
 
     // Detalle Venta
     Route::get('/venta', [VentaController::class,'index'])->name('home_venta');
