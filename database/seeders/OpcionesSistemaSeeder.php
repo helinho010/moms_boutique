@@ -66,7 +66,7 @@ class OpcionesSistemaSeeder extends Seeder
 
              ['opcion' => "Traspaso Productos",
              'icono' => "fas fa-shipping-fast",
-             'ruta' => 'home_venta',  
+             'ruta' => 'home_traspaso_productos',  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
 

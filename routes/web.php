@@ -13,6 +13,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\UsertypeOpcController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\VentaController;
+use App\Http\Controllers\TrasporteProductosController;
 use Illuminate\Support\Facades\Route;
 
 require(base_path('routes/route-list/route-auth.php'));
@@ -82,6 +83,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/actualizar_inventario_externo',[InventarioExternoController::class,'update'])->name('actualizar_inventario_externo');
     Route::post('/actualizar_estado_inventario_externo',[InventarioExternoController::class,'update_estado'])->name('actualizar_estado_inventario_externo');
     Route::post('/inventario_externo_pdf', [InventarioExternoController::class,'exportPdfLista'])->name('inventario_externo_pdf_lista');
+
+    //Traspaso de Productos
+    Route::get('/traspaso_productos', [TrasporteProductosController::class,'index'])->name('home_traspaso_productos');
+
 
 
     // Detalle Venta

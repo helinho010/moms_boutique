@@ -91,7 +91,7 @@
                                     @endforeach
                              </select>
                              <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-search"></i></button>
-                             <button class="input-group-text" id="btnFormDataExportPdf"><i class="fas fa-file-pdf" style="font-size: 19px; color:#F52220"></i></a>
+                             <button class="input-group-text" id="btnFormDataExportPdf" disabled><i id="ibtnFormDataExportPdf" class="fas fa-file-pdf" style="font-size: 19px; color:#292622"></i></button>
                         </div>
                     </form>
                 </div>
@@ -316,6 +316,15 @@
         }
     });
 
+    $("#select_evento").on('change',function(){
+        console.log("Se esta ejecuntando el css");
+        $("#btnFormDataExportPdf").prop('disabled', false);
+        $('#ibtnFormDataExportPdf').attr('style','');
+        $('#ibtnFormDataExportPdf').attr('style','font-size:19px; color:#F52220');
+        $('#ibtnFormDataExportPdf').css('font-size','19px');
+        // $('#btnFormDataExportPdf').css('color','#F52220');
+    });
+
     $(document).ready(function(){
         // alert($("#select_sucursal option:selected").attr('value'));
         if ($("#select_evento option:selected").attr('value') > 0) 
@@ -352,11 +361,12 @@
             $("#modalFormularioRegistroActualizacion").submit();
 
         } else if ($(this).attr('id') == 'btnFormDataInventario'){
+            $("#dataformInventario").attr('action',"{{ route('data_inventario_externo') }}");
             $("#dataformInventario").submit();
 
         }else if($(this).attr('id') == 'btnFormDataExportPdf'){
-            $(this).attr('action',"route('inventario_externo_pdf_lista')")
-            // $("#dataformInventario").submit();
+            $("#dataformInventario").attr('action',"{{ route('inventario_externo_pdf_lista') }}");
+            $("#dataformInventario").submit();
         }
     });
 
@@ -443,10 +453,17 @@
             setTimeout(() => {
                 $(location).attr('href',pathname);
             }, 10000);
-        } 
-    });
+        }
+        
+        
+        if (parseInt ($("#select_evento option:selected").attr('value')) > 0) 
+        {
+            $("#btnFormDataExportPdf").prop('disabled', false);
+            $('#ibtnFormDataExportPdf').css({'font-size':'', 'color':'green'});
+            // $('#ibtnFormDataExportPdf').attr('style','font-size:50px; color:red');
+            // $('#ibtnFormDataExportPdf').css('font-size','19px');
+        }
 
-    $(document).ready(function(){
         $("#home").removeClass('active');
         $("#inventario\\ externo").addClass('active');
     });
