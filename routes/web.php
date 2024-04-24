@@ -86,6 +86,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Traspaso de Productos
     Route::get('/traspaso_productos', [TrasporteProductosController::class,'index'])->name('home_traspaso_productos');
+    Route::post('/traspaso_productos', [TrasporteProductosController::class,'store'])->name('nuevo_traspaso_productos');
 
 
 
