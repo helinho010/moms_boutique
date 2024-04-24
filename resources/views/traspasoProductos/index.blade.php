@@ -75,15 +75,15 @@
                 @foreach ($traspasos as $traspaso)
                   <tr>
                     <th scope="row">
-                      <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editarCategoria(@php echo json_encode(["id"=>$traspaso->id,"nombre"=>$traspaso->nombre]); @endphp)'></i>
+                      {{-- <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editarCategoria(@php echo json_encode(["id"=>$traspaso->id,"nombre"=>$traspaso->nombre]); @endphp)'></i> --}}
                       @php
-                        $dataCategoria = json_encode(['id'=>$traspaso->id,'estado'=>$traspaso->estado]);
-                        if ($traspaso->estado_trasporte_productos == 1) 
-                        {
-                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>'; 
-                        }else{
-                            echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>';
-                        }
+                        // $dataCategoria = json_encode(['id'=>$traspaso->id,'estado'=>$traspaso->estado]);
+                        // if ($traspaso->estado_trasporte_productos == 1) 
+                        // {
+                        //     echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>'; 
+                        // }else{
+                        //     echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>';
+                        // }
                       @endphp
 
                     </th>

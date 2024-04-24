@@ -194,7 +194,6 @@ class TrasporteProductosController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request);
         $registroInvetarioSucursalOrigen = InventarioInterno::where('id_sucursal',$request->id_sucursal_origen)
                                                       ->where('id_producto',$request->id_producto)
                                                       ->first();
@@ -215,21 +214,29 @@ class TrasporteProductosController extends Controller
             $registroInvetarioSucursalOrigen->id_usuario = auth()->user()->id;
             $registroInvetarioSucursalOrigen->save();
 
-            // $registroInvetarioSucursalDestino = InventarioInterno::where('id_sucursal',$request->id_sucursal_destino)
-            //                                                     ->where('id_producto',$request->id_producto)
-            //                                                     ->first();
-            // $registroInvetarioSucursalDestino->stock = $registroInvetarioSucursalOrigen->stock + $request->cantidad;
-            // $registroInvetarioSucursalDestino->id_usuario = auth()->user()->id;
-
-            $registroInvetarioSucursalDestino = InventarioInterno::updateOrCreate(['id_sucursal'=>$request->id_sucursal_destino,'id_producto'=>$request->id_producto],
-                                                                                  ['id_producto'=>$request->id_producto, 
-                                                                                   'id_sucursal'=>$request->id_sucursal_destino, 
-                                                                                   'id_usuario'=>auth()->user()->id,
-                                                                                   'id_tipo_ingreso_salida' => $request->id_tipo_salida,
-                                                                                   'cantidad_ingreso' => $request->cantidad,
-                                                                                   'stock'=>DB::raw("IFNULL(stock, 0) + $request->cantidad"),
-                                                                                   ]);
-            $registroInvetarioSucursalDestino->save();
+            $registroInvetarioSucursalDestino = InventarioInterno::where('id_sucursal',$request->id_sucursal_destino)
+                                                                ->where('id_producto',$request->id_producto);
+                                                                
+            
+            if ($registroInvetarioSucursalDestino->get()->count() == 1) 
+            {
+                $registroInvetarioSucursalDestinoRegistro = $registroInvetarioSucursalDestino->first();
+                $registroInvetarioSucursalDestinoRegistro->stock =  $registroInvetarioSucursalDestinoRegistro->stock + intval($request->cantidad);
+                $registroInvetarioSucursalDestinoRegistro->id_usuario = auth()->user()->id;
+                $registroInvetarioSucursalDestinoRegistro->id_tipo_ingreso_salida = $request->id_tipo_salida;
+                $registroInvetarioSucursalDestinoRegistro->cantidad_ingreso = $request->cantidad;
+                $registroInvetarioSucursalDestinoRegistro->save();
+            }else{
+                $registroInvetarioSucursalDestinoRegistro =new InventarioInterno();
+                $registroInvetarioSucursalDestinoRegistro->id_producto = $request->id_producto;
+                $registroInvetarioSucursalDestinoRegistro->id_sucursal = $request->id_sucursal_destino;
+                $registroInvetarioSucursalDestinoRegistro->id_usuario = auth()->user()->id;
+                $registroInvetarioSucursalDestinoRegistro->id_tipo_ingreso_salida = $request->id_tipo_salida;
+                $registroInvetarioSucursalDestinoRegistro->cantidad_ingreso = $request->cantidad;
+                $registroInvetarioSucursalDestinoRegistro->stock = $request->cantidad;
+                $registroInvetarioSucursalDestinoRegistro->save();
+            }
+            
         }
         return redirect()->route('home_traspaso_productos');        
     } 
