@@ -102,6 +102,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/exportar_venta_detalle_venta',[VentaController::class,'exportVentaPdf'])->name('exportar_venta_detalle_venta');
     Route::get('/detalle_ventas_rango_fechas',[VentaController::class,'detalleVentasRangoFechas'])->name('detalle_ventas_rango_fechas');
     Route::post('/reimprimir_pdf',[VentaController::class,'reImprimirPdf'])->name('reimprimir_pdf');
+    Route::get('/reporte_venta',[VentaController::class, 'reporteVenta'])->name('reporte_venta');
+    Route::post('/reporte_venta',[VentaController::class, 'reporteVentaExcel'])->name('reporte_venta_excel');
 
     
     // Tipo Pago

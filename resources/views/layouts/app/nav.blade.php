@@ -62,6 +62,7 @@
                         <ul id="ui" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                             <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_venta') }}">Realizar Venta</a></li>
                             <li class="sidebar-item"><a class="sidebar-link" href="{{ route('detalle_ventas_rango_fechas') }}">Detalle Ventas</a></li>
+                            <li class="sidebar-item"><a class="sidebar-link" href="{{ route('reporte_venta') }}">Reporte Ventas</a></li>
                         </ul>
                     </li>
                 @else

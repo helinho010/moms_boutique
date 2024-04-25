@@ -4555,4 +4555,59 @@ class VentaController extends Controller
                       ->get();
         return $venta;
     }
+
+    public function reporteVenta()
+    {
+        if(auth()->user()->id == 1)
+        {
+            $sucursalesHabilitadasUsuario = UserSucursal::selectRaw('
+                                                                                user_sucursals.id as id_user_sucursals,
+                                                                        user_sucursals.estado as estado_user_sucursals,
+                                                                        user_sucursals.created_at as created_at_user_sucursals,
+                                                                        user_sucursals.updated_at as updated_at_user_sucursals,
+                                                                        users.id as id_usuario,
+                                                                        users.name as nombre_usuario,
+                                                                        users.username as  nombre_login_usuario,
+                                                                        users.estado as estado_usuario,
+                                                                        sucursals.id as id_sucursal,
+                                                                        sucursals.razon_social as razon_social_sucursal,
+                                                                        sucursals.direccion as direccion_sucursal,
+                                                                        sucursals.ciudad as ciudad_sucursal,
+                                                                        sucursals.activo as estado_sucursal
+                                                                    ')
+                                                        ->join('users', 'users.id', 'user_sucursals.id_usuario')
+                                                        ->join('sucursals', 'sucursals.id', 'user_sucursals.id_sucursal')
+                                                        ->get();
+        }else {
+            $sucursalesHabilitadasUsuario = UserSucursal::selectRaw('
+                                                                                user_sucursals.id as id_user_sucursals,
+                                                                        user_sucursals.estado as estado_user_sucursals,
+                                                                        user_sucursals.created_at as created_at_user_sucursals,
+                                                                        user_sucursals.updated_at as updated_at_user_sucursals,
+                                                                        users.id as id_usuario,
+                                                                        users.name as nombre_usuario,
+                                                                        users.username as  nombre_login_usuario,
+                                                                        users.estado as estado_usuario,
+                                                                        sucursals.id as id_sucursal,
+                                                                        sucursals.razon_social as razon_social_sucursal,
+                                                                        sucursals.direccion as direccion_sucursal,
+                                                                        sucursals.ciudad as ciudad_sucursal,
+                                                                        sucursals.activo as estado_sucursal
+                                                                    ')
+                                                        ->join('users', 'users.id', 'user_sucursals.id_usuario')
+                                                        ->join('sucursals', 'sucursals.id', 'user_sucursals.id_sucursal')
+                                                        ->where('users.id',auth()->user()->id)
+                                                        ->get();
+        }
+
+        return view('Venta.ReporteVenta.reporteVenta', [
+            'sucursales' => $sucursalesHabilitadasUsuario,
+        ]);
+    }
+
+    public function reporteVentaExcel(Request $request)
+    {
+        dd($request);
+    }
+
 }
