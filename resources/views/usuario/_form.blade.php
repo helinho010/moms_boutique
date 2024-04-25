@@ -1,14 +1,20 @@
 <div class="row">
     <div class="col-md">
+        <input type="text" name="id_usuario" id="id_usuario" value="{{ $usuario[0]->id_usuario }}" hidden>
         <div class="mb-3">
             <label for="nombre_usuario" class="form-label">Nombre de Usuario:</label>
             <input type="text" class="form-control" value="{{ $usuario[0]->name_usuario }}" name="nombre_usuario" id="nombre_usuario" placeholder="Introduzca el nombre del usuario"> 
+            @error('nombre_usuario')
+                <div class="alert alert-danger" role="alert">
+                    {{ $message }}
+                </div>
+            @enderror
           </div>
     </div>
     <div class="col-md">
         <div class="mb-3">
             <label for="usuario" class="form-label">Usuario:</label>
-            <input type="text" class="form-control" value="{{ $usuario[0]->username_usuario }}" name="usuario" id="usuario" placeholder="Introduzca el usuario"> 
+            <input type="text" class="form-control" value="{{ $usuario[0]->username_usuario }}" name="usuario" id="usuario" placeholder="Introduzca el usuario" readonly> 
             <span id="existeUsuarioBdComentario" style="display: none;">Usuario ya existe</span>
         </div>
     </div>
@@ -25,6 +31,11 @@
         <div class="mb-3">
             <label for="confirmar_contrasenia" class="form-label">Repita la Contraseña:</label>
             <input type="password" class="form-control" name="confirmar_contrasenia" id="confirmar_contrasenia" placeholder="Confirmar Contraseña"> 
+            @error('confirmar_contrasenia')
+                <div class="alert alert-danger" role="alert">
+                    {{ $message }}
+                </div>
+            @enderror
         </div>
     </div>
 </div>
@@ -33,6 +44,11 @@
         <div class="mb-3">
             <label for="correo" class="form-label">Correo Electronico:</label>
             <input type="email" class="form-control" value="{{ $usuario[0]->email_usario }}" name="correo" id="correo" placeholder="Introduzca el Correo Electronico"> 
+            @error('correo')
+                <div class="alert alert-danger" role="alert">
+                    {{ $message }}
+                </div>
+            @enderror
         </div>
     </div>
     <div class="col-md">
@@ -48,6 +64,11 @@
                             @endif>{{ $rol->type}}</option>    
                         @endforeach
                     </select>
+                    @error('tipo_usuario')
+                        <div class="alert alert-danger" role="alert">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
                 <div class="col-2"><i class="fa fa-square-plus" style="font-size: 2vw;" onclick="agregarRol()"></i></div>
             </div>
@@ -64,16 +85,21 @@
         <div class="col-md-10">
             <div id="sucursalesHabilitadas0"></div>
             <div id="sucursalesHabilitadas">
-                {{-- @foreach ($sucursales as $sucursal)
+                @foreach ($sucursales as $sucursal)
                     <div class="form-check">
-                        <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id}}" id="flexCheckChecked" name=sucursales_seleccionadas[]>
+                        <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id}}" id="flexCheckChecked" name=sucursales_seleccionadas[]
+                            @foreach ($sucursalXUsuario as $item)
+                                @if ($sucursal->id == $item->id_sucursal)
+                                    checked
+                                @endif
+                            @endforeach
+                        >
                         <label class="form-check-label" for="flexCheckChecked">
                             {{ $sucursal->ciudad}} - {{substr($sucursal->direccion,0,30)}}... 
                         </label>
                     </div>
-                @endforeach --}}
+                @endforeach
             </div>
-            <div id="sucursalesHabilitadas1"></div>
         </div>
         <div class="col-md-1"></div>
     </div>                              

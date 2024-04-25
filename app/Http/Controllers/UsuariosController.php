@@ -8,6 +8,8 @@ use App\Models\UserSucursal;
 use App\Models\Usertype;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
+
 
 class UsuariosController extends Controller
 {
@@ -206,15 +208,69 @@ class UsuariosController extends Controller
                             ->get();
             $roles = Usertype::where('estado',1)
                                     ->get();
+            
+            $sucursales = Sucursal::where('activo',1)->get();
+
+            $sucursalesXUsuario = UserSucursal::where('id_usuario',$request->id_usuario)->get();
 
             return view('usuario.edit',[
                 'usuario' => $usuario,
                 'roles' => $roles,
+                'sucursales' => $sucursales,
+                'sucursalXUsuario' => $sucursalesXUsuario, 
             ]);  
        }
        else{
           return redirect()->route('home_usuarios');
        }  
+    }
+
+    public function update(Request $request)
+    {
+        // dd($request);
+        $validated = $request->validate([
+            'nombre_usuario' => 'required|string',
+            'correo' => 'required',
+            'tipo_usuario' => 'required',
+            'sucursales_seleccionadas' => 'required|array|min:1',
+        ]);
+
+        $usuarioBD = User::where('id',$request->id_usuario)->first();
+
+        if (isset($request->contrasenia) || isset($request->confirmar_contrasenia) ) 
+        {
+            if ($request->contrasenia ==  $request->confirmar_contrasenia) 
+            {
+                $usuarioBD->name = $request->nombre_usuario;
+                $usuarioBD->email = $request->correo ;
+                $usuarioBD->password = Hash::make($request->contrasenia);
+                $usuarioBD->usertype_id = $request->tipo_usuario;
+
+            } else {
+                return Redirect::back()->withErrors(['mensaje_confirm_pwd'=>'Las contrasenias no son iguales']);
+            }    
+        }else{
+            $usuarioBD->name = $request->nombre_usuario;
+            $usuarioBD->email = $request->correo ;
+            $usuarioBD->usertype_id = $request->tipo_usuario;
+        }
+
+        $usuarioBD->save();
+
+        $sucursalHabilitadaUsuario = UserSucursal::where('id_usuario',$request->id_usuario)
+                                                 ->delete();
+
+        
+        foreach ($request->sucursales_seleccionadas as $key => $value) 
+        {
+            $nuevasSucursalesHabilitadasUsuario = new UserSucursal();
+            $nuevasSucursalesHabilitadasUsuario->id_usuario = $request->id_usuario;
+            $nuevasSucursalesHabilitadasUsuario->id_sucursal = $value;
+            $nuevasSucursalesHabilitadasUsuario->save();
+        }
+
+        return redirect()->route('home_usuarios');
+    
     }
 
     public function update_estado(Request $request)
