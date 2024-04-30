@@ -42,8 +42,13 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                                     sucursals.ciudad,
                                     detalle_ventas.descripcion,
                                     detalle_ventas.precio_unitario,
+                                    detalle_ventas.cantidad,
                                     venta.descuento,
                                     tipo_pagos.tipo,
+                                    venta.efectivo_recibido ,
+                                    venta.envio,
+                                    venta.referencia,
+                                    venta.observacion,
                                     venta.updated_at, 
                                     users.username as nombre_usuario
                                     ')
@@ -53,45 +58,59 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                         ->join('tipo_pagos', 'tipo_pagos.id', 'venta.id_tipo_pago')
                         ->where('venta.id_sucursal', "$this->idSucursal")
                         ->where('venta.updated_at','>=', "$this->fechaInicial")
-                        ->where('venta.updated_at','<=', "$this->fechaFinal");
+                        ->where('venta.updated_at','<=', "$this->fechaFinal")
+                        ->where('venta.estado',1);
         }
 
         public function headings(): array
         {
-            return ["Sucursal", "Cuiudad", "Producto","P/U", "Descuento[%]","Tipo Pago", "Fecha", "Usuario"];
+                    // A           B            C          D        E            F                G              H            I          J           K               L
+            return ["Sucursal", "Fecha Hora", "Producto", "P/U", "Cantidad", "Descuento[%]", "Monto Recibido","Tipo Pago", "Vendedor", "Envio" , "Referencia", "observacion" ];
         }
 
         public function map($invoice): array
         {
             return [
                 substr($invoice->direccion,0,45)."..." ,
-                $invoice->ciudad,
+                $invoice->updated_at,
                 $invoice->descripcion,
                 $invoice->precio_unitario,
+                $invoice->cantidad,
                 $invoice->descuento,
+                $invoice->efectivo_recibido, 
                 $invoice->tipo,
+                $invoice->nombre_usuario,
+                $invoice->envio,
+                $invoice->referencia,
+                $invoice->observacion,
+                // $invoice->ciudad,
                 // Date::dateTimeToExcel($invoice->updated_at),
-                $invoice->updated_at,
-                $invoice->nombre_usuario
+                
             ];
         }
 
         public function columnFormats(): array
         {
             return [
-                'G' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+                // 'G' => NumberFormat::FORMAT_DATE_DDMMYYYY,
             ];
         }
 
         public function columnWidths(): array
         {
             return [
-                'A' => 40,
-                'B' => 10,
-                'C' => 40,
-                'E' => 13,
-                'F' => 15,
-                'G' => 20,            
+                'A' => 30,
+                'B' => 20,
+                'C' => 30,
+                'D' => 10,
+                'E' => 10,
+                'F' => 16,
+                'G' => 18,
+                'H' => 18,
+                'I' => 13,
+                'J' => 13, 
+                'K' => 15,   
+                'L' => 20, 
             ];
         }
 

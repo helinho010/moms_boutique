@@ -24,9 +24,9 @@ return new class extends Migration
             $table->double('cambio',8,2);
             $table->timestamps();
 
-            $table->foreign('id_sucursal')->references('id')->on('users')->onUpdate('cascade');
+            $table->foreign('id_sucursal')->references('id')->on('sucursals')->onUpdate('cascade');
             $table->foreign('id_tipo_pago')->references('id')->on('tipo_pagos')->onUpdate('cascade');
-            $table->foreign('id_usuario')->references('id')->on('sucursals')->onUpdate('cascade');
+            $table->foreign('id_usuario')->references('id')->on('users')->onUpdate('cascade');
         });
     }
 

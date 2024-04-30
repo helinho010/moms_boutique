@@ -187,6 +187,18 @@
                   @endforeach
                 </select>
             </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="envio">Envios:</label>
+                <input type="text" class="form-control" id="envio" placeholder="Intraduzca el envio">
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="referencia">Referencia:</label>
+                <input type="text" class="form-control" id="referencia" placeholder="Introduzca la referencia">
+            </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="observacion">Observaciones:</label>
+                <textarea class="form-control" id="observacion" placeholder="Introduzca la observacion"></textarea>
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary modalBtnCerrar" data-bs-dismiss="modal" id="">Cerrar</button>
@@ -431,6 +443,9 @@
                                         "efectivo_recibido":$("#efectivoRecebido").val() == '' ? 0:$("#efectivoRecebido").val(),
                                         "descuento_venta":$("#descuentoVenta").val() == '' ? 0:$("#descuentoVenta").val(),
                                         "cambio_venta":$("#cambio").text(),
+                                        "envio":$("#envio").val(),
+                                        "referencia":$("#referencia").val(),
+                                        "observacion":$("#observacion").val(),
                                       },
                                 success: function (response) {
                                     var respuesta = JSON.stringify(response);
@@ -451,7 +466,7 @@
                                     } else {
                                         Swal.fire({
                                             title: "Hubo un Error!",
-                                            text: "Contactese con el administrador",
+                                            text: "Contactese con el administrador"+ response.estado,
                                             icon: "error"
                                         }); 
                                     }

@@ -110,6 +110,7 @@ class VentaController extends Controller
 
     public function realizarVenta(Request $request)
     {
+       
         
         try {
                 $this->nombre_archivo = date('Ymd-His').".pdf";
@@ -122,7 +123,11 @@ class VentaController extends Controller
                 $newVenta->total_venta = $request->totalVenta;
                 $newVenta->efectivo_recibido = $request->efectivo_recibido;
                 $newVenta->cambio = $request->cambio_venta;
+                $newVenta->envio = $request->envio;
+                $newVenta->referencia = $request->referencia;
+                $newVenta->observacion = $request->observacion;
                 $newVenta->nombre_pdf = $this->nombre_archivo;
+                // dd($newVenta);
                 $newVenta->save();
 
                 foreach ($request->productos as $key => $value) 
