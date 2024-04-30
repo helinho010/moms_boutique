@@ -13,6 +13,9 @@ use App\Models\TipoPago;
 use App\Models\Venta;
 use Luecano\NumeroALetras\NumeroALetras;
 
+use App\Exports\VentaReporteExcelExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class VentaController extends Controller
 {
     private $nombre_archivo = "";
@@ -4560,27 +4563,18 @@ class VentaController extends Controller
     {
         if(auth()->user()->id == 1)
         {
-            $sucursalesHabilitadasUsuario = UserSucursal::selectRaw('
-                                                                                user_sucursals.id as id_user_sucursals,
-                                                                        user_sucursals.estado as estado_user_sucursals,
-                                                                        user_sucursals.created_at as created_at_user_sucursals,
-                                                                        user_sucursals.updated_at as updated_at_user_sucursals,
-                                                                        users.id as id_usuario,
-                                                                        users.name as nombre_usuario,
-                                                                        users.username as  nombre_login_usuario,
-                                                                        users.estado as estado_usuario,
+            $sucursalesHabilitadasUsuario = Sucursal::selectRaw('
                                                                         sucursals.id as id_sucursal,
                                                                         sucursals.razon_social as razon_social_sucursal,
                                                                         sucursals.direccion as direccion_sucursal,
                                                                         sucursals.ciudad as ciudad_sucursal,
                                                                         sucursals.activo as estado_sucursal
                                                                     ')
-                                                        ->join('users', 'users.id', 'user_sucursals.id_usuario')
-                                                        ->join('sucursals', 'sucursals.id', 'user_sucursals.id_sucursal')
+                                                        ->where('sucursals.activo',1)
                                                         ->get();
         }else {
             $sucursalesHabilitadasUsuario = UserSucursal::selectRaw('
-                                                                                user_sucursals.id as id_user_sucursals,
+                                                                        user_sucursals.id as id_user_sucursals,
                                                                         user_sucursals.estado as estado_user_sucursals,
                                                                         user_sucursals.created_at as created_at_user_sucursals,
                                                                         user_sucursals.updated_at as updated_at_user_sucursals,
@@ -4600,6 +4594,7 @@ class VentaController extends Controller
                                                         ->get();
         }
 
+
         return view('Venta.ReporteVenta.reporteVenta', [
             'sucursales' => $sucursalesHabilitadasUsuario,
         ]);
@@ -4607,7 +4602,7 @@ class VentaController extends Controller
 
     public function reporteVentaExcel(Request $request)
     {
-        dd($request);
+        return Excel::download( new VentaReporteExcelExport($request->id_sucursal, $request->fecha_inicial." 00:00:00", $request->fecha_final." 23:59:59"), 'detalleventa.xlsx');
     }
 
 }

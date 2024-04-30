@@ -47,13 +47,13 @@
             <div class="col-md-3">
                 <div class="mb-3">
                     <label for="fecha_inicial" class="form-label">Fecha Inicio</label>
-                    <input type="date" class="form-control" name="fecha_inicial" id="fecha_inicial" placeholder="name@example.com">
+                    <input type="date" class="form-control" name="fecha_inicial" id="fecha_inicial" value="{{ date("Y-m-d") }}">
                   </div>
             </div>
             <div class="col-md-3">
                 <div class="mb-3">
                     <label for="fecha_final" class="form-label">Fecha Final</label>
-                    <input type="date" class="form-control" name="fecha_final" id="fecha_final" placeholder="name@example.com">
+                    <input type="date" class="form-control" name="fecha_final" id="fecha_final" value="{{ date("Y-m-d") }}">
                   </div>
             </div>
         </div>
