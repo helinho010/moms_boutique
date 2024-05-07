@@ -154,7 +154,7 @@
                         <div class="row">
                             <div class="col-md">
                                 <div class="mb-3">
-                                    <label for="nombre_usuario" class="form-label">Nombre de Usuario:</label>
+                                    <label for="nombre_usuario" class="form-label">Nombre Completo del Usuario:</label>
                                     <input type="text" class="form-control" name="nombre_usuario" id="nombre_usuario" placeholder="Introduzca el nombre del usuario"> 
                                   </div>
                             </div>
