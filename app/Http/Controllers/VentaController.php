@@ -4536,25 +4536,64 @@ class VentaController extends Controller
 
     public function update_estado(Request $request)
     {
+        $venta = Venta::where("id",$request->id)->first();
+        $detalleVenta = DetalleVenta::where('id_venta',$request->id)->get();
+        $respuesta=array();
+        $controlActualizacion = 0;
+
         switch ($request->estado) 
         {
             case 0:
-                $venta = Venta::where("id",$request->id)->first();
-                $venta->estado = 1;
-                return $venta->save();
+                foreach ($detalleVenta as $key => $value) 
+                {
+                    $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
+                                                            ->where('id_producto',$value->id_producto)
+                                                            ->first();
+                    if ($inventarioSucursal->stock - $value->cantidad >= 0) 
+                    {      
+                        $controlActualizacion++;
+                    } 
+                }
+                
+                if ($controlActualizacion == $detalleVenta->count()) 
+                {
+                    foreach ($detalleVenta as $key => $value) 
+                    {
+                        $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
+                                                                ->where('id_producto',$value->id_producto)
+                                                                ->first();
+                        $inventarioSucursal->stock = $inventarioSucursal->stock - $value->cantidad;
+                        $inventarioSucursal->save();
+                    }
+                    $venta->estado = 1;
+                    $venta->save();
+                    $respuesta = ['estado'=>1, 'mensaje'=>'Habilitado Exitosamente'];
+                }else{
+                    $respuesta = ['estado'=>0, 'mensaje'=>'Hubo un error al momento de modificar el stock del Inventario'];
+                }
+                
             break;
 
             case 1:
-                $venta = Venta::where("id",$request->id)->first();
+                foreach ($detalleVenta as $key => $value) 
+                {
+                    $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
+                                                            ->where('id_producto',$value->id_producto)
+                                                            ->first();
+                    $inventarioSucursal->cantidad_ingreso = $value->cantidad; 
+                    $inventarioSucursal->stock = $inventarioSucursal->stock + $value->cantidad;
+                    $inventarioSucursal->save();
+                }
                 $venta->estado = 0;
-                return $venta->save();
+                $venta->save();
+                $respuesta = ['estado'=>1, 'mensaje'=>'Inhabilitado Exitosamente'];
             break;
             
             default:
                 
             break;
         }
-        
+        return $respuesta;
     }
 
     public function reImprimirPdf(Request $request)
@@ -4608,6 +4647,22 @@ class VentaController extends Controller
     public function reporteVentaExcel(Request $request)
     {
         return Excel::download( new VentaReporteExcelExport($request->id_sucursal, $request->fecha_inicial." 00:00:00", $request->fecha_final." 23:59:59"), 'detalleventa.xlsx');
+    }
+
+
+    public function editarVenta(Request $request)
+    {
+        
+        // $sucursal = Sucursal::where('id',$request->id_sucursal)->get();
+        
+        // return view('Venta.editarVenta.editar',[
+        //     "sucursal" => $sucursal,
+        // ]);
+    }
+
+    public function editarVentaUpdate(Request $request)
+    {
+        // return view('Venta.homeVenta.php');
     }
 
 }

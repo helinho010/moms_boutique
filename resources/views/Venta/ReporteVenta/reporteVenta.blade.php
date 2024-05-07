@@ -35,8 +35,8 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="mb-3">
-                    <label for="fecha_inicial" class="form-label">Seleccione Sucursal</label>
-                    <select class="form-select" name="id_sucursal" aria-label="Default select example">
+                    <label for="id_sucursal" class="form-label">Seleccione Sucursal</label>
+                    <select class="form-select" name="id_sucursal" id="id_sucursal" aria-label="Default select example">
                         <option value="seleccionado" selected disabled>Seleccione una sucursal ...</option>
                         @foreach ($sucursales as $sucursal)
                             <option value="{{ $sucursal->id_sucursal }}">{{$sucursal->ciudad_sucursal}}-{{ substr($sucursal->direccion_sucursal,0,40)."..." }}</option>
@@ -60,7 +60,7 @@
         <div class="row">
             <div class="col-md-4"></div>
             <div class="col-md-4">
-                <button type="button" class="btn btn-primary" id="obternerReporteVentasExcel">Obtener el Reporte</button>    
+                <button type="button" class="btn btn-primary" id="obternerReporteVentasExcel" disabled>Obtener el Reporte</button>    
             </div>
             <div class="col-md-4"></div>
         </div>
@@ -78,6 +78,13 @@
     $("#venta").addClass('active');
   });
 
+  $("#id_sucursal").change(function (e){ 
+    if ($("#id_sucursal").val() > 0) 
+    {
+       $("#obternerReporteVentasExcel").prop('disabled', false);
+    }
+  });
+  
   $("button").on('click',function(e){
     if($(this).attr('id') == 'obternerReporteVentasExcel')
     {

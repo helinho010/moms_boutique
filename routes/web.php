@@ -105,6 +105,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/reporte_venta',[VentaController::class, 'reporteVenta'])->name('reporte_venta');
     Route::post('/reporte_venta',[VentaController::class, 'reporteVentaExcel'])->name('reporte_venta_excel');
 
+    // Route::get('/editar_venta',[VentaController::class, 'editarVenta'])->name('editar_venta');
+    // Route::post('/editar_venta',[VentaController::class, 'editarVentaUpdate'])->name('update_editar_venta');
+
     
     // Tipo Pago
     Route::get('/tipo_pago', [TipoPagoController::class,'index'])->name('home_tipo_pago');

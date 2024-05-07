@@ -49,7 +49,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                                     venta.envio,
                                     venta.referencia,
                                     venta.observacion,
-                                    venta.updated_at, 
+                                    venta.created_at, 
                                     users.username as nombre_usuario
                                     ')
                         ->join('sucursals', 'sucursals.id', 'venta.id_sucursal')
@@ -57,8 +57,8 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                         ->join('users', 'users.id', 'venta.id_usuario')
                         ->join('tipo_pagos', 'tipo_pagos.id', 'venta.id_tipo_pago')
                         ->where('venta.id_sucursal', "$this->idSucursal")
-                        ->where('venta.updated_at','>=', "$this->fechaInicial")
-                        ->where('venta.updated_at','<=', "$this->fechaFinal")
+                        ->where('venta.created_at','>=', "$this->fechaInicial")
+                        ->where('venta.created_at','<=', "$this->fechaFinal")
                         ->where('venta.estado',1);
         }
 
@@ -72,7 +72,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
         {
             return [
                 substr($invoice->direccion,0,45)."..." ,
-                $invoice->updated_at,
+                $invoice->created_at,
                 $invoice->descripcion,
                 $invoice->precio_unitario,
                 $invoice->cantidad,

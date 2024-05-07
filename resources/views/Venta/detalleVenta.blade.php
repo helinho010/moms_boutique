@@ -98,20 +98,19 @@
                 @foreach ($ventas as $item)
                   <tr>
                     <th scope="row">
-                        <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(
-                            @php echo json_encode([
-                                "id"=>$item->id_venta,
-                                "id_sucursal"=>$item->id_sucursal,
-                                "id_tipo_pago"=>$item->id_tipo_pago,
-                                "id_usuario"=>$item->id_usuario,
-                                "descuento"=>$item->descuento_venta,
-                                "total_venta,"=>$item->total_venta,
-                                "efectivo_recivido"=>$item->efectivo_recibido_venta,
-                                "cambio"=>$item->cambio_venta,
-                                "estado"=>$item->estado_venta,
-                                "fecha_venta"=>$item->updated_at_venta,
-                            ]); @endphp)'>
-                        </i>
+                        {{-- <a href="{{ route('editar_venta',[
+                            "id"=>$item->id_venta,
+                            "id_sucursal"=>$item->id_sucursal,
+                            "id_tipo_pago"=>$item->id_tipo_pago,
+                            "id_usuario"=>$item->id_usuario,
+                            "descuento"=>$item->descuento_venta,
+                            "total_venta,"=>$item->total_venta,
+                            "efectivo_recivido"=>$item->efectivo_recibido_venta,
+                            "cambio"=>$item->cambio_venta,
+                            "estado"=>$item->estado_venta,
+                            "fecha_venta"=>$item->updated_at_venta,
+                            ]) }}">
+                            <i class="fas fa-edit fa-xl i" style="color:#6BA9FA"></i></a> --}}
                         @php
                         $auxdata = json_encode([
                                 "id"=>$item->id_venta,
@@ -264,6 +263,7 @@
     {
         console.log(item);
         $("#exampleModal").modal("show");
+
         // $("#exampleModalLabel").html("<h3>Editar Evento</h3>");
         // $("#formularioRegistroActualizacion").attr("action","{{ route('actualizar_evento') }}");
         // $("#formularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
@@ -278,6 +278,7 @@
 
     function habilitarDesabilitar(venta)
     {
+        // alert("Estamos en el lugar correcto");
         let mensaje = '';
         if(venta.estado == 1){
             mensaje = 'Esta seguro de deshabilitar la venta?';
@@ -303,12 +304,12 @@
                                "estado":venta.estado
                               },
                         success: function (response) {
-                          if (response == 1) 
+                          if (response.estado == 1) 
                           {
                             Swal.fire("Cambio Guardado!", "", "success");        
                             location.reload();  
                           } else {
-                            Swal.fire("Hubo un error, Contactese con el administrador", "", "success");        
+                            Swal.fire("Hubo un error, " + response.mensaje, "", "error");        
                           }
                           
                         }
