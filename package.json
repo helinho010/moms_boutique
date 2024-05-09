@@ -9,7 +9,7 @@
         "@popperjs/core": "^2.10.2",
         "axios": "^1.6.8",
         "bootstrap": "5.2.0",
-        "chart.js": "2.9.4",
+        "chart.js": "^2.9.4",
         "feather-icons": "4.29.0",
         "flatpickr": "4.6.13",
         "icheck-bootstrap": "^3.0.1",

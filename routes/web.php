@@ -14,6 +14,7 @@ use App\Http\Controllers\UsertypeOpcController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\TrasporteProductosController;
+use App\Http\Controllers\GraficosController;
 use Illuminate\Support\Facades\Route;
 
 require(base_path('routes/route-list/route-auth.php'));
@@ -134,6 +135,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update_rol', [UsertypeOpcController::class,'update'])->name('update_rol');
     Route::post('/consultar_rol', [UsertypeOpcController::class,'consultaRol'])->name('consultar_rol');
     Route::post('/actualizar_estado_rol', [UsertypeOpcController::class,'actualizarEstadoRol'])->name('actualizar_estado_rol');
+
+    
+    // Graficos
+    Route::post('/productos_mas_vendidos', [GraficosController::class,'productosMasVendidos'])->name('productos_mas_vendidos');
 
 });
 
