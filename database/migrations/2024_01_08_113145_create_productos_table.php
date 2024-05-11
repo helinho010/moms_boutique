@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->uuid('codigo_producto');
             $table->string('nombre');
-            $table->double('precio',8,2);
-            $table->string('talla');
+            $table->double('precio',8,2)->default(0);
+            $table->string('talla')->nullable();
             $table->unsignedBigInteger('id_categoria');
             $table->boolean('estado')->default(1)->comment('0 = inactivo, 1 = activo');
             $table->timestamps();
