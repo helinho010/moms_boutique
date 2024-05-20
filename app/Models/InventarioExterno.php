@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class InventarioExterno extends Model
 {
     use HasFactory;
+    protected $fillable = ['activo'];
 }

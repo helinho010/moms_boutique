@@ -69,7 +69,10 @@
                             @foreach ($productos as $item)
                                @if ($item->estado_inventario_interno == 1)
                                   @if ($item->stock > 0)
-                                    <option value="{{ $item->id_producto }}" @if ( isset($id_evento) && $item->id == $id_evento )  selected @endif> {{ "$item->nombre_producto - $item->talla -  $item->precio Bs. (Stock: $item->stock)" }}</option> 
+                                    <option value="{{ $item->id_producto }}" @if ( isset($id_evento) && $item->id == $id_evento )  selected @endif>
+                                        {{-- {{ "$item->nombre_producto - $item->talla -  $item->precio Bs. (Stock: $item->stock)" }} --}}
+                                        {{ $item->nombre_producto }} - Talla: {{ $item->talla!=''?$item->talla:"ST(Sin Talla)"}} - {{ "$item->precio Bs. (Stock: $item->stock)"}}
+                                    </option> 
                                   @else
                                     <option value="{{ $item->id_producto }}" disabled> {{ "$item->nombre_producto - $item->talla - $item->precio Bs. (Stock: $item->stock)" }}</option> 
                                   @endif
@@ -119,7 +122,7 @@
                     {{-- Suma de Items --}}
                     <tr class="sinMargen">
                         <th colspan="2" ></th>
-                        <td style="font-weight: bold;">Descuento [%]: </td> 
+                        <td style="font-weight: bold;">Descuento [Bs]: </td> 
                         <td><input type="text" placeholder="0" id="descuentoVenta"></td>
                       </tr>
                     <tr class="sinMargen">
@@ -288,7 +291,11 @@
                         });
 
                         let descuento_venta = $("#descuentoVenta").val() == '' ? 0 : $("#descuentoVenta").val();
-                        let total_venta = (parseFloat(sumaTotal)-parseFloat(sumaTotal)*parseFloat(descuento_venta)/100).toFixed(2);
+                        // Esto es el calculo en porcentajes 
+                        // let total_venta = (parseFloat(sumaTotal)-parseFloat(sumaTotal)*parseFloat(descuento_venta)/100).toFixed(2);
+                        // Esto es el calculo en Bolivianos
+                        let total_venta = (parseFloat(sumaTotal)-parseFloat(descuento_venta)).toFixed(2);
+
                         $("#total").text(total_venta);
 
                         cambiarNumeroALiterarEfectivo($("#total").text());
@@ -342,7 +349,12 @@
                   total_venta = total_venta + parseFloat($(this).text());
                 });
 
-                total_venta = (parseFloat(total_venta)-parseFloat(total_venta)*parseFloat(descuento_venta)/100).toFixed(2)
+                // Calculo del descuento en porcentajes
+                // total_venta = (parseFloat(total_venta)-parseFloat(total_venta)*parseFloat(descuento_venta)/100).toFixed(2)
+
+                // Calculo del descuento en bolivianos
+                total_venta = (parseFloat(total_venta)-parseFloat(descuento_venta)).toFixed(2)
+
                 $("#total").text(total_venta);
 
                 let efectivo_recibido = $("#efectivoRecebido").val() == '' ? 0:$("#efectivoRecebido").val();
@@ -403,7 +415,10 @@
                     //$("#total").text(parseFloat(sumaTotal));
                     
                     let descuento_venta = $("#descuentoVenta").val() == '' ? 0 : $("#descuentoVenta").val();
-                    let total_venta = (parseFloat(sumaTotal)-parseFloat(sumaTotal)*parseFloat(descuento_venta)/100).toFixed(2);
+                    // Calculo del total de la venta en porcentaje
+                    // let total_venta = (parseFloat(sumaTotal)-parseFloat(sumaTotal)*parseFloat(descuento_venta)/100).toFixed(2);
+                    // Calculo del total de la venta en bolivianos
+                    let total_venta = (parseFloat(sumaTotal)-parseFloat(descuento_venta)).toFixed(2);
                     $("#total").text(total_venta);
                     cambiarNumeroALiterarEfectivo(total_venta);
                     let efectivo_recibido = $("#efectivoRecebido").val() == '' ? 0:$("#efectivoRecebido").val();

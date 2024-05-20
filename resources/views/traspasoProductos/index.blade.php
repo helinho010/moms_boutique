@@ -101,7 +101,11 @@
                             @endif        
                         @endforeach
                     </td>
-                    <td>{{ $traspaso->nombre_productos }} - {{ $traspaso->talla_productos }} - {{ $traspaso->descripcion_productos }}</td>
+                    <td>
+                        {{ $traspaso->nombre_productos }} <br>
+                        Talla: <span class="badge bg-primary">{{ $traspaso->talla_productos!=""?$traspaso->talla_productos:"ST(Sin Talla)" }}</span> 
+                        Precio: <span class="badge bg-info text-dark">{{ $traspaso->descripcion_productos!=""?$traspaso->descripcion_productos:"0" }} Bs.</span>
+                    </td>
                     <td>{{ $traspaso->cantidad_trasporte_productos }}</td>
                     <td>{{ $traspaso->nombre_tipo_ingreso_salidas }}</td>
                     <td>{{ $traspaso->updated_at_trasporte_productos }}</td>
@@ -181,9 +185,9 @@
                                             <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
                                                 @foreach ($productos as $item)
                                                     @if ($item->estado_producto)
-                                                        <option value="{{ $item->id_producto }}">{{ $item->nombre_producto }} - {{ $item->talla }} - {{ "(Stock:".$item->stock.")" }}</option>
+                                                        <option value="{{ $item->id_producto }}">{{ $item->nombre_producto }} - Talla: {{ $item->talla!=""?$item->talla:"ST(Sin talla)" }} - {{ "(Stock:".$item->stock.")" }}</option>
                                                     @else
-                                                        <option value="{{ $item->id_producto }}" disabled>{{ $item->nombre_producto }} - {{ $item->talla }} - {{ "(Stock:".$item->stock.") (deshabilitado)" }}</option>
+                                                        <option value="{{ $item->id_producto }}" disabled>{{ $item->nombre_producto }} - Talla: {{ $item->talla!=""?$item->talla:"ST(Sin talla)" }} - {{ "(Stock:".$item->stock.") (deshabilitado)" }}</option>
                                                     @endif
                                                 @endforeach
                                         </select>

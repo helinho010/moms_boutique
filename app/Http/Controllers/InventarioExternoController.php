@@ -13,6 +13,7 @@ use App\Models\UserSucursal;
 use Illuminate\Support\Facades\DB;
 use Dompdf\Dompdf;
 
+use function Laravel\Prompts\error;
 
 class InventarioExternoController extends Controller
 {
@@ -248,6 +249,7 @@ class InventarioExternoController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'id_evento' => 'required|numeric',
             'id_sucursal' => 'required|numeric',
@@ -385,7 +387,7 @@ class InventarioExternoController extends Controller
                                                     productos.id as id_productos,
                                                     productos.codigo_producto as codigo_producto_productos,
                                                     productos.nombre as nombre_productos,
-                                                    productos.costo as costo_productos,
+                                                    productos.precio as precio_productos,
                                                     productos.talla as talla_productos,
                                                     productos.estado as estado_productos,
                                                     productos.updated_at as updated_at_productos,
@@ -426,7 +428,9 @@ class InventarioExternoController extends Controller
             $htmlItem = $htmlItem.'<tr>
             <td>'.$contador.'</td>
             <td>'.$item["razon_social_sucursals"].' - '.substr($item['direccion_sucursals'],0,35).'...'.'</td>
-            <td>'.$item["nombre_productos"]." - ".$item["talla_productos"].'</td>
+            <td>'.$item["nombre_productos"].'</td>
+            <td>'.($item["talla_productos"]!=""?$item["talla_productos"]:"ST(Sin Talla)").'</td> 
+            <td>'.$item["precio_productos"].'</td>
             <td>'.$item["cantidad_inventario_externos"].'</td>
             <td>'.$item["tipo_ingreso_salidas"].'</td>
             <td>'.$item["name_users"].'</td>
@@ -4630,6 +4634,8 @@ class InventarioExternoController extends Controller
                       <th style="width: 5%;">Nro.</th>
                       <th style="width: 20%;">Sucursal</th>
                       <th style="width: 20%;">Producto</th>
+                      <th style="width: 8%;">Talla</th>
+                      <th style="width: 8%;">Precio</th>
                       <th style="width: 10%;">Cantidad</th>
                       <th style="width: 15%;">Tipo de Ingreso o Salida</th>
                       <th style="width: 15%;">Usuario</th>
@@ -4654,4 +4660,38 @@ class InventarioExternoController extends Controller
 
         return redirect()->route('home_inventario_externo');
     }
+
+
+    public function retornarProductos(Request $request)
+    {
+        try {
+                $eventoProductos = InventarioExterno::where('id_evento',$request->id_evento)
+                                                    ->get();
+                
+                if ($eventoProductos->count() > 0 && $eventoProductos[0]->activo != 3 ) 
+                {
+                    foreach ($eventoProductos as $key => $value) 
+                    {
+                        $item = InventarioInterno::where('id_sucursal',$value->id_sucursal)
+                            ->where('id_producto',$value->id_producto)
+                            ->first();
+
+                        $item->stock = $item->stock + $value->cantidad;
+                        $item->id_usuario = auth()->user()->id;
+                        $item->save();
+
+                        $value->update(['activo' => 3]);
+                    }
+                    return ['respuesta'=>true, 'mensaje'=>'Datos actualizados correctamente'];
+                }else {
+                    return ['respuesta'=>true, 'mensaje'=>'Los datos ya fueron almacenados con ateoridad o no se tienen registros de ellos'];
+                }
+                
+
+        } catch (\Throwable $th) {
+            return ['respuesta'=>false, 'mensaje'=>$th->getMessage()];
+        }
+    }
+
+
 }
