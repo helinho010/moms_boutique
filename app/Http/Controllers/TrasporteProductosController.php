@@ -194,14 +194,15 @@ class TrasporteProductosController extends Controller
 
     public function store(Request $request)
     {
-        $registroInvetarioSucursalOrigen = InventarioInterno::where('id_sucursal',$request->id_sucursal_origen)
+        
+        $registroInvetarioSucursalOrigen = InventarioInterno::where('id_sucursal',$request->id_sucursal)
                                                       ->where('id_producto',$request->id_producto)
                                                       ->first();
         
         if ($registroInvetarioSucursalOrigen->stock >= $request->cantidad) 
         {
             $nuevoTraspasoProductos = new TrasporteProductos();
-            $nuevoTraspasoProductos->id_sucursal_origen = $request->id_sucursal_origen;
+            $nuevoTraspasoProductos->id_sucursal_origen = $request->id_sucursal;
             $nuevoTraspasoProductos->id_sucursal_destino = $request->id_sucursal_destino;
             $nuevoTraspasoProductos->id_producto = $request->id_producto;
             $nuevoTraspasoProductos->id_tipo_ingreso_salida = $request->id_tipo_salida;

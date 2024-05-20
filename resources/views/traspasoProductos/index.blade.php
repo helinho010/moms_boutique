@@ -60,33 +60,21 @@
         <table class="table table-striped"> 
             <thead>
                 <tr>
-                  <th scope="col">Opciones</th>
-                  <th scope="col">Sucursal Origen</th>
-                  <th scope="col">Sucursal Destino</th>
-                  <th scope="col">Producto</th>
-                  <th scope="col">Cantidad</th>
-                  <th scope="col">Tipo Ingreso Salida</th>
-                  <th scope="col">Fecha Registro/Actualizacion</th>
-                  <th scope="col">Usuario</th>
-                  <th scope="col">Estado</th>
+                  
+                  <th style="width: 15%;">Sucursal Origen</th>
+                  <th style="width: 15%;">Sucursal Destino</th>
+                  <th style="width: 20%;">Producto</th>
+                  <th style="width: 5%;">Cantidad</th>
+                  <th style="width: 7%;">Tipo Ingreso Salida</th>
+                  <th style="width: 10%;">Fecha Registro/Actualizacion</th>
+                  <th style="width: 10%;">Observaciones</th>
+                  <th style="width: 10%;">Usuario</th>
+                  <th style="width: 5%;">Estado</th>
                 </tr>
               </thead>
               <tbody>
                 @foreach ($traspasos as $traspaso)
                   <tr>
-                    <th scope="row">
-                      {{-- <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editarCategoria(@php echo json_encode(["id"=>$traspaso->id,"nombre"=>$traspaso->nombre]); @endphp)'></i> --}}
-                      @php
-                        // $dataCategoria = json_encode(['id'=>$traspaso->id,'estado'=>$traspaso->estado]);
-                        // if ($traspaso->estado_trasporte_productos == 1) 
-                        // {
-                        //     echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>'; 
-                        // }else{
-                        //     echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataCategoria.')\'></i>';
-                        // }
-                      @endphp
-
-                    </th>
                     <td>
                         @foreach ($sucursales as $sucursal)
                             @if ($traspaso->id_sucursal_origen == $sucursal->id_sucursal)
@@ -109,6 +97,7 @@
                     <td>{{ $traspaso->cantidad_trasporte_productos }}</td>
                     <td>{{ $traspaso->nombre_tipo_ingreso_salidas }}</td>
                     <td>{{ $traspaso->updated_at_trasporte_productos }}</td>
+                    <td>{{ $traspaso->observaciones_trasporte_productos }}</td>
                     <td>{{ $traspaso->name_usuario }}</td>
                     <td> 
                         @if ( $traspaso->estado_trasporte_productos == 1 )
@@ -126,7 +115,7 @@
 
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Nuevo Traspaso</h5>
@@ -137,6 +126,9 @@
                         @csrf
                         @method('POST')
                         <div class="row">
+                            @livewire('selecto-filter-productos')
+                        </div>
+                        {{-- <div class="row">
                             <div class="mb-3">
                                 <div class="col-md-10">
                                     <label for="">Sucursal de Origen:</label>
@@ -154,10 +146,25 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="mb-3">
+                        </div> --}}
+                        <br>
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <label for="">Sucursal de Destino:</label>
+                            </div>
+                            <div class="col-md-8">
+                                <select class="form-select" aria-describedby="" name="id_sucursal_destino" id="modalSelectSucursalDestino">
+                                    <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
+                                        @foreach ($sucursales as $item)
+                                           @if ($item->estado_sucursal)
+                                              <option value="{{ $item->id_sucursal }}">{{ $item->razon_social_sucursal }} - {{ substr($item->direccion_sucursal,0,35)." ..." }}</option>
+                                            @else
+                                              <option value="{{ $item->id_sucursal }}" disabled>{{ "$item->nombre - $item->fecha_evento (deshabilitado)" }}</option>
+                                           @endif
+                                        @endforeach
+                                </select>
+                            </div>
+                            {{-- <div class="mb-3">
                                 <div class="col-md-10">
                                     <label for="">Sucursal de Destino:</label>
                                     <div class="input-group">
@@ -173,10 +180,10 @@
                                          </select>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
 
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="mb-3">
                                 <div class="col-md-10">
                                     <label for="">Producto:</label>
@@ -194,10 +201,27 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="row">
-                            <div class="mb-3">
+                            <div class="col-md-2">
+                                <label for="">Tipo Salida:</label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <select class="form-select" aria-describedby="" name="id_tipo_salida" id="modalSelectTipoSalida">
+                                        <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
+                                            @foreach ($tipoSalida as $item)
+                                                @if ($item->estado)
+                                                    <option value="{{ $item->id }}">{{ $item->tipo }}</option>
+                                                @else
+                                                    <option value="{{ $item->id }}" disabled>{{ $item->tipo }}</option>
+                                                @endif
+                                            @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            {{-- <div class="mb-3">
                                 <div class="col-md-10">
                                     <label for="">Tipo Salida:</label>
                                     <div class="input-group">
@@ -213,25 +237,41 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
-
+                        <br>
                         <div class="row">
-                            <div class="col-md-10">
+                            <div class="col-md-2">
+                                <label for="exampleInputEmail1" class="form-label">Cantidad:</label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="cantidad" id="cantidad" aria-describedby="emailHelp" placeholder="Introduzca la Cantidad">   
+                                </div>
+                            </div>
+                            {{-- <div class="col-md-10">
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Cantidad:</label>
                                     <input type="number" class="form-control" name="cantidad" id="cantidad" aria-describedby="emailHelp" placeholder="Introduzca la Cantidad"> 
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
-
+                        <br>
                         <div class="row">
-                            <div class="col-md-10">
+                            <div class="col-md-2">
+                                <label for="exampleInputEmail1" class="form-label">Observaciones:</label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <textarea class="form-control" name="observaciones" id="observaciones" cols="30" rows="3" aria-describedby="emailHelp" placeholder="Introduzca el nombre de la Categoria"></textarea> 
+                                </div>
+                            </div>
+                            {{-- <div class="col-md-10">
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Observaciones:</label>
                                     <textarea class="form-control" name="observaciones" id="observaciones" cols="30" rows="3" aria-describedby="emailHelp" placeholder="Introduzca el nombre de la Categoria"></textarea>
                                 </div>
-                            </div>  
+                            </div>   --}}
                         </div>
                       </form>
                 </div>
@@ -266,12 +306,25 @@
             $("#buscarformulario").submit();
         } else if ($(this).attr('id') == 'inputNombreModal') 
         {
-            $("#nuevo_traspaso_productos").submit();
+            Swal.fire({
+            title: "Estas seguro de realizar el traspaso?",
+            // text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirmar!"
+            }).then((result) => {
+            if (result.isConfirmed) 
+            {
+                $("#nuevo_traspaso_productos").submit();
+            }
+            });
+            
 
         } else if ($(this).attr('class') == 'btn btn-danger cerrarModal' || $(this).attr('class') == 'btn-close cerrarModal') 
         {
-            console.log("Que es esto");
-            $("#modalSelectSucursalOrigen").val('seleccionado');
+            $("#modalSelectSucursal").val('seleccionado');
             $("#modalSelectSucursalDestino").val('seleccionado');
             $("#modalSelectProducto").val('seleccionado');
             $("#cantidad").val('');
@@ -286,29 +339,29 @@
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 
-    $("#modalSelectSucursalOrigen").on('change',function()
-    {
-        var parametroGet = getParameterByName('id_sucursal');
-        var pathname = window.location.pathname;
+    // $("#modalSelectSucursal").on('change',function()
+    // {
+    //     var parametroGet = getParameterByName('id_sucursal');
+    //     var pathname = window.location.pathname;
 
-        if (parametroGet != '' && parametroGet == $("#modalSelectSucursalOrigen option:selected").val()) 
-        {
-            console.log(parametroGet);
-        } else{
-            window.location.href = pathname+"?id_sucursal="+$("#modalSelectSucursalOrigen option:selected").val();
-        }
-    });
+    //     if (parametroGet != '' && parametroGet == $("#modalSelectSucursal option:selected").val()) 
+    //     {
+    //         console.log(parametroGet);
+    //     } else{
+    //         window.location.href = pathname+"?id_sucursal="+$("#modalSelectSucursal option:selected").val();
+    //     }
+    // });
     
 
     $(document).ready(function(){
-        var parametroGet = getParameterByName('id_sucursal');
-        var pathname = window.location.pathname;
+        // var parametroGet = getParameterByName('id_sucursal');
+        // var pathname = window.location.pathname;
 
-        if (parametroGet != '') 
-        {
-            console.log(parametroGet);
-            $("#exampleModal").modal('show');
-        } 
+        // if (parametroGet != '') 
+        // {
+        //     console.log(parametroGet);
+        //     $("#exampleModal").modal('show');
+        // } 
 
         $("#home").removeClass('active');
         $("#traspaso\\ productos").addClass('active');
