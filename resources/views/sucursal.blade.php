@@ -174,6 +174,8 @@
                             <label for="ciudad_sucursal" class="form-label">Ciudad:</label>
                             <input type="text" class="form-control" name="ciudad" id="ciudad_sucursal" aria-describedby="emailHelp" placeholder="Introduzca la Ciudad"> 
                           </div>
+                          <br>
+                          @livewire('check-almacen-central')
                       </form>
                 </div>
                 <div class="modal-footer">
