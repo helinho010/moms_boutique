@@ -30,10 +30,10 @@ class UsertypesTableSeeder extends Seeder
              'created_at' => '2022-06-04 23:31:08', 
              'updated_at' => '2022-06-04 23:31:08'],
 
-			['id' => 2,  
-			 'type' =>  'Estandar', 
-			 'created_at' => '2022-06-04 23:31:08', 
-			 'updated_at' => '2022-06-04 23:31:08']
+			// ['id' => 2,  
+			//  'type' =>  'Estandar', 
+			//  'created_at' => '2022-06-04 23:31:08', 
+			//  'updated_at' => '2022-06-04 23:31:08']
 		];
 
         for ($i=0; $i<count($usertypes); $i++)

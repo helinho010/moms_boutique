@@ -1,0 +1,104 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Sucursal;
+
+class SucursalController extends Controller
+{
+    public function index(Request $request)
+    {
+        $sucursales = Sucursal::orderBy('updated_at','desc')->paginate(10);
+        return view('sucursal',compact('sucursales'));
+    }
+
+    public function buscar(Request $request)
+    {
+        if ($request->buscar != '') 
+        {
+            $sucursales = Sucursal::orwhere("nit", "like", '%'.$request->buscar.'%')
+                                    ->orwhere('nit','like','%'.$request->buscar.'%')
+                                    ->orwhere('razon_social','like','%'.$request->buscar.'%')
+                                    ->orwhere('direccion','like','%'.$request->buscar.'%')
+                                    ->orwhere('telefonos','like','%'.$request->buscar.'%')
+                                    ->orwhere('ciudad','like','%'.$request->buscar.'%')
+                                    ->orwhere('activo','like','%'.$request->buscar.'%')
+                                   ->orderBy('updated_at','desc')
+                                   ->paginate(10);    
+        }else {
+            $sucursales = Sucursal::orderBy('updated_at','desc')->paginate(10);
+        }
+        return view('sucursal',compact('sucursales'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nit' => 'required',
+            'razon_social' => 'required',
+            'direccion' => 'required',
+            'telefonos' => 'required',
+            'ciudad' => 'required',
+        ]);
+
+        $nuevoSucursal = new Sucursal();
+        $nuevoSucursal->nit = $request->nit;
+        $nuevoSucursal->razon_social = $request->razon_social;
+        $nuevoSucursal->direccion = $request->direccion;
+        $nuevoSucursal->telefonos = $request->telefonos;
+        $nuevoSucursal->ciudad = $request->ciudad;
+        $estado = 0;
+        if ($nuevoSucursal->save()) {
+            $estado = 1;
+        }
+
+        return redirect()->route('home_sucursal',['exito'=>$estado]);
+    }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'nit' => 'required',
+            'razon_social' => 'required',
+            'direccion' => 'required',
+            'telefonos' => 'required',
+            'ciudad' => 'required',
+        ]);
+
+        $actualizarSucursal = Sucursal::where("id",$request->id)->first();
+        $actualizarSucursal->nit = $request->nit;
+        $actualizarSucursal->razon_social = $request->razon_social;
+        $actualizarSucursal->direccion = $request->direccion;
+        $actualizarSucursal->telefonos = $request->telefonos;
+        $actualizarSucursal->ciudad = $request->ciudad;
+
+        $estado = 0;
+        if ($actualizarSucursal->save()) {
+            $estado = 1;
+        }
+
+        return redirect()->route('home_sucursal',['actualizado'=>$estado]);
+    }
+
+    public function update_estado(Request $request)
+    {
+        switch ($request->activo) 
+        {
+            case 0:
+                $sucursal = Sucursal::where("id",$request->id)->first();
+                $sucursal->activo = 1;
+            break;
+
+            case 1:
+                $sucursal = Sucursal::where("id",$request->id)->first();
+                $sucursal->activo = 0;
+            break;
+            
+            default:
+                
+            break;
+        }
+        $sucursal->save();
+    }
+}

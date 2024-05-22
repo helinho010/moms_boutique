@@ -12,7 +12,10 @@ login-box
     <!-- /.login-logo -->
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <a href="{{ route('login') }}" class="h1"><b>Mom's </b> Boutique</a>
+                {{-- <b>Mom's </b> Boutique --}}
+                <a href="{{ route('login') }}" class="h1">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo Empresa" width="150px">
+                </a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Acceder para iniciar sesión</p>
@@ -66,7 +69,7 @@ login-box
                         <button type="submit" class="btn btn-block btn-primary"><strong>{{ __('Login') }}  <i class="fa-solid fa-right-to-bracket"></i></strong></button>
                         <p class="mb-0">
                             <br>
-                            <a href="{{ route('register') }}" class="text-center">Registrar nuevo usuario</a>
+                            {{-- <a href="{{ route('register') }}" class="text-center">Registrar nuevo usuario</a> --}}
                         </p>
                     </div>
 

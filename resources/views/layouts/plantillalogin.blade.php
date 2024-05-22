@@ -9,6 +9,11 @@
 
     <!-- VITE CSS -->
     @vite(['resources/sass/login.scss'])
+    <style>
+        body{
+            background-image: url({{asset('img/fondoLogin.png')}});
+        }
+    </style>
 </head>
 <body class="hold-transition @yield('bodystyle')">
     <div class="@yield('boxstyle')">

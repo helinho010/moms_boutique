@@ -10,6 +10,8 @@ export default defineConfig({
                 'resources/sass/app.scss',
                 'resources/js/login.js',
                 'resources/js/app.js',
+                'node_modules/chart.js/dist/Chart.min.js',
+                'node_modules/chart.js/dist/Chart.min.css',
             ],
             refresh: true,
         }),
