@@ -29,7 +29,8 @@ class UsersTableSeeder extends Seeder
              'name' =>  'ADMIN', 
              'username' =>  'admin', 
              'email' =>  'admin@admin.com', 
-             'password' =>  '$2y$10$oyaH36bPd9rfbywnPi6PJuC4GRsHaf6voJ9FrLDQhN5tO2DeywgTG', //123456789
+             // 'password' =>  '$2y$10$oyaH36bPd9rfbywnPi6PJuC4GRsHaf6voJ9FrLDQhN5tO2DeywgTG', //123456789
+             'password' =>  '$2y$10$mI9H8xQ7zZfCIZni2ELNK.iMweWNX/eQ4me4Pgrgg4gfoqqtCbmFy', //aLDMU8FqjRYXv3R
              'usertype_id' =>  1, 
              'created_at' => '2022-10-04 23:31:08', 
              'updated_at' => '2022-10-04 23:31:08']
