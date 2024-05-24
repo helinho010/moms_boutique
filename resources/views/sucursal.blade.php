@@ -11,7 +11,13 @@
 @endsection
 
 @section('h-title')
+
+    @error('errorAddAlmacenCentral')
+     <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
+
     @php
+
         if (isset($_GET['exito'])) 
         {
             if ($_GET['exito'] == 1) {
@@ -87,13 +93,14 @@
                   <th scope="col">Direccion</th>
                   <th scope="col">Telefonos</th>
                   <th scope="col">Ciudad</th>
+                  <th scope="col">Almacen Central</th>
                   <th scope="col">Estado</th>
                 </tr>
               </thead>
               <tbody>
                 @foreach ($sucursales as $aux)
                   <tr>
-                    <th scope="row">
+                    <th scope="row" >
                         <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
                             "id"=>$aux->id,
                             "nit"=>$aux->nit,
@@ -128,6 +135,13 @@
                     <th>{{$aux->direccion}}</th>
                     <th>{{$aux->telefonos}}</th>
                     <th>{{$aux->ciudad}}</th>
+                    <th>
+                        @if ($aux->almacen_central)
+                            <span class="badge bg-success">&nbsp;&nbsp;Si&nbsp;&nbsp;</span>
+                        @else
+                            <span class="badge bg-warning"> &nbsp;No&nbsp; </span>
+                        @endif
+                    </th>
                     <td> 
                         @if ( $aux->activo == 1 )
                             <span class="badge bg-success">Activo</span>    
@@ -154,7 +168,7 @@
                     <form method="POST" action="{{ route('nueva_sucursal') }}" id="formularioRegistroActualizacion">
                         @csrf
                         @method('POST')
-                        <div class="mb-3">
+                        {{-- <div class="mb-3">
                           <label for="nit_sucursal" class="form-label">Nit:</label>
                           <input type="text" class="form-control" name="nit" id="nit_sucursal" aria-describedby="emailHelp" placeholder="Introduzca el Nit"> 
                         </div>
@@ -173,10 +187,17 @@
                           <div class="mb-3">
                             <label for="ciudad_sucursal" class="form-label">Ciudad:</label>
                             <input type="text" class="form-control" name="ciudad" id="ciudad_sucursal" aria-describedby="emailHelp" placeholder="Introduzca la Ciudad"> 
-                          </div>
+                          </div> --}}
                           <br>
                           @livewire('check-almacen-central')
                       </form>
+
+                      @php  
+                        if (isset($errorAddAlmacenCentral)) 
+                        {
+                            echo '<div class="alert alert-danger" role="alert">'.$errorAddAlmacenCentral[0]->errorAddAlmacenCentral.'</div>';
+                        }
+                      @endphp
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger cerrarModal" data-bs-dismiss="modal" onclick="resestablecerValoresModal()">Cerrar</button>

@@ -34,6 +34,7 @@ class SucursalController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request);
         $request->validate([
             'nit' => 'required',
             'razon_social' => 'required',
@@ -42,15 +43,27 @@ class SucursalController extends Controller
             'ciudad' => 'required',
         ]);
 
-        $nuevoSucursal = new Sucursal();
-        $nuevoSucursal->nit = $request->nit;
-        $nuevoSucursal->razon_social = $request->razon_social;
-        $nuevoSucursal->direccion = $request->direccion;
-        $nuevoSucursal->telefonos = $request->telefonos;
-        $nuevoSucursal->ciudad = $request->ciudad;
-        $estado = 0;
-        if ($nuevoSucursal->save()) {
-            $estado = 1;
+        $existeAlmacenCentral = Sucursal::where('almacen_central',1)
+                                        ->get();
+
+        if ($request->almacen_central=='on' && $existeAlmacenCentral->count() > 0 ) 
+        {
+            return back()->withInput()->withErrors(['errorAddAlmacenCentral' => '¡Ya existe registrado un almacen central!']);
+        }
+        else
+        {
+            $nuevoSucursal = new Sucursal();
+            $nuevoSucursal->nit = $request->nit;
+            $nuevoSucursal->razon_social = $request->razon_social;
+            $nuevoSucursal->direccion = $request->direccion;
+            $nuevoSucursal->telefonos = $request->telefonos;
+            $nuevoSucursal->ciudad = $request->ciudad;
+            $nuevoSucursal->almacen_central = $request->almacen_central=='on'?true:false;
+
+            $estado = 0;
+            if ($nuevoSucursal->save()) {
+                $estado = 1;
+            }
         }
 
         return redirect()->route('home_sucursal',['exito'=>$estado]);

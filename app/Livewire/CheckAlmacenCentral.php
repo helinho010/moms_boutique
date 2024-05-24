@@ -9,21 +9,30 @@ class CheckAlmacenCentral extends Component
 {
     public $almacen_central;
     public $estado;
+    public $mensaje;
 
     public function mount()
     {
-        $this->almacen_central="";
-        $this->estado="";
+        $almacenCentral=Sucursal::where('almacen_central',true)
+                                       ->get();
+
+        $this->almacen_central = false;
+
+        $this->estado = $almacenCentral->count() > 0 ? "disabled" : "";
+
+        $this->mensaje = $almacenCentral->count() > 0 ? "Ya existe un Almacen Central (Bloqueado!)" : "";
     }
 
-    public function actulizarCheckAlmacenCentral()
+    public function comprobarAlmacenCentral()
     {
-        $existeAlmacenCentral = Sucursal::where('almacen_central',true)
-                                        ->get();
-        
-        $this->estado = $existeAlmacenCentral->count() > 0 ? "disabled" : "";
-        
-        // $this->almacen_central = $existeAlmacenCentral[0]->almacen_central;  
+        $almacenCentral=Sucursal::where('almacen_central',true)
+                                       ->get();
+
+        $this->almacen_central = false;
+
+        $this->estado = $almacenCentral->count() > 0 ? "disabled" : "";
+
+        $this->mensaje = $almacenCentral->count() > 0 ? "Ya existe un Almacen Central (Bloqueado!)" : "";
     }
 
     public function render()
