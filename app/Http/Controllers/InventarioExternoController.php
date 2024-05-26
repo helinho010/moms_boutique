@@ -48,7 +48,10 @@ class InventarioExternoController extends Controller
                                        ->get();
         }
 
-        $eventos = Evento::orderBy('fecha_evento','desc')->get();
+        $eventos = Evento::where('estado',1)
+                         ->orderBy('fecha_evento','desc')
+                         ->get();
+
         $productos = Producto::all();
         $tiposIngresosSalidas = TipoIngresoSalida::all();
 
@@ -4664,17 +4667,21 @@ class InventarioExternoController extends Controller
 
     public function retornarProductos(Request $request)
     {
+        dd("Estasmos aqui solucionando el requerimiento de inventarios externos");
         try {
                 $eventoProductos = InventarioExterno::where('id_evento',$request->id_evento)
                                                     ->get();
                 
                 if ($eventoProductos->count() > 0 && $eventoProductos[0]->activo != 3 ) 
                 {
+                    $idAlmcenCentral = Sucursal::where('almacen_central',1)->get();
+                    $item = InventarioInterno::where('id_sucursal',$idAlmcenCentral->id);
+                            // ->where('id_producto',$value->id_producto)
+                            // ->first();
+
                     foreach ($eventoProductos as $key => $value) 
                     {
-                        $item = InventarioInterno::where('id_sucursal',$value->id_sucursal)
-                            ->where('id_producto',$value->id_producto)
-                            ->first();
+                        
 
                         $item->stock = $item->stock + $value->cantidad;
                         $item->id_usuario = auth()->user()->id;

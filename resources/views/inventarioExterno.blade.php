@@ -92,7 +92,7 @@
                              </select>
                              <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-search"></i></button>
                              <button class="input-group-text" id="btnFormDataExportPdf" disabled title="Exportar a PDF"><i id="ibtnFormDataExportPdf" class="fas fa-file-pdf" style="font-size: 19px; color:#292622"></i></button>
-                             <button class="input-group-text" id="btnFormDataRetornarProductos" disabled title="Devolver los productos a sus respectivas sucursales"><i id="ibtnFormDataRetornarProductos" class="fas fa-exchange-alt" style="font-size: 19px; color:#292622"></i></button>
+                             <button class="input-group-text" id="btnFormDataRetornarProductos" disabled title="Devolver los productos al Almacen Central"><i id="ibtnFormDataRetornarProductos" class="fas fa-exchange-alt" style="font-size: 19px; color:#292622"></i></button>
                         </div>
                     </form>
                 </div>
