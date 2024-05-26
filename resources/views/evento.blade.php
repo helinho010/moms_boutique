@@ -112,11 +112,11 @@
                         @method('POST')
                         <div class="mb-3">
                           <label for="exampleInputEmail1" class="form-label">Nombre del Evento:</label>
-                          <input type="text" class="form-control" name="nombre" id="nombre_evento" aria-describedby="emailHelp" placeholder="Introduzca el nombre del Evento"> 
+                          <input type="text" class="form-control" name="nombre" id="nombre_evento" placeholder="Introduzca el nombre del Evento"> 
                         </div>
                         <div class="mb-3">
                             <label for="fecha_evento" class="form-label">Fecha del Evento:</label>
-                            <input type="date" class="form-control" name="fecha_evento" id="fecha_evento" aria-describedby="emailHelp"> 
+                            <input type="date" value="{{ date('Y-m-d') }}" class="form-control" name="fecha_evento" id="fecha_evento"> 
                           </div>
                       </form>
                 </div>
@@ -158,7 +158,7 @@
         $("#exampleModalLabel").html("<h3>Nuevo Evento</h3>");
         $("#formularioTipoIngresoSalida").attr("action","{{ route('nuevo_evento') }}");
         $("#nombre_evento").val('');
-        $("#fecha_evento").val('');
+        // $("#fecha_evento").val('');
         $("#inputTipoModal").val("Guardar");     
     }
 
@@ -228,10 +228,8 @@
             setTimeout(() => {
                 $(location).attr('href',pathname);
             }, 10000);
-        } 
-    });
-
-    $(document).ready(function(){
+        }
+        
         $("#home").removeClass('active');
         $("#evento").addClass('active');
     });
