@@ -4667,10 +4667,8 @@ class InventarioExternoController extends Controller
 
     public function retornarProductos(Request $request)
     {
-        // dd("Estasmos aqui solucionando el requerimiento de inventarios externos");
         try {
-                $eventoProductos = InventarioExterno::where('id_evento',$request->id_evento)
-                                                    ->get();
+                $eventoProductos = InventarioExterno::where('id_evento',$request->id_evento)->get();
                 
                 $idAlmcenCentral = (Sucursal::firstWhere('almacen_central',1))->id;
 
@@ -4680,9 +4678,6 @@ class InventarioExternoController extends Controller
                 {
                     foreach ($eventoProductos as $key => $value) 
                     {
-                        // $item->stock = $item->stock + $value->cantidad;
-                        // $item->id_usuario = auth()->user()->id;
-                        // $item->save();
                         
                         $itemInventarioInterno = InventarioInterno::updateOrCreate(
                             [
@@ -4706,7 +4701,6 @@ class InventarioExternoController extends Controller
                 }else {
                     return ['respuesta'=>true, 'mensaje'=>'Los datos ya fueron almacenados con ateoridad o no se tienen registros de ellos'];
                 }
-                
 
         } catch (\Throwable $th) {
             return ['respuesta'=>false, 'mensaje'=>$th->getMessage()];
