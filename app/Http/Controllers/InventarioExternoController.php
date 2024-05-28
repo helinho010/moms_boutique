@@ -4667,26 +4667,39 @@ class InventarioExternoController extends Controller
 
     public function retornarProductos(Request $request)
     {
-        dd("Estasmos aqui solucionando el requerimiento de inventarios externos");
+        // dd("Estasmos aqui solucionando el requerimiento de inventarios externos");
         try {
                 $eventoProductos = InventarioExterno::where('id_evento',$request->id_evento)
                                                     ->get();
                 
+                $idAlmcenCentral = (Sucursal::firstWhere('almacen_central',1))->id;
+
+                $idTipoIngreso = (TipoIngresoSalida::firstWhere('tipo','Traspaso'))->id;
+
                 if ($eventoProductos->count() > 0 && $eventoProductos[0]->activo != 3 ) 
                 {
-                    $idAlmcenCentral = Sucursal::where('almacen_central',1)->get();
-                    $item = InventarioInterno::where('id_sucursal',$idAlmcenCentral->id);
-                            // ->where('id_producto',$value->id_producto)
-                            // ->first();
-
                     foreach ($eventoProductos as $key => $value) 
                     {
+                        // $item->stock = $item->stock + $value->cantidad;
+                        // $item->id_usuario = auth()->user()->id;
+                        // $item->save();
                         
-
-                        $item->stock = $item->stock + $value->cantidad;
-                        $item->id_usuario = auth()->user()->id;
-                        $item->save();
-
+                        $itemInventarioInterno = InventarioInterno::updateOrCreate(
+                            [
+                                'id_producto'=>$value->id_producto, 
+                                'id_sucursal'=>$idAlmcenCentral,
+                                'estado'=>1,    
+                            ],
+                            [
+                                'id_producto'=>$value->id_producto, 
+                                'id_sucursal'=>$idAlmcenCentral,
+                                'id_usuario'=>auth()->user()->id,
+                                'id_tipo_ingreso_salida'=>$idTipoIngreso,
+                                'cantidad_ingreso'=>$value->cantidad,
+                                'stock' => DB::raw('IFNULL(stock, 0) +'.$value->cantidad),
+                            ]
+                        );
+                        
                         $value->update(['activo' => 3]);
                     }
                     return ['respuesta'=>true, 'mensaje'=>'Datos actualizados correctamente'];
