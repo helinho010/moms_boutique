@@ -9,9 +9,11 @@ use App\Models\Producto;
 use App\Models\InventarioInterno;
 use App\Models\Sucursal;
 use App\Models\TipoIngresoSalida;
+use App\Models\TipoPago;
 use App\Models\UserSucursal;
 use Illuminate\Support\Facades\DB;
 use Dompdf\Dompdf;
+use Svg\Tag\Rect;
 
 use function Laravel\Prompts\error;
 
@@ -4667,37 +4669,94 @@ class InventarioExternoController extends Controller
 
     public function retornarProductos(Request $request)
     {
-        dd("Estasmos aqui solucionando el requerimiento de inventarios externos");
         try {
-                $eventoProductos = InventarioExterno::where('id_evento',$request->id_evento)
-                                                    ->get();
+                $eventoProductos = InventarioExterno::where('id_evento',$request->id_evento)->get();
                 
+                $idAlmcenCentral = (Sucursal::firstWhere('almacen_central',1))->id;
+
+                $idTipoIngreso = (TipoIngresoSalida::firstWhere('tipo','Traspaso'))->id;
+
                 if ($eventoProductos->count() > 0 && $eventoProductos[0]->activo != 3 ) 
                 {
-                    $idAlmcenCentral = Sucursal::where('almacen_central',1)->get();
-                    $item = InventarioInterno::where('id_sucursal',$idAlmcenCentral->id);
-                            // ->where('id_producto',$value->id_producto)
-                            // ->first();
-
                     foreach ($eventoProductos as $key => $value) 
                     {
                         
-
-                        $item->stock = $item->stock + $value->cantidad;
-                        $item->id_usuario = auth()->user()->id;
-                        $item->save();
-
+                        $itemInventarioInterno = InventarioInterno::updateOrCreate(
+                            [
+                                'id_producto'=>$value->id_producto, 
+                                'id_sucursal'=>$idAlmcenCentral,
+                                'estado'=>1,    
+                            ],
+                            [
+                                'id_producto'=>$value->id_producto, 
+                                'id_sucursal'=>$idAlmcenCentral,
+                                'id_usuario'=>auth()->user()->id,
+                                'id_tipo_ingreso_salida'=>$idTipoIngreso,
+                                'cantidad_ingreso'=>$value->cantidad,
+                                'stock' => DB::raw('IFNULL(stock, 0) +'.$value->cantidad),
+                            ]
+                        );
+                        
                         $value->update(['activo' => 3]);
                     }
                     return ['respuesta'=>true, 'mensaje'=>'Datos actualizados correctamente'];
                 }else {
                     return ['respuesta'=>true, 'mensaje'=>'Los datos ya fueron almacenados con ateoridad o no se tienen registros de ellos'];
                 }
-                
 
         } catch (\Throwable $th) {
             return ['respuesta'=>false, 'mensaje'=>$th->getMessage()];
         }
+    }
+
+
+    public function seleccionEventoVenta(Request $request)
+    {
+        //dd($request);
+
+        $evento = Evento::where('id',$request->id_evento)->get();
+
+        $tipoPagos = TipoPago::where('estado',1)->get();
+
+        $productosEvento = InventarioExterno::selectRaw(' inventario_externos.id as id_inventario_externos,
+                                                            inventario_externos.cantidad as cantidad_inventario_externos,
+                                                            inventario_externos.activo as estado_inventario_externos,
+                                                            inventario_externos.created_at as created_at_inventario_externos,
+                                                            inventario_externos.updated_at as updated_at_inventario_externos,
+                                                            productos.id as id_productos,
+                                                            productos.nombre as nombre_productos,
+                                                            productos.costo as costo_productos,
+                                                            productos.talla as talla_productos,
+                                                            productos.estado as estado_productos,
+                                                            sucursals.id as id_sucursals,
+                                                            sucursals.razon_social as razon_social_sucursals,
+                                                            sucursals.direccion as direccion_sucursals,
+                                                            sucursals.ciudad as ciudad_sucursals,
+                                                            sucursals.activo as estado_sucursals,
+                                                            users.id as id_users,
+                                                            users.name as name_users,
+                                                            users.estado as estado_users,
+                                                            eventos.id as id_eventos,
+                                                            eventos.nombre as nombre_eventos,
+                                                            eventos.estado as estado_eventos,
+                                                            tipo_ingreso_salidas.id as id_tipo_ingreso_salidas,
+                                                            tipo_ingreso_salidas.tipo as tipo_tipo_ingreso_salidas,
+                                                            tipo_ingreso_salidas.estado as estado_tipo_ingreso_salidas')
+                                                ->join('productos', 'productos.id','inventario_externos.id_producto')
+                                                ->join('sucursals', 'sucursals.id', 'inventario_externos.id_sucursal')
+                                                ->join('users', 'users.id', 'inventario_externos.id_usuario')
+                                                ->join('eventos', 'eventos.id', 'inventario_externos.id_evento')
+                                                ->join('tipo_ingreso_salidas', 'tipo_ingreso_salidas.id', 'inventario_externos.id_tipo_ingreso_salida')
+                                                ->where('eventos.id', $request->id_evento)
+                                                ->get();
+
+        session(['eventoSeleccionadoParaVenta' => $request->id_evento]); 
+
+        return view('Venta.ventaEvento',[
+            'evento'=>$evento,
+            'productos' => $productosEvento,
+            'tipoPagos' => $tipoPagos,
+        ]);   
     }
 
 

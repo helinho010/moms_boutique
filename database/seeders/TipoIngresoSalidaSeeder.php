@@ -38,6 +38,10 @@ class TipoIngresoSalidaSeeder extends Seeder
              ['tipo' => "Prestamo",  
              'created_at' => date("Y/m/d H:i"), 
              'updated_at' => date("Y/m/d H:i")],
+
+             ['tipo' => "Traspaso",  
+             'created_at' => date("Y/m/d H:i"), 
+             'updated_at' => date("Y/m/d H:i")],
 		];
 
         for ($i=0; $i<count($tipo_ingreso_salida); $i++)

@@ -30,12 +30,12 @@
   <div class="row">
   @foreach ($sucursales as $item)
       <div class="col-md-4">
-        <div class="card border-primary mb-3" style="max-width: 18rem;">
-          <div class="card-header">Sucursal</div>
+        <div class="card bg-primary mb-3" style="max-width: 18rem;">
+          <div class="card-header text-white fs-2">Sucursal</div>
           <div class="card-body text-primary">
             <h5 class="card-title">{{ $item->razon_social_sucursal }}</h5>
-            <p class="card-text"><span style="color:black; font-weight: bold">Direccion:</span> <span style="color:black">{{ $item->direccion_sucursal }}</span></p>
-            <p class="card-text"><span style="color:black; font-weight: bold">Ciudad:</span> {{ $item->ciudad_sucursal }}</p>
+            <p class="card-text text-white"><span style=" font-weight: bold">Direccion:</span> <span style="">{{ $item->direccion_sucursal }}</span></p>
+            <p class="card-text text-white"><span style=" font-weight: bold">Ciudad:</span> {{ $item->ciudad_sucursal }}</p>
             <form action="{{ route('seleccion_sucursal_venta') }}" method="POST">
               @csrf
               @method('POST')
@@ -45,7 +45,31 @@
               <div class="mb-3">
                 <input type="text" class="form-control" id="exampleInputPassword1" hidden>
               </div>
-              <button type="submit" class="btn btn-primary">Realizar Venta aqui</button>
+              <button type="submit" class="btn btn-warning">Realizar Venta aqui</button>
+            </form>
+          </div>
+        </div>
+      </div>
+  @endforeach
+  <br>
+  @foreach ($eventos as $item)
+      <div class="col-md-4">
+        <div class="card bg-success mb-3" style="max-width: 18rem;">
+          <div class="card-header text-white fs-2">Evento</div>
+          <div class="card-body text-primary">
+            <h5 class="card-title">{{ $item->razon_social_sucursal }}</h5>
+            <p class="card-text text-white"><span style="font-weight: bold">Nombre Enveto:</span> <span style="font-size: 16px; font-weight: bold;">{{ $item->nombre }}</span></p>
+            <p class="card-text text-white"><span style="font-weight: bold">Fecha:</span> <span style="font-size: 16px; font-weight: bold;">{{ $item->fecha_evento }}</span></p>
+            <form action="{{ route('seleccion_evento_venta') }}" method="POST">
+              @csrf
+              @method('POST')
+              <div class="mb-3">
+                <input type="text" class="form-control" name="id_evento" id="id_evento" value="{{ $item->id }}" hidden>
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" id="exampleInputPassword1" hidden>
+              </div>
+              <button type="submit" class="btn btn-light">Realizar Venta aqui</button>
             </form>
           </div>
         </div>

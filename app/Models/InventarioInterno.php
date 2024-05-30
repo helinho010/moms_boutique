@@ -8,5 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class InventarioInterno extends Model
 {
     use HasFactory;
-    protected $fillable = ['id_sucursal','id_producto','id_usuario','id_tipo_ingreso_salida','cantidad_ingreso'];
+    protected $fillable = ['id_sucursal',
+                            'id_producto','id_usuario',
+                            'id_tipo_ingreso_salida',
+                            'cantidad_ingreso',
+                            'stock',
+                          ];
 }
