@@ -14,6 +14,7 @@ use App\Models\Venta;
 use Luecano\NumeroALetras\NumeroALetras;
 
 use App\Exports\VentaReporteExcelExport;
+use App\Models\Evento;
 use Maatwebsite\Excel\Facades\Excel;
 
 class VentaController extends Controller
@@ -50,8 +51,13 @@ class VentaController extends Controller
                                        ->where('sucursals.activo',1)
                                        ->get();
         }
+
+        $eventos = Evento::where('estado',1)
+                         ->get();
+
         return view('Venta.homeVenta',[
             'sucursales'=>$sucursales,
+            'eventos' => $eventos,
         ]);
     }
 
