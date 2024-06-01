@@ -20,19 +20,18 @@
             border-left: solid 2px black;
             border-right: solid 1px black;
         }
-        #efectivoRecebido, #descuentoVenta{
+        #efectivoRecebido, #descuentoVenta, #totalinput, #cambioinput {
            border: 0;
            width: 100%;
            height: auto;
         }
-        #efectivoRecebido:focus , #descuentoVenta:focus{
+        #efectivoRecebido:focus , #descuentoVenta:focus , #totalinput:focus, #cambioinput:focus{
            border: 0;
            outline: none;
            width: 100%;
            height: auto;
            font-weight: bold;
         }
-
     </style>
 @endsection
 
@@ -66,7 +65,7 @@
 @push('scripts')
     <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+    {{-- <script>
          let arrayProductosVenta =[]; 
          $.ajaxSetup({
             headers: {
@@ -367,6 +366,91 @@
             $("#venta").addClass('active');
         });
 
+    </script> --}}
+
+    <script>
+        /**
+         * Realizar la Venta BOTON
+        */
+        // $("#realizarVenta").click(function(){
+        //     $("#staticBackdrop").modal('hide');
+        //     Swal.fire({
+        //         title: "Esta seguro de realizar la venta?",
+        //         // text: "You won't be able to revert this!",
+        //         icon: "warning",
+        //         showCancelButton: true,
+        //         confirmButtonColor: "#3085d6",
+        //         cancelButtonColor: "#d33",
+        //         confirmButtonText: "Si, estoy seguro"
+        //         }).then((result) => {
+        //            if (result.isConfirmed) {
+        //               if (arrayProductosVenta.length > 0) 
+        //               {
+        //                 if ( parseInt($("#selectTipoPago").val()) > 0) {
+        //                     $.ajax({
+        //                         type: "POST",
+        //                         url: "/realizar_venta",
+        //                         data: {
+        //                                 "productos":arrayProductosVenta, 
+        //                                 "idTipoPago":$("#selectTipoPago").val(), 
+        //                                 "nit_cliente":$("#nit_cliente").val(),
+        //                                 "nombre_cliente":$("#nombre_cliente").val(),
+        //                                 "totalVenta":$("#total").text(),
+        //                                 "efectivo_recibido":$("#efectivoRecebido").val() == '' ? 0:$("#efectivoRecebido").val(),
+        //                                 "descuento_venta":$("#descuentoVenta").val() == '' ? 0:$("#descuentoVenta").val(),
+        //                                 "cambio_venta":$("#cambio").text(),
+        //                                 "envio":$("#envio").val(),
+        //                                 "referencia":$("#referencia").val(),
+        //                                 "observacion":$("#observacion").val(),
+        //                               },
+        //                         success: function (response) {
+        //                             var respuesta = JSON.stringify(response);
+        //                             var respuesta = JSON.parse(respuesta);
+        //                             console.log(respuesta);
+        //                             if (respuesta.estado == 1) {
+        //                                 Swal.fire({
+        //                                     title: "Venta Realizada Exitosamente!",
+        //                                     // text: "You clicked the button!",
+        //                                     icon: "success",
+        //                                     timer: 1500
+        //                                 });
+        //                                 setTimeout(() => {
+        //                                     var win = window.open('/'+respuesta.nombreArchivo, '_blank');
+        //                                     $(location).attr('href','/detalle_ventas_rango_fechas');                            
+        //                                 }, 1600);
+                                        
+        //                             } else {
+        //                                 Swal.fire({
+        //                                     title: "Hubo un Error!",
+        //                                     text: "Contactese con el administrador"+ response.estado,
+        //                                     icon: "error"
+        //                                 }); 
+        //                             }
+        //                         }
+        //                     }); 
+        //                 } else {
+        //                     Swal.fire({
+        //                         title: "No selecciono un tipo de pago",
+        //                         // text: "That thing is still around?",
+        //                         icon: "error",
+        //                     });  
+        //                 }
+                        
+        //               } else {
+        //                 Swal.fire({
+        //                     title: "No Existe items registrados para la venta",
+        //                     // text: "That thing is still around?",
+        //                     icon: "error",
+        //                 });
+        //               }
+        //             }
+        //         });
+        // });
+
+        $(document).ready(function(){
+            $("#home").removeClass('active');
+            $("#venta").addClass('active');
+        });
     </script>
 @endpush
 
