@@ -224,10 +224,31 @@
                                             </div>
                                         @endforeach
                                     </div>
-                                    <div id="sucursalesHabilitadas1"></div>
                                 </div>
                                 <div class="col-md-1"></div>
-                            </div>                              
+                            </div>
+                            <br><hr><br>
+                            <div class="row">
+                                <div class="col-md text-center">
+                                    <h5>Seleccione Eventos a Habilitar</h5>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-10">
+                                    <div id="eventosHabilitados">
+                                        @foreach ($eventos as $evento)
+                                            <div class="form-check">
+                                                <input class="form-check-input soloLectura" type="checkbox" value="{{ $evento->id}}" name=eventos_seleccionados[]>
+                                                <label class="form-check-label" for="flexCheckChecked">
+                                                    {{ $evento->nombre}} - Fecha: {{ $evento->fecha_evento }}
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>                               
                         </div>
                       </form>
                 </div>

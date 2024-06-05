@@ -2,10 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Models\Cliente;
+use App\Models\DetalleVenta;
 use App\Models\Evento;
 use App\Models\InventarioExterno;
 use App\Models\Producto;
 use App\Models\TipoPago;
+use App\Models\Venta;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Luecano\NumeroALetras\NumeroALetras;
@@ -23,6 +26,7 @@ class RealizarVenta extends Component
 
     #[Validate('required|min:1|numeric')]
     public $cantidadDelProductoSeleccionado;
+
     public $descuento;
     public $total;
     public $efectivoRecivido;
@@ -33,6 +37,7 @@ class RealizarVenta extends Component
     // Datos de la factura 
     public $nitCliente;
     public $nombreCliente;
+
     // #[Validate('required|min:1|numeric')]
     public $idTipoPagoSeleccionado;
     public $envio;
@@ -177,11 +182,58 @@ class RealizarVenta extends Component
 
     public function almacenarDatos()
     {
-        dd($this->productosAVender);
-        
-        // $productoInventarioExterno = InventarioExterno::where('id_evento',session('eventoSeleccionadoParaVenta'))
-        //                                               ->where('id_producto',$this->idProductoSeleccionado)          
-        //                                               ->update(['cantidad'=> DB::raw('cantidad-'.$this->cantidadDelProductoSeleccionado)]);
+        // dd($this->productosAVender);
+
+        $venta = new Venta();
+        $venta->id_sucursal = 0;
+        $venta->id_evento = session('eventoSeleccionadoParaVenta');
+        $venta->id_usuario = auth()->user()->id;
+        $venta->descuento = $this->descuento;
+        $venta->total_venta = $this->total;
+        $venta->efectivo_recibido = $this->efectivoRecivido;
+        $venta->cambio = $this->cambio;
+        $venta->id_tipo_pago = $this->idTipoPagoSeleccionado;
+        $venta->envio = $this->envio;
+        $venta->referencia = $this->referencia;
+        $venta->observacion = $this->observacion;
+        $venta->nombre_pdf = "";
+        $venta->save();
+
+        $cliente = new Cliente();
+        $cliente->nit_ci = $this->nitCliente;
+        $cliente->razon_social = $this->nombreCliente;
+        $cliente->save();
+
+        foreach ($this->productosAVender as $key => $producto) 
+        {
+            $detalleVenta = new DetalleVenta();
+            $detalleVenta->id_venta = $venta->id;
+            $detalleVenta->id_producto = $producto["id_producto"];
+            $detalleVenta->cantidad = $producto["cantidad"];
+            $detalleVenta->descripcion = $producto["descripcion"];
+            $detalleVenta->precio_unitario = $producto["precio_unitario"];
+            $detalleVenta->subtotal = $producto["subtotal"];
+            $detalleVenta->save();
+
+            $productoInventarioExterno = InventarioExterno::where('id_evento',session('eventoSeleccionadoParaVenta'))
+                                                      ->where('id_producto',$producto["id_producto"])          
+                                                      ->update(['cantidad'=> DB::raw('cantidad-'.$producto["cantidad"])]);
+        }
+
+        return redirect('detalle_ventas_rango_fechas');
+    }
+
+    public function eliminarProducto($id_producto)
+    {
+        foreach ($this->productosAVender as $key => $producto) 
+        {
+          if($producto["id_producto"] == $id_producto )
+          {
+            unset($this->productosAVender[$key]);
+            $this->productosAVender = array_values($this->productosAVender);
+            break;
+          }
+        }
     }
 
 

@@ -87,7 +87,7 @@
             <div id="sucursalesHabilitadas">
                 @foreach ($sucursales as $sucursal)
                     <div class="form-check">
-                        <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id}}" id="flexCheckChecked" name=sucursales_seleccionadas[]
+                        <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id }}" id="flexCheckChecked" name=sucursales_seleccionadas[]
                             @foreach ($sucursalXUsuario as $item)
                                 @if ($sucursal->id == $item->id_sucursal)
                                     checked
@@ -102,5 +102,36 @@
             </div>
         </div>
         <div class="col-md-1"></div>
-    </div>                              
+    </div>
+    
+    <br>
+    <hr><br>
+    <div class="row">
+        <div class="col-md text-center">
+            <h5>Seleccione Eventos a Habilitar</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div id="eventosHabilitados">
+                @foreach ($eventos as $evento)
+                <div class="form-check">
+                    <input class="form-check-input soloLectura" type="checkbox" value="{{ $evento->id }}" name=eventos_seleccionados[]
+                        @foreach ($eventosXUsuario as $item)
+                            @if ($evento->id == $item->id_evento)
+                                checked
+                            @endif
+                        @endforeach
+                    >
+                    <label class="form-check-label" for="flexCheckChecked">
+                        {{ $evento->nombre}} - Fecha: {{ $evento->fecha_evento }}
+                    </label>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>  
+    
 </div>
