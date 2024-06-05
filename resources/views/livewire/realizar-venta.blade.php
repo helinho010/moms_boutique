@@ -71,10 +71,17 @@
                             <th colspan="5">
                                 @foreach ($productosAVender as $productoventa)
                                     <tr class="text-center itemProductoVenta" style="border-bottom: solid 1px black;">
-                                        <th scope="row">{{ $productoventa["cantidad"] }} </th>
+                                        <th scope="row"> 
+                                            <button class="btn" 
+                                                    wire:click="eliminarProducto({{ $productoventa["id_producto"] }})" 
+                                                    wire:confirm="Esta seguro de eliminar el registro?">
+                                                    <i class="fas fa-trash-alt" style="color: red;"></i>
+                                            </button>&nbsp;&nbsp;&nbsp;
+                                            {{ $productoventa["cantidad"] }} 
+                                        </th>
                                         <td> {{ $productoventa["descripcion"] }} </td> 
-                                        <td> {{ $productoventa["precio_unitario"] }} </td> 
-                                        <td class="subtotal"> {{ $productoventa["subtotal"] }} </td>
+                                        <td> {{ $productoventa["precio_unitario"] }} </td>
+                                        <td> {{ $productoventa["subtotal"] }} </td> 
                                     </tr> 
                                 @endforeach
                             </th>
