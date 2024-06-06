@@ -43,7 +43,7 @@
                 <input type="text" class="form-control" name="id_sucursal" id="id_sucursal" value="{{ $item->id_sucursal }}" hidden>
               </div>
               <div class="mb-3">
-                <input type="text" class="form-control" id="exampleInputPassword1" hidden>
+                {{-- <input type="text" class="form-control" id="exampleInputPassword1" hidden> --}}
               </div>
               <button type="submit" class="btn btn-warning">Realizar Venta aqui</button>
             </form>
@@ -57,17 +57,17 @@
         <div class="card bg-success mb-3" style="max-width: 18rem;">
           <div class="card-header text-white fs-2">Evento</div>
           <div class="card-body text-primary">
-            <h5 class="card-title">{{ $item->razon_social_sucursal }}</h5>
-            <p class="card-text text-white"><span style="font-weight: bold">Nombre Enveto:</span> <span style="font-size: 16px; font-weight: bold;">{{ $item->nombre }}</span></p>
-            <p class="card-text text-white"><span style="font-weight: bold">Fecha:</span> <span style="font-size: 16px; font-weight: bold;">{{ $item->fecha_evento }}</span></p>
+            {{-- <h5 class="card-title">{{ $item->razon_social_sucursal }}</h5> --}}
+            <p class="card-text text-white"><span style="font-weight: bold">Nombre Enveto:</span> <span style="font-size: 16px; font-weight: bold;">{{ $item->nombre_eventos }}</span></p>
+            <p class="card-text text-white"><span style="font-weight: bold">Fecha:</span> <span style="font-size: 16px; font-weight: bold;">{{ $item->fecha_eventos }}</span></p>
             <form action="{{ route('seleccion_evento_venta') }}" method="POST">
               @csrf
               @method('POST')
               <div class="mb-3">
-                <input type="text" class="form-control" name="id_evento" id="id_evento" value="{{ $item->id }}" hidden>
+                <input type="text" class="form-control" name="id_evento" id="id_evento" value="{{ $item->id_eventos }}" hidden>
               </div>
               <div class="mb-3">
-                <input type="text" class="form-control" id="exampleInputPassword1" hidden>
+                {{-- <input type="text" class="form-control" id="exampleInputPassword1" hidden> --}}
               </div>
               <button type="submit" class="btn btn-light">Realizar Venta aqui</button>
             </form>

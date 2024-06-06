@@ -11,6 +11,7 @@ use App\Models\Sucursal;
 use App\Models\TipoIngresoSalida;
 use App\Models\TipoPago;
 use App\Models\UserSucursal;
+use App\Models\UsuarioEvento;
 use Illuminate\Support\Facades\DB;
 use Dompdf\Dompdf;
 use Svg\Tag\Rect;
@@ -33,6 +34,10 @@ class InventarioExternoController extends Controller
                                                 sucursals.activo as estado_sucursal')
                                     // ->where('sucursals.activo',1)
                                     ->get();
+            
+            $eventos = Evento::where('estado',1)
+                             ->orderBy('fecha_evento','desc')
+                             ->get();
         } else {
             $sucursales = UserSucursal::selectRaw('user_sucursals.id as id_user_sucursal,
                                                 user_sucursals.id_usuario as id_usuario_user_sucursal,
@@ -48,11 +53,17 @@ class InventarioExternoController extends Controller
                                        ->join('users', 'users.id','user_sucursals.id_usuario')
                                        ->where('user_sucursals.id_usuario',auth()->user()->id)
                                        ->get();
+            $eventos = UsuarioEvento::selectRaw('
+                                                 eventos.*
+                                                ')
+                                    ->join('eventos', 'eventos.id', 'user_evento.id_evento')
+                                    ->where('eventos.estado',1)
+                                    ->where('user_evento.id_usuario', auth()->user()->id)
+                                    ->orderBy('fecha_evento','desc')
+                                    ->get();
         }
 
-        $eventos = Evento::where('estado',1)
-                         ->orderBy('fecha_evento','desc')
-                         ->get();
+        
 
         $productos = Producto::all();
         $tiposIngresosSalidas = TipoIngresoSalida::all();
@@ -109,6 +120,11 @@ class InventarioExternoController extends Controller
                                                 sucursals.activo as estado_sucursal')
                                     // ->where('sucursals.activo',1)
                                     ->get();
+
+            $eventos = Evento::where('estado',1)
+                             ->orderBy('fecha_evento','desc')
+                             ->get();
+                             
         } else {
             $sucursales = UserSucursal::selectRaw('user_sucursals.id as id_user_sucursal,
                                                 user_sucursals.id_usuario as id_usuario_user_sucursal,
@@ -124,10 +140,18 @@ class InventarioExternoController extends Controller
                                        ->join('users', 'users.id','user_sucursals.id_usuario')
                                        ->where('user_sucursals.id_usuario',auth()->user()->id)
                                        ->get();
+            $eventos = UsuarioEvento::selectRaw('
+                                                 eventos.*
+                                                ')
+                                    ->join('eventos', 'eventos.id', 'user_evento.id_evento')
+                                    ->where('eventos.estado',1)
+                                    ->where('user_evento.id_usuario', auth()->user()->id)
+                                    ->orderBy('fecha_evento','desc')
+                                    ->get();
         }
 
         $productos = Producto::all();
-        $eventos = Evento::orderBy('fecha_evento','desc')->get();
+        
         $tiposIngresosSalidas = TipoIngresoSalida::all();
         
         return view('inventarioExterno',[
@@ -179,6 +203,7 @@ class InventarioExternoController extends Controller
                                ->whereRaw("productos.nombre like '%".$request->buscar."%' or productos.precio like '%".$request->buscar."%' or productos.talla like '%".$request->buscar."%' or tipo_ingreso_salidas.tipo like '%".$request->buscar."%' or users.name like '%".$request->buscar."%'")
                                ->orderBy('inventario_externos.updated_at','desc')
                                ->paginate(10);
+            
         }else {
             $inventariosExternos = InventarioExterno::selectRaw('inventario_externos.id as id_inventario_externos,
                                                                 inventario_externos.cantidad as cantidad_inventario_externos,
@@ -222,6 +247,10 @@ class InventarioExternoController extends Controller
                                                 sucursals.activo as estado_sucursal')
                                     // ->where('sucursals.activo',1)
                                     ->get();
+            $eventos = Evento::where('estado',1)
+                             ->orderBy('fecha_evento','desc')
+                             ->get();
+            
         } else {
             $sucursales = UserSucursal::selectRaw('user_sucursals.id as id_user_sucursal,
                                                 user_sucursals.id_usuario as id_usuario_user_sucursal,
@@ -237,9 +266,17 @@ class InventarioExternoController extends Controller
                                        ->join('users', 'users.id','user_sucursals.id_usuario')
                                        ->where('user_sucursals.id_usuario',auth()->user()->id)
                                        ->get();
+            
+            $eventos = UsuarioEvento::selectRaw('
+                                                 eventos.*
+                                                ')
+                                    ->join('eventos', 'eventos.id', 'user_evento.id_evento')
+                                    ->where('eventos.estado',1)
+                                    ->where('user_evento.id_usuario', auth()->user()->id)
+                                    ->orderBy('fecha_evento','desc')
+                                    ->get();
         }
 
-        $eventos = Evento::orderBy('fecha_evento','desc')->get();
         $productos = Producto::all();
         $tiposIngresosSalidas = TipoIngresoSalida::all();
 
@@ -4712,7 +4749,7 @@ class InventarioExternoController extends Controller
 
     public function seleccionEventoVenta(Request $request)
     {
-        //dd($request);
+        // dd($request);
 
         $evento = Evento::where('id',$request->id_evento)->get();
 
