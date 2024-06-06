@@ -15,6 +15,7 @@ use Luecano\NumeroALetras\NumeroALetras;
 
 use App\Exports\VentaReporteExcelExport;
 use App\Models\Evento;
+use App\Models\UsuarioEvento;
 use Maatwebsite\Excel\Facades\Excel;
 
 class VentaController extends Controller
@@ -33,6 +34,20 @@ class VentaController extends Controller
                                                 sucursals.activo as estado_sucursal')
                                     ->where('sucursals.activo',1)
                                     ->get();
+            $eventos = UsuarioEvento::selectRaw('
+                                                user_evento.id as id_user_evento,
+                                                user_evento.estado as estado_user_evento,
+                                                user_evento.created_at as created_at_user_evento,
+                                                user_evento.updated_at as updated_at_user_evento,
+                                                eventos.id as id_eventos,
+                                                eventos.nombre as nombre_eventos,
+                                                eventos.fecha_evento as fecha_eventos,
+                                                eventos.estado as estado_eventos
+                                                ')
+                                    ->join('eventos', 'eventos.id', 'user_evento.id_evento')
+                                    ->where('user_evento.estado ',1)
+                                    ->get();
+                             
         } else {
             $sucursales = UserSucursal::selectRaw('user_sucursals.id as id_user_sucursal,
                                                 user_sucursals.id_usuario as id_usuario_user_sucursal,
@@ -50,10 +65,23 @@ class VentaController extends Controller
                                        ->where('user_sucursals.id_usuario',auth()->user()->id)
                                        ->where('sucursals.activo',1)
                                        ->get();
+
+            $eventos = UsuarioEvento::selectRaw('
+                                                user_evento.id as id_user_evento,
+                                                user_evento.estado as estado_user_evento,
+                                                user_evento.created_at as created_at_user_evento,
+                                                user_evento.updated_at as updated_at_user_evento,
+                                                eventos.id as id_eventos,
+                                                eventos.nombre as nombre_eventos,
+                                                eventos.fecha_evento as fecha_eventos,
+                                                eventos.estado as estado_eventos
+                                                ')
+                                    ->join('eventos', 'eventos.id', 'user_evento.id_evento')
+                                    ->where('user_evento.id_usuario', auth()->user()->id)
+                                    ->where('user_evento.estado',1)
+                                    ->get();
         }
 
-        $eventos = Evento::where('estado',1)
-                         ->get();
 
         return view('Venta.homeVenta',[
             'sucursales'=>$sucursales,

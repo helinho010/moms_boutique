@@ -333,6 +333,9 @@ class UsuariosController extends Controller
             $nuevoEventoSeleccionado->id_evento = $evento;
             $nuevoEventoSeleccionado->save();
             }
+        }else{
+            $eventosHabilitados = UsuarioEvento::where('id_usuario',$request->id_usuario)
+                                               ->delete();
         }
         
 
