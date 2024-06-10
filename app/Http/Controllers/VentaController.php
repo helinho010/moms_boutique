@@ -45,7 +45,7 @@ class VentaController extends Controller
                                                 eventos.estado as estado_eventos
                                                 ')
                                     ->join('eventos', 'eventos.id', 'user_evento.id_evento')
-                                    ->where('user_evento.estado ',1)
+                                    ->where('user_evento.estado',1)
                                     ->get();
                              
         } else {
