@@ -7,6 +7,53 @@
         table > tbody > tr > th > i{
             font-size: 20px;
         }
+        .estado{
+            font-size: 12px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
     </style>
 @endsection
 
@@ -19,6 +66,8 @@
             <h4>Detalle de Ventas</h4>
         </div>
 
+        @livewire('boton-on-of', ['estado' => false])
+
         {{-- <div class="col text-end">
             <button type="button" class="btn btn-success" id="btnModalRegistroActualizacion" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
                 <i class="fas fa-plus"></i> Agregar Iten al Inventario
@@ -29,131 +78,7 @@
 @endsection
 
 @section('content')
-    <div class="row">
-        <nav>
-            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Sucursales</button>
-              <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Eventos</button>
-              {{-- <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button> --}}
-            </div>
-          </nav>
-          <div class="tab-content" id="nav-tabContent">
-            <br>
-            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="row">
-                            <div class="col-md-2">
-                                <label for="inputPassword6" class="col-form-label">Sucursal: </label>
-                            </div>
-                            <div class="col-md-8">
-                                <form action="{{ route('buscar_detalle_venta') }}" method="POST" id="dataformDetalleVenta">
-                                    @method('POST')
-                                    @csrf
-                                    <div class="input-group">
-                                        <select class="form-select" aria-describedby="" name="id_sucursal" id="select_sucursal">
-                                            <option value="seleccionado" @if (!isset($id_sucursal_seleccionado)) selected  @endif disabled>Seleccione una opcion...</option>
-                                                @foreach ($sucursales as $item)
-                                                   @if ($item->estado_sucursal == 1)
-                                                      <option value="{{ $item->id_sucursal }}" 
-                                                        @if (isset($id_sucursal_seleccionado) && $item->id_sucursal_user_sucursal == $id_sucursal_seleccionado ) 
-                                                            selected  
-                                                        @endif>
-                                                        {{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,40)."..." }}
-                                                      </option>
-                                                    @else
-                                                      <option value="{{ $item->id_sucursal }}" disabled>
-                                                        {{ "$item->razon_social - $item->ciudad_sucursal - ".substr($item->direccion,0,30)."... (deshabilitado)" }}
-                                                      </option>
-                                                   @endif
-                                                @endforeach
-                                         </select>
-                                         <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-search"></i></button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>  
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="row">
-                            <form action="{{ route('buscar_inventario_interno') }}" method="POST" id="buscarformulario">
-                                @method('POST')
-                                @csrf
-                                <div class="input-group flex-nowrap">
-                                    <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="" aria-describedby="addon-wrapping">
-                                    <input type="text" name="id_sucursal" id="id_sucursal" hidden>
-                                    <button class="input-group-text" id="inputBuscar" disabled><i class="fas fa-search"></i></button><br>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="row">
-                            <span style="font-size: 10px; color:red" id="btnBuscarItem">(*) Seleccionar una Sucursal</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="row">
-                            <div class="col-md-2">
-                                <label for="inputPassword6" class="col-form-label">Evento: </label>
-                            </div>
-                            <div class="col-md-8">
-                                <form action="{{ route('buscar_detalle_venta') }}" method="POST" id="dataformDetalleVenta">
-                                    @method('POST')
-                                    @csrf
-                                    <div class="input-group">
-                                        <select class="form-select" aria-describedby="" name="id_sucursal" id="select_sucursal">
-                                            <option value="seleccionado" @if (!isset($id_sucursal_seleccionado)) selected  @endif disabled>Seleccione una opcion...</option>
-                                                @foreach ($sucursales as $item)
-                                                   @if ($item->estado_sucursal == 1)
-                                                      <option value="{{ $item->id_sucursal }}" 
-                                                        @if (isset($id_sucursal_seleccionado) && $item->id_sucursal_user_sucursal == $id_sucursal_seleccionado ) 
-                                                            selected  
-                                                        @endif>
-                                                        {{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,40)."..." }}
-                                                      </option>
-                                                    @else
-                                                      <option value="{{ $item->id_sucursal }}" disabled>
-                                                        {{ "$item->razon_social - $item->ciudad_sucursal - ".substr($item->direccion,0,30)."... (deshabilitado)" }}
-                                                      </option>
-                                                   @endif
-                                                @endforeach
-                                         </select>
-                                         <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-search"></i></button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>  
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="row">
-                            <form action="{{ route('buscar_inventario_interno') }}" method="POST" id="buscarformulario">
-                                @method('POST')
-                                @csrf
-                                <div class="input-group flex-nowrap">
-                                    <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="" aria-describedby="addon-wrapping">
-                                    <input type="text" name="id_sucursal" id="id_sucursal" hidden>
-                                    <button class="input-group-text" id="inputBuscar" disabled><i class="fas fa-search"></i></button><br>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="row">
-                            <span style="font-size: 10px; color:red" id="btnBuscarItem">(*) Seleccionar una Sucursal</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-
-            </div> --}}
-          </div>  
-    </div>
+    
     {{-- <div class="row">
         <div class="col-md-5">
             <div class="row">
@@ -206,79 +131,10 @@
             </div>
         </div>
     </div> --}}
-    <br>
-    <div class="row">
-        <table class="table table-striped"> 
-            <thead>
-                <tr>
-                  <th scope="col">Opciones</th>
-                  <th scope="col">Fecha de Venta</th>
-                  <th scope="col">Total Venta</th>
-                  <th scope="col">Descuento</th>
-                  <th scope="col">Tipo de Pago</th>
-                  <th scope="col">Usuario</th>
-                  <th scope="col">Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach ($ventas as $item)
-                  <tr>
-                    <th scope="row">
-                        {{-- <a href="{{ route('editar_venta',[
-                            "id"=>$item->id_venta,
-                            "id_sucursal"=>$item->id_sucursal,
-                            "id_tipo_pago"=>$item->id_tipo_pago,
-                            "id_usuario"=>$item->id_usuario,
-                            "descuento"=>$item->descuento_venta,
-                            "total_venta,"=>$item->total_venta,
-                            "efectivo_recivido"=>$item->efectivo_recibido_venta,
-                            "cambio"=>$item->cambio_venta,
-                            "estado"=>$item->estado_venta,
-                            "fecha_venta"=>$item->updated_at_venta,
-                            ]) }}">
-                            <i class="fas fa-edit fa-xl i" style="color:#6BA9FA"></i></a> --}}
-                        @php
-                        $auxdata = json_encode([
-                                "id"=>$item->id_venta,
-                                "id_sucursal"=>$item->id_sucursal,
-                                "id_tipo_pago"=>$item->id_tipo_pago,
-                                "id_usuario"=>$item->id_usuario,
-                                "descuento"=>$item->descuento_venta,
-                                "total_venta,"=>$item->total_venta,
-                                "efectivo_recivido"=>$item->efectivo_recibido_venta,
-                                "cambio"=>$item->cambio_venta,
-                                "estado"=>$item->estado_venta,
-                                "fecha_venta"=>$item->updated_at_venta,
-                            ]);
-                        if ($item->estado_venta == 1) 
-                        {
-                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>'; 
-                        }else{
-                            echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>';
-                        }
-                            echo '<i class="fas fa-file-pdf" style="color:#FC2631; font-size: 22px; padding-left: 8px;" onclick=\'exportPdf('.$auxdata.')\'></i>';
-                       @endphp
-                       
-                    </th>
-                    <th>{{"$item->updated_at_venta"}}</th>
-                    <th>{{"$item->total_venta"}} Bs</th>
-                    <th>{{"$item->descuento_venta"}}%</th>
-                    <th>{{$item->tipo_pago}}</th>
-                    <th>{{"$item->nombre_usuario"}}</th>
-                    <td> 
-                        @if ( $item->estado_venta == 1 )
-                            <span class="badge bg-success">Activo</span>    
-                        @else
-                            <span class="badge bg-warning">Inactivo</span>    
-                        @endif
-                    </td>
-                  </tr>    
-                @endforeach
-              </tbody>
-        </table>
-        {{ $ventas->links() }}
-    </div>
 
+    <br>
+    @livewire('detalle-venta')
+    
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -299,7 +155,7 @@
                                 <div class="input-group">
                                     <select class="form-select" aria-describedby="" name="id_sucursal" id="modalSelectSucursal">
                                         <option value="seleccionado" @if (!isset($id_sucursal)) selected  @endif disabled>Seleccione una opcion...</option>
-                                            @foreach ($sucursales as $item)
+                                            @foreach ($sucursalesModal as $item)
                                                @if ($item->estado_sucursal == 1)
                                                   <option value="{{ $item->id_sucursal_user_sucursal }}" @if (isset($id_sucursal) && $item->id_sucursal_user_sucursal == $id_sucursal ) selected  @endif>{{ "$item->razon_social_sucursal - $item->ciudad_sucursal - ".substr($item->direccion_sucursal,0,40)."..." }}</option>
                                                 @else
