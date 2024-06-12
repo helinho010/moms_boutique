@@ -6,11 +6,13 @@ use App\Models\Sucursal;
 use App\Models\UserSucursal;
 use App\Models\UsuarioEvento;
 use App\Models\Venta;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\On;
+
 
 class DetalleVenta extends Component
 {
@@ -26,6 +28,10 @@ class DetalleVenta extends Component
     public $titleLabel; // Titulo del label del select 
     
     public $mensajeError;
+
+    public $mensajeErrorBuscar;
+
+    public $buscarDetalleVenta;
 
     public function sucursalesEventosUsuario($tipoUsuario = 1, $idUsuario = 1)
     {
@@ -89,9 +95,9 @@ class DetalleVenta extends Component
         }
     }
 
-    public function x($id)
+    public function x($id, $buscar="")
     {
-        $ventas = "";
+        $ventas = collect();
 
         $columnas = 'venta.id as id_venta,
         venta.descuento as descuento_venta,
@@ -135,13 +141,30 @@ class DetalleVenta extends Component
         
         if ( strtolower($this->titleLabel) == strtolower('Sucursal') ) 
         {
-            $ventas = $ventas->join('sucursals', 'sucursals.id', 'venta.id_sucursal')
-                                         ->where('sucursals.id',intval($id))
-                                         ->paginate(10);
+            if ($buscar != "") 
+            {
+                $ventas = $ventas->join('sucursals', 'sucursals.id', 'venta.id_sucursal')                 
+                                 ->whereRaw("( venta.created_at like '%{$buscar}%' or venta.updated_at like '%{$buscar}%' or venta.descuento like '%{$buscar}%' or venta.total_venta like '%{$buscar}%' or venta.envio like '%{$buscar}%' or venta.referencia like '%{$buscar}%' or venta.observacion like '%{$buscar}%' or tipo_pagos.tipo like '%{$buscar}%' or users.name like '%{$buscar}%' )")
+                                 ->where('sucursals.id',intval($id))
+                                 ->paginate(10);
+            }else{
+                $ventas = $ventas->join('sucursals', 'sucursals.id', 'venta.id_sucursal')
+                                 ->where('sucursals.id',intval($id))
+                                 ->paginate(10);
+            }
+            
         } else {
-            $ventas = $ventas->join('eventos', 'eventos.id', 'venta.id_evento')
-                                         ->where('eventos.id',intval($id))
-                                         ->paginate(10);
+            if ($buscar != "") 
+            {
+                $ventas = $ventas->join('eventos', 'eventos.id', 'venta.id_evento')
+                                ->where('eventos.id',intval($id))
+                                ->whereRaw("( venta.created_at like '%$buscar%' or venta.updated_at like '%$buscar%' or venta.descuento like '%$buscar%' or venta.total_venta like '%$buscar%' or venta.envio like '%$buscar%' or venta.referencia like '%$buscar%' or venta.observacion like '%$buscar%' or tipo_pagos.tipo like '%$buscar%' or users.name like '%$buscar%' )")
+                                ->paginate(10);
+            }else{
+                $ventas = $ventas->join('eventos', 'eventos.id', 'venta.id_evento')
+                                 ->where('eventos.id',intval($id))
+                                 ->paginate(10);
+            }
         }
 
         return $ventas;
@@ -154,15 +177,14 @@ class DetalleVenta extends Component
         $this->idSelector = "seleccionado";
         $this->eventosOSucursales = $this->sucursales;
         $this->mensajeError = "";
-        // $this->ventas = Venta::where("created_at","0000-00-00 00:00")
-        //                     //->where("estado",1)
-        //                       ->paginate(10);
+        $this->buscarDetalleVenta = "";
     }
 
 
     public function buscarRegistrosDeVentas()
     {
         $this->sucursalesEventosUsuario(auth()->user()->usertype_id, auth()->user()->id);
+        $this->buscarDetalleVenta = "";
 
         if(intval($this->idSelector) > 0)
         {
@@ -186,6 +208,39 @@ class DetalleVenta extends Component
         $this->resetPage();
     }
 
+    public function updatedPage($page)
+    {
+        $this->sucursalesEventosUsuario(auth()->user()->usertype_id, auth()->user()->id);
+
+        if (strtolower($this->titleLabel) == strtolower("Sucursal")) 
+        {
+            $this->eventosOSucursales = $this->sucursales;
+        } else {
+            $this->eventosOSucursales = $this->eventos;
+        }
+    }
+
+    public function buscarRegSucEnv()
+    {
+
+       if ($this->buscarDetalleVenta != "") 
+       {
+          $this->mensajeErrorBuscar = "";
+
+       }else{
+          $this->mensajeErrorBuscar = "(*)Seleccione una opcion en Sucursal o Evento";
+       }      
+       
+       $this->sucursalesEventosUsuario(auth()->user()->usertype_id, auth()->user()->id);
+
+        if (strtolower($this->titleLabel) == strtolower("Sucursal")) 
+        {
+            $this->eventosOSucursales = $this->sucursales;
+        } else {
+            $this->eventosOSucursales = $this->eventos;
+        }
+    }
+
     #[On('boton-on-of')]
     public function ValoresEntreComponentes($estadoBotonOnOff)
     {
@@ -201,14 +256,16 @@ class DetalleVenta extends Component
         }
 
         $this->idSelector = "seleccionado";
+        $this->buscarDetalleVenta = "";
     }
     
     public function render()
     {
-                
+        // dd($this->x($this->idSelector,$this->buscarDetalleVenta));
+        
         return view('livewire.detalle-venta', [
             // 'eventosOSucursales' => $this->eventosOSucursales,
-            'ventas' => $this->x($this->idSelector) ? $this->x($this->idSelector) : collect() ,
+            'ventas' => $this->x($this->idSelector, $this->buscarDetalleVenta) ? $this->x($this->idSelector,$this->buscarDetalleVenta) : collect() ,
         ]);   
     }
 }

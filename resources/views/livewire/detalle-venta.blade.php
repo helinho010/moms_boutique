@@ -40,27 +40,27 @@
         
         <div class="col-md-4">
             <div class="row">
-                <form action="{{ route('buscar_inventario_interno') }}" method="POST" id="buscarformulario">
-                    @method('POST')
-                    @csrf
+                <div id="buscarformulario">
                     <div class="input-group flex-nowrap">
-                        <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="" aria-describedby="addon-wrapping">
-                        <input type="text" name="id_sucursal" id="id_sucursal" hidden>
-                        <button class="input-group-text" id="inputBuscar" disabled><i class="fas fa-search"></i></button><br>
+                        <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="" aria-describedby="addon-wrapping" wire:model='buscarDetalleVenta'> 
+                        <button class="input-group-text" id="inputBuscar" wire:click='buscarRegSucEnv'>
+                            <i class="fas fa-search"></i>
+                        </button><br>
                     </div>
-                </form>
+                </div>
             </div>
             <div class="row">
-                <span style="font-size: 10px; color:red" id="btnBuscarItem">(*) Seleccionar una Sucursal</span>
+                <span style="font-size: 10px; color:red" id="btnBuscarItem">{{ $mensajeErrorBuscar }}</span>
             </div>
         </div>
     </div>
-
+    <br>
     <div class="row">
         <table class="table table-striped"> 
             <thead>
                 <tr>
                   <th scope="col">Opciones</th>
+                  {{-- <th scope="col">Num. Nota Venta</th> --}}
                   <th scope="col">Fecha de Venta</th>
                   <th scope="col">Total Venta</th>
                   <th scope="col">Descuento</th>
@@ -109,11 +109,12 @@
                        @endphp
                        
                     </th>
+                    {{-- <th>{{"00001"}}</th> --}}
                     <th>{{"$item->updated_at_venta"}}</th>
                     <th>{{"$item->total_venta"}} Bs</th>
                     <th>{{"$item->descuento_venta"}}%</th>
-                    <th>{{$item->tipo_pago}}</th>
-                    <th>{{"$item->nombre_usuario"}}</th>
+                    <th>{{$item->tipo_pagos}}</th>
+                    <th>{{"$item->nombre_users"}}</th>
                     <td> 
                         @if ( $item->estado_venta == 1 )
                             <span class="badge bg-success">Activo</span>    
