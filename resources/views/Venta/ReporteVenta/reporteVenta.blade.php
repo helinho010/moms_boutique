@@ -7,6 +7,53 @@
         table > tbody > tr > th > i{
             font-size: 20px;
         }
+        .estado{
+            font-size: 12px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
     </style>
 @endsection
 
@@ -19,6 +66,9 @@
         <div class="col">
             <h4>Reporte de Ventas</h4>
         </div>
+        <div class="col text-end">
+            @livewire('boton-on-of')
+        </div>
     </div>
 @endsection
 
@@ -29,43 +79,8 @@
     </div>
   </div>
   <div class="row">
-    <form action="{{ route('reporte_venta_excel') }}" method="post" id="reporteVentasExcel">
-        @csrf
-        @method('post')
-        <div class="row">
-            <div class="col-md-5">
-                <div class="mb-3">
-                    <label for="id_sucursal" class="form-label">Seleccione Sucursal</label>
-                    <select class="form-select" name="id_sucursal" id="id_sucursal" aria-label="Default select example">
-                        <option value="seleccionado" selected disabled>Seleccione una sucursal ...</option>
-                        @foreach ($sucursales as $sucursal)
-                            <option value="{{ $sucursal->id_sucursal }}">{{$sucursal->ciudad_sucursal}}-{{ substr($sucursal->direccion_sucursal,0,40)."..." }}</option>
-                        @endforeach
-                      </select>
-                  </div>
-            </div>
-            <div class="col-md-3">
-                <div class="mb-3">
-                    <label for="fecha_inicial" class="form-label">Fecha Inicio</label>
-                    <input type="date" class="form-control" name="fecha_inicial" id="fecha_inicial" value="{{ date("Y-m-d") }}">
-                  </div>
-            </div>
-            <div class="col-md-3">
-                <div class="mb-3">
-                    <label for="fecha_final" class="form-label">Fecha Final</label>
-                    <input type="date" class="form-control" name="fecha_final" id="fecha_final" value="{{ date("Y-m-d") }}">
-                  </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4"></div>
-            <div class="col-md-4">
-                <button type="button" class="btn btn-primary" id="obternerReporteVentasExcel" disabled>Obtener el Reporte</button>    
-            </div>
-            <div class="col-md-4"></div>
-        </div>
-    </form>
-</div>
+    @livewire('reporte-ventas-component')  
+  </div>
 @endsection
 
 
@@ -76,6 +91,10 @@
   $(document).ready(function(){
     $("#home").removeClass('active');
     $("#venta").addClass('active');
+    if ($("#id_sucursal").val() > 0) 
+    {
+       $("#obternerReporteVentasExcel").prop('disabled', false);
+    }
   });
 
   $("#id_sucursal").change(function (e){ 

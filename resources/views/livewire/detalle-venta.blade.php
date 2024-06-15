@@ -73,46 +73,25 @@
                 @foreach ($ventas as $item)
                   <tr>
                     <th scope="row">
-                        {{-- <a href="{{ route('editar_venta',[
-                            "id"=>$item->id_venta,
-                            "id_sucursal"=>$item->id_sucursal,
-                            "id_tipo_pago"=>$item->id_tipo_pago,
-                            "id_usuario"=>$item->id_usuario,
-                            "descuento"=>$item->descuento_venta,
-                            "total_venta,"=>$item->total_venta,
-                            "efectivo_recivido"=>$item->efectivo_recibido_venta,
-                            "cambio"=>$item->cambio_venta,
-                            "estado"=>$item->estado_venta,
-                            "fecha_venta"=>$item->updated_at_venta,
-                            ]) }}">
-                            <i class="fas fa-edit fa-xl i" style="color:#6BA9FA"></i></a> --}}
-                        @php
-                        $auxdata = json_encode([
-                                "id"=>$item->id_venta,
-                                "id_sucursal"=>$item->id_sucursal,
-                                "id_tipo_pago"=>$item->id_tipo_pago,
-                                "id_usuario"=>$item->id_usuario,
-                                "descuento"=>$item->descuento_venta,
-                                "total_venta,"=>$item->total_venta,
-                                "efectivo_recivido"=>$item->efectivo_recibido_venta,
-                                "cambio"=>$item->cambio_venta,
-                                "estado"=>$item->estado_venta,
-                                "fecha_venta"=>$item->updated_at_venta,
-                            ]);
-                        if ($item->estado_venta == 1) 
-                        {
-                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>'; 
-                        }else{
-                            echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>';
-                        }
-                            echo '<i class="fas fa-file-pdf" style="color:#FC2631; font-size: 22px; padding-left: 8px;" onclick=\'exportPdf('.$auxdata.')\'></i>';
-                       @endphp
-                       
+                        @if ($item->estado_venta == 1)
+                            <i class="fas fa-trash-alt fa-xl" style="color:#FA746B; font-size: 18px; margin-right: 7px;" 
+                            wire:click='habilitarEliminar({{ $item->id_venta }}, {{$item->estado_venta}})'
+                            wire:confirm='Esta seguro de deshabilitar la venta?'
+                            ></i>
+                        @else
+                            <i class="fas fa-check-circle fa-xl" style="color:#FAAE43; font-size: 18px; margin-right: 7px;" 
+                            wire:click='habilitarEliminar({{ $item->id_venta }}, {{$item->estado_venta}})'
+                            wire:confirm='Esta seguro de habilitar la venta?'
+                            ></i>
+                        @endif
+                            <i class="fas fa-file-pdf" style="color:rgb(190, 43, 43); font-size: 18px; margin-right: 7px;" 
+                            wire:click='exportarPdf({{ $item->id_venta }})'
+                            ></i>
                     </th>
                     {{-- <th>{{"00001"}}</th> --}}
                     <th>{{"$item->updated_at_venta"}}</th>
-                    <th>{{"$item->total_venta"}} Bs</th>
-                    <th>{{"$item->descuento_venta"}}%</th>
+                    <th>{{"$item->total_venta"}} Bs.</th>
+                    <th>{{"$item->descuento_venta"}} Bs.</th>
                     <th>{{$item->tipo_pagos}}</th>
                     <th>{{"$item->nombre_users"}}</th>
                     <td> 

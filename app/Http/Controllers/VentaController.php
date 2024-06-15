@@ -34,18 +34,12 @@ class VentaController extends Controller
                                                 sucursals.activo as estado_sucursal')
                                     ->where('sucursals.activo',1)
                                     ->get();
-            $eventos = UsuarioEvento::selectRaw('
-                                                user_evento.id as id_user_evento,
-                                                user_evento.estado as estado_user_evento,
-                                                user_evento.created_at as created_at_user_evento,
-                                                user_evento.updated_at as updated_at_user_evento,
-                                                eventos.id as id_eventos,
-                                                eventos.nombre as nombre_eventos,
-                                                eventos.fecha_evento as fecha_eventos,
-                                                eventos.estado as estado_eventos
-                                                ')
-                                    ->join('eventos', 'eventos.id', 'user_evento.id_evento')
-                                    ->where('user_evento.estado',1)
+            $eventos = Evento::selectRaw('
+                                          eventos.id as id_eventos,
+                                          eventos.nombre as nombre_eventos,
+                                          eventos.fecha_evento as fecha_eventos,
+                                          eventos.estado as estado_eventos')
+                                    ->where('eventos.estado',1)
                                     ->get();
                              
         } else {
@@ -144,15 +138,19 @@ class VentaController extends Controller
 
     public function realizarVenta(Request $request)
     {
-       
-        
         try {
                 $this->nombre_archivo = date('Ymd-His').".pdf";
+                
+                $nuevoCliente = new Cliente();
+                $nuevoCliente->nit_ci = $request->nit_cliente != "" ? $request->nit_cliente : 0 ;
+                $nuevoCliente->razon_social = $request->nombre_cliente != "" ? $request->nombre_cliente : "S/N";
+                $nuevoCliente->save();
                 
                 $newVenta = new Venta();
                 $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
                 $newVenta->id_tipo_pago = $request->idTipoPago;
                 $newVenta->id_usuario = auth()->user()->id;
+                $newVenta->id_cliente = $nuevoCliente->id;
                 $newVenta->descuento = $request->descuento_venta;
                 $newVenta->total_venta = $request->totalVenta;
                 $newVenta->efectivo_recibido = $request->efectivo_recibido;
@@ -182,19 +180,10 @@ class VentaController extends Controller
                     $newDetalleVenta->id_venta = $newVenta->id;
                     $newDetalleVenta->id_producto = $value['id_producto'];
                     $newDetalleVenta->cantidad = $value['cantidad'];
-                    $newDetalleVenta->descripcion = $value['nombre_producto'].'-'.$value['talla_producto'].' ';
+                    $newDetalleVenta->descripcion = $value['nombre_producto'].' - Talla: '.($value['talla_producto'] != "" ? $value['talla_producto'] : "ST(Sin Talla)");
                     $newDetalleVenta->precio_unitario = $value['precio_producto'];
                     $newDetalleVenta->subtotal = floatval($value['cantidad'])*floatval($value['precio_producto']);
                     $newDetalleVenta->save();
-                }
-
-                $existeCliente = Cliente::where('nit_ci',$request->nit_cliente)->get();
-                if($existeCliente->count() == 0 && $request->nit_cliente != '' && $request->nombre_cliente != '')
-                {
-                    $nuevoCliente = new Cliente();
-                    $nuevoCliente->nit_ci = $request->nit_cliente;
-                    $nuevoCliente->razon_social = $request->nombre_cliente;
-                    $nuevoCliente->save();
                 }
 
                 $this->exportVentaPdf(
@@ -236,7 +225,7 @@ class VentaController extends Controller
         foreach ($productos as $key => $producto) {
             $htmlProductos = $htmlProductos.'<tr>
             <td>'.$producto["cantidad"].'</td>
-            <td>'.$producto["nombre_producto"]." ".$producto["talla_producto"].'</td>
+            <td>'.$producto["nombre_producto"]." - Talla: ".($producto["talla_producto"] != "" ? $producto["talla_producto"] : "ST(Sin Talla)").'</td>
             <td>'.$producto["precio_producto"].'</td>
             <!--td>0</td-->
             <td>'.((float) $producto["cantidad"] * (float) $producto["precio_producto"]).'</td>
@@ -4454,7 +4443,7 @@ class VentaController extends Controller
                       <th style="width: 10%;">Cantidad</th>
                       <th style="width: 45%;">Descripcion</th>
                       <th style="width: 15%;">Precio Unitario [Bs]</th>
-                      <!--th style="width: 15%;">Descuento [%]</th-->
+                      <!--th style="width: 15%;">Descuento [Bs]</th-->
                       <th style="width: 15%;">Subtotal [Bs]</th>
                     </tr>
                     '.$htmlProductos.'
@@ -4679,7 +4668,14 @@ class VentaController extends Controller
 
     public function reporteVentaExcel(Request $request)
     {
-        return Excel::download( new VentaReporteExcelExport($request->id_sucursal, $request->fecha_inicial." 00:00:00", $request->fecha_final." 23:59:59"), 'detalleventa.xlsx');
+        // return Excel::download( 
+        //     new VentaReporteExcelExport
+        //     (
+        //         $request->id_sucursal, 
+        //         $request->fecha_inicial." 00:00:00", 
+        //         $request->fecha_final." 23:59:59"
+        //     ), 
+        //         'detalleventa.xlsx');
     }
 
 

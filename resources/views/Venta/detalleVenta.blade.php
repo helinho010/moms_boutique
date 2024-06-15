@@ -243,7 +243,6 @@
 
     function editar(item)
     {
-        console.log(item);
         $("#exampleModal").modal("show");
 
         // $("#exampleModalLabel").html("<h3>Editar Evento</h3>");

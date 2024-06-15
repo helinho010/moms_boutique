@@ -4540,7 +4540,7 @@ class DetalleVentaController extends Controller
         // Render the HTML as PDF
         $dompdf->render();
         
-        $this->nombre_archivo = date('Ymd-His').".pdf";
+        $this->nombre_archivo = date('Ymd_His').".pdf";
         file_put_contents($this->nombre_archivo, $dompdf->output());
         // Output the generated PDF to Browser
         // $dompdf->stream(date('Ymd-His').".pdf");

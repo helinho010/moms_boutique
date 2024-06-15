@@ -23,55 +23,88 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
     /**
     * @return \Illuminate\Support\Collection
     */
-        protected $idSucursal;
+        protected $idSucursalEvento;
         protected $fechaInicial;
         protected $fechaFinal;
+        protected $titleLabel;
 
-        public function __construct( $id_suc, $fecIni, $fecFin) {
-            $this->idSucursal = $id_suc;
+        public function __construct( $idSucursalEvento, $titleLabel, $fecIni, $fecFin) {
+            $this->idSucursalEvento = $idSucursalEvento;
+            $this->titleLabel = $titleLabel;
             $this->fechaInicial = $fecIni;
             $this->fechaFinal = $fecFin;
         }
 
         public function query()
         {
-            // dd("--".$this->idSucursal . "--".  $this->fechaInicial ."--". $this->fechaFinal);
-            return Venta::query()
-                        ->selectRaw('	
-                                    sucursals.direccion,
-                                    sucursals.ciudad,
-                                    detalle_ventas.descripcion,
-                                    detalle_ventas.precio_unitario,
-                                    detalle_ventas.cantidad,
-                                    venta.descuento,
-                                    tipo_pagos.tipo,
-                                    venta.efectivo_recibido ,
-                                    venta.envio,
-                                    venta.referencia,
-                                    venta.observacion,
-                                    venta.created_at, 
-                                    users.username as nombre_usuario
-                                    ')
-                        ->join('sucursals', 'sucursals.id', 'venta.id_sucursal')
-                        ->join('detalle_ventas', 'detalle_ventas.id_venta', 'venta.id')
-                        ->join('users', 'users.id', 'venta.id_usuario')
-                        ->join('tipo_pagos', 'tipo_pagos.id', 'venta.id_tipo_pago')
-                        ->where('venta.id_sucursal', "$this->idSucursal")
-                        ->where('venta.created_at','>=', "$this->fechaInicial")
-                        ->where('venta.created_at','<=', "$this->fechaFinal")
-                        ->where('venta.estado',1);
+            // dd($this->idSucursalEvento."--".$this->titleLabel."--".$this->fechaInicial."--".$this->fechaFinal);
+            $columnas = 'detalle_ventas.descripcion,
+                         detalle_ventas.precio_unitario,
+                         detalle_ventas.cantidad,
+                         venta.descuento,
+                         tipo_pagos.tipo,
+                         venta.efectivo_recibido ,
+                         venta.envio,
+                         venta.referencia,
+                         venta.observacion,
+                         venta.created_at, 
+                         users.username as nombre_usuario,';
+
+            if (strtolower($this->titleLabel) == strtolower("Sucursal")) 
+            {
+                $columnas = $columnas . '
+                         sucursals.direccion,
+                         sucursals.ciudad';
+            } else {
+                $columnas = $columnas . '
+                                        eventos.nombre,
+                                        eventos.fecha_evento';
+            }
+
+            $consulta = Venta::query()
+                            ->selectRaw($columnas)
+                            ->join('detalle_ventas', 'detalle_ventas.id_venta', 'venta.id')
+                            ->join('users', 'users.id', 'venta.id_usuario')
+                            ->join('tipo_pagos', 'tipo_pagos.id', 'venta.id_tipo_pago');
+            
+            if (strtolower($this->titleLabel) == strtolower("Sucursal")) {
+                $consulta = $consulta->join('sucursals', 'sucursals.id', 'venta.id_sucursal')
+                                     ->where('venta.id_sucursal', "$this->idSucursalEvento");
+            } else {
+                $consulta = $consulta->join('eventos', 'eventos.id', 'venta.id_evento')
+                                     ->where('venta.id_evento', "$this->idSucursalEvento");
+            }
+
+            $consulta = $consulta->where('venta.created_at','>=', "$this->fechaInicial")
+                                ->where('venta.created_at','<=', "$this->fechaFinal")
+                                ->where('venta.estado',1);
+              
+            return $consulta;
         }
 
         public function headings(): array
         {
-                    // A           B            C          D        E            F                G              H            I          J           K               L
-            return ["Sucursal", "Fecha Hora", "Producto", "P/U", "Cantidad", "Descuento[%]", "Monto Recibido","Tipo Pago", "Vendedor", "Envio" , "Referencia", "observacion" ];
+            return [
+                "Sucursal/Evento",      //A
+                "Fecha Hora",           //B
+                "Producto",             //C
+                "P/U [Bs]",             //D
+                "Cantidad",             //E    
+                "Descuento[Bs]",         //F
+                "Monto Recibido",       //G    
+                "Tipo Pago",            //H
+                "Vendedor",             //I
+                "Envio" ,               //J
+                "Referencia",           //K
+                "observacion"           //L    
+            ];
         }
 
         public function map($invoice): array
         {
+            // dd($invoice->direccion);
             return [
-                substr($invoice->direccion,0,45)."..." ,
+                $invoice->direccion != "" ? substr($invoice->direccion,0,45)."..." : $invoice->nombre,
                 $invoice->created_at,
                 $invoice->descripcion,
                 $invoice->precio_unitario,

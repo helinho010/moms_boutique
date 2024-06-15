@@ -276,7 +276,7 @@
                              $("#contenidoItemsProductos").before(' \
                                 <tr class="text-center itemProductoVenta" style="border-bottom: solid 1px black;" data-producto="'+valueOfElement.id_producto+'"> \
                                     <th scope="row">'+valueOfElement.cantidad+'</th> \
-                                    <td>'+valueOfElement.nombre_producto + ' ' + valueOfElement.talla_producto +'</td> \
+                                    <td>'+valueOfElement.nombre_producto + ' - Talla: ' + (valueOfElement.talla_producto != "" ? valueOfElement.talla_producto : "ST(Sin Talla)") +'</td> \
                                     <td> ' +valueOfElement.precio_producto+ '</td> \
                                     <!--td>'+ 0 +'</td--> \
                                     <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto ).toFixed(2) +'</td> \
@@ -322,17 +322,17 @@
         });
 
         $( "#cantidad" ).on( "keydown", function( event ) {
-            if( event.which == 13 )
+            if( event.which == 13 || event.which == 9 )
             {
                 agregarRegistrsoVenta();
             }
         });
 
         $( "#efectivoRecebido" ).on( "keydown", function( event ) {
-            if( event.which == 13 )
+            if( event.which == 13 || event.which == 9 )
             {
                 //$( "#cambio" ).html( event.type + ": " +  event.which );
-                let efectivo_recibido = $("#efectivoRecebido").val() == '' ? 0:$("#efectivoRecebido").val();
+                let efectivo_recibido = $("#efectivoRecebido").val() == '' ? 0 : $("#efectivoRecebido").val();
                 let total_compra = $("#total").text();
                 $( "#cambio" ).text((parseFloat(efectivo_recibido)-parseFloat(total_compra)).toFixed(2));
             }
@@ -341,9 +341,9 @@
         $( "#descuentoVenta" ).on( "keydown", function( event ) {
             let total_venta = 0;
 
-            if( event.which == 13 )
+            if( event.which == 13 || event.which == 9 )
             {
-                let descuento_venta = $("#descuentoVenta").val();
+                let descuento_venta = $("#descuentoVenta").val() != "" ? $("#descuentoVenta").val() : 0;
 
                 $('.subtotal').each(function(index) {
                   total_venta = total_venta + parseFloat($(this).text());
@@ -404,7 +404,7 @@
                         $("#contenidoItemsProductos").before(' \
                         <tr class="text-center itemProductoVenta" style="border-bottom: solid 1px black;" data-producto="'+valueOfElement.id_producto+'"> \
                         <th scope="row">'+valueOfElement.cantidad+'</th> \
-                        <td>'+valueOfElement.nombre_producto + ' ' + valueOfElement.talla_producto +'</td> \
+                        <td>'+valueOfElement.nombre_producto + ' - Talla: ' + (valueOfElement.talla_producto != "" ? valueOfElement.talla_producto : "ST(Sin Talla)") +'</td> \
                         <td> ' +valueOfElement.precio_producto+ '</td> \
                         <!--td>'+ 0 +'</td--> \
                         <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto).toFixed(2) +'</td> \
@@ -432,6 +432,7 @@
          * Realizar la Venta BOTON
         */
         $("#realizarVenta").click(function(){
+            
             $("#staticBackdrop").modal('hide');
             Swal.fire({
                 title: "Esta seguro de realizar la venta?",
@@ -443,7 +444,7 @@
                 confirmButtonText: "Si, estoy seguro"
                 }).then((result) => {
                    if (result.isConfirmed) {
-                      if (arrayProductosVenta.length > 0) 
+                      if (arrayProductosVenta.length > 0 && $("#selectTipoPago").val() > 0) 
                       {
                         if ( parseInt($("#selectTipoPago").val()) > 0) {
                             $.ajax({
