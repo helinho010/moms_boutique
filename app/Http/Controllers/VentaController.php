@@ -112,7 +112,8 @@ class VentaController extends Controller
                                                ->join('users','users.id','inventario_internos.id_usuario')
                                                ->join('tipo_ingreso_salidas','tipo_ingreso_salidas.id','inventario_internos.id_tipo_ingreso_salida')
                                                ->where('sucursals.id',$request->id_sucursal)
-                                               ->where('sucursals.activo',1) 
+                                               ->where('sucursals.activo',1)
+                                               ->orderBy('productos.nombre', 'asc') 
                                                ->get();
 
         session(['sucursalSeleccionadoParaVenta' => $request->id_sucursal]);
@@ -211,15 +212,15 @@ class VentaController extends Controller
     public function exportVentaPdf($descuentoVenta=0, $TotalVenta=0, $productos=[], $nit='0', $senores='S/N', $efectivoRecibido=0, $idSucursal)
     {
         // Instaciamos el objeto Request para enviar a la funcion numeroALetras
-        $requestObj = new Request(array('efectivo' =>$TotalVenta));
+        $requestObj = new Request(array('efectivo' => $TotalVenta));
         $literal = $this->numeroALetras($requestObj);
 
         // Datos de la sucursal
         $sucursal = Sucursal::find($idSucursal);
         
         // Datos del cliente
-        $nit = $nit==''?0:$nit;
-        $senores = $senores == ''?'S/N':$senores;
+        $nit = $nit == '' ? 0 : $nit;
+        $senores = $senores == '' ? 'S/N' : $senores;
         $htmlProductos = '';
 
         foreach ($productos as $key => $producto) {

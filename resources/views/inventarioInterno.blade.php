@@ -7,6 +7,10 @@
         table > tbody > tr > th > i{
             font-size: 20px;
         }
+
+        #btnExportDataInventarioPdf{
+            height: 40px;
+        }
     </style>
 @endsection
 
@@ -61,20 +65,22 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-6">
             <div class="row">
                 <div class="col-md-2">
                     <label for="inputPassword6" class="col-form-label">Sucursal:</label>
                 </div>
                 <div class="col-md-8">
-                    <form action="{{ route('data_inventario_interno') }}" method="POST" id="dataformInventario">
+                    <form action="{{ route('data_inventario_interno_page') }}" method="POST" id="dataformInventario">
                         @method('POST')
                         @csrf
                         <div class="input-group">
                             <select class="form-select" aria-describedby="" name="id_sucursal" id="select_sucursal">
-                                <option value="seleccionado" @if (!isset($id_sucursal)) selected  @endif disabled>Seleccione una opcion...</option>
+                                <option value="seleccionado" @if ( !isset($id_sucursal) ) selected  @endif disabled>Seleccione una opcion...</option>
                                 @if (auth()->user()->usertype_id == 1)
-                                  <option value="999">Todas las Sucursales</option>    
+                                  <option value="999" @if (isset($id_sucursal) && $id_sucursal == 999 ) selected  @endif>
+                                    Todas las Sucursales
+                                  </option>    
                                 @endif
                                     @foreach ($sucursales as $item)
                                        @if ($item->estado_sucursal == 1)
@@ -85,6 +91,8 @@
                                     @endforeach
                              </select>
                              <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-search"></i></button>
+                             <button class="input-group-text" id="btnExportDataInventarioPdf"><i class="far fa-file-pdf" style="color: red;font-size: 20px;"></i></button>
+                             {{-- @livewire('boton-invint-pdf') --}}
                         </div>
                     </form>
                 </div>
@@ -322,9 +330,14 @@
             $("#modalFormularioRegistroActualizacion").submit();
 
         } else if ($(this).attr('id') == 'btnFormDataInventario'){
+            $('#dataformInventario').attr('action', "{{ route('data_inventario_interno_page') }}" );
             $("#dataformInventario").submit();
 
+        }else if ($(this).attr('id') == 'btnExportDataInventarioPdf') {
+            $('#dataformInventario').attr('action', "{{ route('inventario_interno_pdf') }}" );
+            $('#dataformInventario').submit();
         }
+
     });
 
     function resestablecerValoresModal()

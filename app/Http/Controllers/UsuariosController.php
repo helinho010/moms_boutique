@@ -118,11 +118,16 @@ class UsuariosController extends Controller
                                                         ->join('users', 'users.id', 'user_sucursals.id_usuario')
                                                         ->where('sucursals.activo',1)
                                                         ->get();
+
+        $eventos = Evento::where('estado',1)
+                         ->get();
+
         return view('usuario.UserOpcSuc',
         [
             'usuarios' => $usuarios,
             'roles' => $roles,
             'sucursales' => $sucursales,
+            'eventos' => $eventos,
             'sucursales_habilitadas' => $sucursalesHabilitadasUsuario,
         ]);
     }

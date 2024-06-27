@@ -69,11 +69,13 @@ Route::group(['middleware' => 'auth'], function () {
     // Inventario Interno
     Route::get('/inventario_interno', [InventarioInternoController::class,'index'])->name('home_inventario_interno');
     Route::get('/data_inventario_interno', [InventarioInternoController::class,'listarInventraio']);
-    Route::post('/data_inventario_interno', [InventarioInternoController::class,'listarInventraio'])->name('data_inventario_interno');
+    Route::get('/data_inventario_interno_page', [InventarioInternoController::class,'listarInventraioPost'])->name('data_inventario_interno');
+    Route::post('/data_inventario_interno_page', [InventarioInternoController::class,'listarInventraioPost'])->name('data_inventario_interno_page');
     Route::post('/inventario_interno', [InventarioInternoController::class,'buscar'])->name('buscar_inventario_interno');
     Route::post('/nuevo_inventario_interno',[InventarioInternoController::class,'store'])->name('nuevo_inventario_interno');
     Route::post('/actualizar_inventario_interno',[InventarioInternoController::class,'update'])->name('actualizar_inventario_interno');
     Route::post('/actualizar_estado_inventario_interno',[InventarioInternoController::class,'update_estado'])->name('actualizar_estado_inventario_interno');
+    Route::post('/inventario_interno_pdf',[InventarioInternoController::class,'exportPdf'])->name('inventario_interno_pdf');
 
     // Inventario Externo
     Route::get('/inventario_externo', [InventarioExternoController::class,'index'])->name('home_inventario_externo');
