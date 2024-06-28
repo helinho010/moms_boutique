@@ -19,7 +19,7 @@ class ProveedorController extends Controller
     {
         if ($request->buscar != '') 
         {
-            $proveedores = Proveedor::orwhere("nombre", "like", '%'.$request->buscar.'%')
+            $proveedores = Proveedor::where("nombre", "like", '%'.$request->buscar.'%')
                                    ->orwhere("telefono", "like", '%'.$request->buscar.'%')
                                    ->orwhere("ciudad", "like", '%'.$request->buscar.'%')
                                    ->orwhere("observacion", "like", '%'.$request->buscar.'%')
