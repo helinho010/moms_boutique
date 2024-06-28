@@ -298,7 +298,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: {{ route('actualizar_estado_producto') }},
+                        url: "{{ route('actualizar_estado_producto') }}",
                         data: {"id":item.id, "estado":item.estado},
                         success: function (response) {
                           Swal.fire("Cambio Guardado!", "", "success");        
