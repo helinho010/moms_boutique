@@ -8,9 +8,20 @@ use App\Models\Categoria;
 
 class ProductoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $productos = Producto::selectRaw('productos.id,
+        if ($request->session()->has('buscar_producto')) 
+        {
+            $productos = Producto::where("codigo_producto", "like", '%'.session('buscar_producto').'%')
+                                ->orwhere('nombre','like','%'.session('buscar_producto').'%')
+                                ->orwhere('costo','like','%'.session('buscar_producto').'%')
+                                ->orwhere('precio','like','%'.session('buscar_producto').'%')
+                                ->orwhere('talla','like','%'.session('buscar_producto').'%')
+                                ->orwhere('descripcion','like','%'.session('buscar_producto').'%')
+                                ->orderBy('updated_at','desc')
+                                ->paginate(10);
+        }else {
+            $productos = Producto::selectRaw('productos.id,
                                         productos.codigo_producto,
                                         productos.nombre,
                                         productos.costo,
@@ -22,9 +33,11 @@ class ProductoController extends Controller
                                         productos.updated_at, 
                                         productos.id_categoria,
                                         categorias.nombre as nombre_categoria')
-                               ->join('categorias','categorias.id','productos.id_categoria')
-                               ->orderBy('updated_at','desc')
-                               ->paginate(10);
+                                ->join('categorias','categorias.id','productos.id_categoria')
+                                ->orderBy('updated_at','desc')
+                                ->paginate(10);
+        }
+
         $categorias = Categoria::all();
 
         return view('producto',compact('productos','categorias'));
@@ -32,18 +45,23 @@ class ProductoController extends Controller
 
     public function buscar(Request $request)
     {
+    
         if ($request->buscar != '') 
         {
-            $productos = Producto::orwhere("codigo_producto", "like", '%'.$request->buscar.'%')
-                                    ->orwhere('nombre','like','%'.$request->buscar.'%')
-                                    ->orwhere('costo','like','%'.$request->buscar.'%')
-                                    ->orwhere('precio','like','%'.$request->buscar.'%')
-                                    ->orwhere('talla','like','%'.$request->buscar.'%')
-                                    ->orwhere('descripcion','like','%'.$request->buscar.'%')
-                                   ->orderBy('updated_at','desc')
-                                   ->paginate(10);
+            $request->session()->forget('buscar_producto');
+            session(['buscar_producto' => $request->buscar]);
+
+            $productos = Producto::where("codigo_producto", "like", '%'.session('buscar_producto').'%')
+                                 ->orwhere('nombre','like','%'.session('buscar_producto').'%')
+                                 ->orwhere('costo','like','%'.session('buscar_producto').'%')
+                                 ->orwhere('precio','like','%'.session('buscar_producto').'%')
+                                 ->orwhere('talla','like','%'.session('buscar_producto').'%')
+                                 ->orwhere('descripcion','like','%'.session('buscar_producto').'%')
+                                 ->orderBy('updated_at','desc')
+                                 ->paginate(10);
         }else {
-            $productos = Producto::orderBy('updated_at','desc')->paginate(10);
+            $request->session()->forget('buscar_producto');
+            return redirect()->route('home_producto');
         }
         $categorias = Categoria::where('estado',1)->get();
         return view('producto',compact('productos','categorias'));
