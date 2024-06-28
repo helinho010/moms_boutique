@@ -6,6 +6,7 @@ use App\Models\OpcionesSistema;
 use App\Models\Usertype;
 use App\Models\UsertypeOpc;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UsertypeOpcController extends Controller
 {
@@ -37,6 +38,49 @@ class UsertypeOpcController extends Controller
             "opciones" => $opciones,
             "opciones_habilitadas" => $opcionesHabilitadas,
         ]);
+    }
+
+    public function buscar(Request $request)
+    {
+        $roles = collect();
+        $opcionesHabilitadas = collect();
+
+        if($request->buscar != '')
+        {
+            $roles = Usertype::orderBy("updated_at","desc")
+                             ->where('estado',1)
+                             ->where(DB::raw('usertypes.`type`'), 'like', '%' . $request->buscar . '%')
+                             ->paginate(10);
+            
+            $opcionesHabilitadas = UsertypeOpc::selectRaw('
+                                                        usertype_opcs.id as id_usertype_opcs,
+                                                        usertype_opcs.estado as estado_usertype_opcs,
+                                                        usertypes.id as id_usertypes,
+                                                        usertypes.`type` as tipo_usertypes,
+                                                        usertypes.estado as estado_usertypes,
+                                                        opciones_sistemas.id as id_opciones_sistemas,
+                                                        opciones_sistemas.opcion as opcion_opciones_sistemas,
+                                                        opciones_sistemas.icono as icono_opciones_sistemas,
+                                                        opciones_sistemas.estado as estado_opciones_sistemas
+                                                    ')
+                                           ->join('usertypes', 'usertypes.id', 'usertype_opcs.id_tipo_usuario')
+                                           ->join('opciones_sistemas', 'opciones_sistemas.id', 'usertype_opcs.id_opcion_sistema')
+                                           ->where('usertypes.id',$roles[0]->id)
+                                           ->get();
+      
+        }else{
+            return redirect()->route('home_rol_usuarios');
+        }
+        
+        $opciones = OpcionesSistema::where('estado',1)
+                                    ->get();
+                            
+        return view('roles.UsertypeOpc',[
+            "roles" => $roles,
+            "opciones" => $opciones,
+            "opciones_habilitadas" => $opcionesHabilitadas,
+        ]);
+
     }
 
     /**

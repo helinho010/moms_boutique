@@ -32,7 +32,7 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <form action="{{ route('buscar_proveedor') }}" method="POST" id="buscarformulario">
+            <form action="{{ route('buscar_roles') }}" method="POST" id="buscarformulario">
                 @method('POST')
                 @csrf
                 <div class="input-group flex-nowrap">

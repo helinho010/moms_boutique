@@ -135,6 +135,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Roles 
     Route::get('/rol_usuarios', [UsertypeOpcController::class,'index'])->name('home_rol_usuarios');
+    Route::post('/buscar_roles', [UsertypeOpcController::class,'buscar'])->name('buscar_roles');
     Route::post('/nuevo_rol', [UsertypeOpcController::class,'store'])->name('nuevo_rol');
     Route::get('/editar_rol', [UsertypeOpcController::class,'editar'])->name('editar_rol');
     Route::post('/update_rol', [UsertypeOpcController::class,'update'])->name('update_rol');
