@@ -283,7 +283,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_sucursal',
+                        url: {{ route('actualizar_estado_sucursal') }},
                         data: {"id":item.id, "activo":item.activo},
                         success: function (response) {
                           Swal.fire("Cambio Guardado!", "", "success");        

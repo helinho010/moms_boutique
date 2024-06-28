@@ -390,7 +390,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_inventario_interno',
+                        url: {{ route('actualizar_estado_inventario_interno') }},
                         data: {"id":item.id, "estado":item.estado},
                         success: function (response) {
                           Swal.fire("Cambio Guardado!", "", "success");        

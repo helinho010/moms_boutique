@@ -233,7 +233,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_proveedor',
+                        url: {{ route('actualizar_estado_proveedor') }},
                         data: {"id":proveedor.id, "estado":proveedor.estado},
                         success: function (response) {
                           Swal.fire("Cambio Guardado!", "", "success");        

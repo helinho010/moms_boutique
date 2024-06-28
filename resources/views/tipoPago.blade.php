@@ -190,7 +190,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_tipo_pago',
+                        url: {{ route('actualizar_estado_tipo_pago') }},
                         data: {"id":item.id, "estado":item.estado},
                         success: function (response) {
                           Swal.fire("Cambio Guardado!", "", "success");        

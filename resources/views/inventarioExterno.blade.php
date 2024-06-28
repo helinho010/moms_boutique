@@ -349,7 +349,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/inventario_externo_retornar_productos',
+                        url: {{ route('inventario_externo_retornar_productos') }},
                         data: {"id_evento":valorSelectEvento},
                         success: function (response) {
                             if (response.respuesta) {
@@ -441,7 +441,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_inventario_externo',
+                        url: {{ route('actualizar_estado_inventario_externo') }},
                         data: {"id":item.id, "estado":item.estado},
                         success: function (response) {
                           Swal.fire("Cambio Guardado!", "", "success");        

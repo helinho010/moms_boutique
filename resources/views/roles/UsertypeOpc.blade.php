@@ -249,7 +249,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_rol',
+                        url: {{ route('actualizar_estado_rol') }},
                         data: {"id":rol.id, "estado":rol.estado},
                         success: function (response) {
                           if (response.respuesta) {

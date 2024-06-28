@@ -279,7 +279,7 @@
                 {
                     $.ajax({
                         type: "POST",
-                        url: '/actualizar_estado_venta',
+                        url: {{ route('actualizar_estado_detalle_venta') }},
                         data: {
                                "id":venta.id, 
                                "estado":venta.estado
@@ -305,7 +305,7 @@
     {
         $.ajax({
             type: "POST",
-            url: '/reimprimir_pdf',
+            url: {{ route('reimprimir_pdf') }},
             data: {
                     "id":venta.id, 
                   },
