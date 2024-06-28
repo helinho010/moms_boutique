@@ -16,9 +16,9 @@ return new class extends Migration
                   ->after('id_sucursal')
                   ->default(0)
                   ->comment("Se creo esta columna para el registro de la venta en los eventos, registrando el id de cada evento");
-            $table->string('observacion')
-                  ->nullable()
-                  ->after('referencia');
+            // $table->string('observacion')
+            //       ->nullable()
+            //       ->after('referencia');
             $table->dropForeign(['id_sucursal']);
         });
     }
