@@ -27,7 +27,7 @@ class GraficosController extends Controller
                                             sum(venta.total_venta) as total_vendido	 
                                             ')
                                 ->join('users', 'users.id', 'venta.id_usuario')
-                                ->groupByRaw('venta.id_usuario')
+                                ->groupByRaw('venta.id_usuario, users.name')
                                 //->orderBy('4','desc')
                                 ->limit(10)
                                 ->get();
