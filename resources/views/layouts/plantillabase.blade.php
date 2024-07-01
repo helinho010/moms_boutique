@@ -27,6 +27,9 @@
             @include('layouts.app.footer')
         </div>
 	</div>
+    
+    @livewire('modal',['tituloModal' => 'Datos del Usuario'])
+  
     <!-- VITE Scripts -->
     @vite(['resources/js/app.js'])
     <!-- Blade Scripts Load -->
