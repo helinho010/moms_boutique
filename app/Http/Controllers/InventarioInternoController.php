@@ -324,27 +324,29 @@ class InventarioInternoController extends Controller
 
     public function update(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'precio' => 'required',
-            'talla' => 'required',
-        ]);
+        dd($request);
 
-        $actualizarProducto = Producto::where("id",$request->id)->first();
-        $actualizarProducto->nombre = $request->nombre;
-        $actualizarProducto->precio = $request->precio;
-        $actualizarProducto->talla = $request->talla;
-        if (isset($request->id_categoria)) 
-        {
-            $actualizarProducto->id_categoria = $request->id_categoria;
-        }
+        // $request->validate([
+        //     'nombre' => 'required',
+        //     'precio' => 'required',
+        //     'talla' => 'required',
+        // ]);
+
+        // $actualizarProducto = Producto::where("id",$request->id)->first();
+        // $actualizarProducto->nombre = $request->nombre;
+        // $actualizarProducto->precio = $request->precio;
+        // $actualizarProducto->talla = $request->talla;
+        // if (isset($request->id_categoria)) 
+        // {
+        //     $actualizarProducto->id_categoria = $request->id_categoria;
+        // }
         
-        $estado = 0;
-        if ($actualizarProducto->save()) {
-            $estado = 1;
-        }
+        // $estado = 0;
+        // if ($actualizarProducto->save()) {
+        //     $estado = 1;
+        // }
 
-        return redirect()->route('home_producto',['actualizado'=>$estado]);
+        // return redirect()->route('home_producto',['actualizado'=>$estado]);
     }
 
     public function update_estado(Request $request)

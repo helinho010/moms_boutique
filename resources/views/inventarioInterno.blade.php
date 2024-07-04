@@ -125,6 +125,7 @@
                   <th scope="col">Producto</th>
                   <th scope="col">Sucursal</th>
                   <th scope="col">Tipo Ingreso Salida</th>
+                  <th scope="col">Ult. Cant. Ing.</th>
                   <th scope="col">Stock</th>
                   <th scope="col">Usuario</th>
                   <th scope="col">Estado</th>
@@ -134,16 +135,6 @@
                 @foreach ($inventariosInternos as $aux)
                   <tr>
                     <th scope="row">
-                        {{-- <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
-                            "id"=>$aux->id,
-                            "codigo"=>$aux->codigo_producto,
-                            "nombre"=>$aux->nombre,
-                            "precio"=>$aux->precio,
-                            "talla"=>$aux->talla,
-                            "id_categoria"=>$aux->id_categoria,
-
-                            ]); @endphp)'>
-                        </i> --}}
                         @php
                         $auxdata = json_encode([
                             "id"=>$aux->id_inventario_interno,
@@ -151,9 +142,11 @@
                             "id_sucursal"=>$aux->id_sucursal,
                             "id_tipo_ingreso_salida"=>$aux->id_tipo_ingreso_salida,
                             "stock"=>$aux->stock,
-                            "cantidad_ingreso,"=>$aux->cantidad_ingreso,
+                            "cantidad_ingreso"=>$aux->cantidad_ingreso,
                             "estado"=>$aux->estado_inventario_interno,
                             ]);
+                        // var_dump($aux);
+                        echo '<i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick=\'editar('.$auxdata.')\'></i>';
                         if ($aux->estado_inventario_interno == 1) 
                         {
                             echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>'; 
@@ -171,6 +164,7 @@
                     </th>
                     <th>{{"$aux->razon_social_sucursal - $aux->ciudad_sucursal"}}</th>
                     <th>{{"$aux->nombre_tipo_ingreso_salida"}}</th>
+                    <th>{{$aux->cantidad_ingreso}}</th>
                     <th>{{$aux->stock}}</th>
                     <th>{{"$aux->nombre_usuario"}}</th>
                     <td> 
@@ -230,9 +224,17 @@
                                             <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
                                                 @foreach ($productos as $item)
                                                 @if ($item->estado == 1)
-                                                    <option value="{{ $item->id }}">{{ "$item->nombre - $item->talla - $item->precio" }}</option>
+                                                    <option value="{{ $item->id }}">
+                                                        {{ $item->nombre }} -
+                                                        {{ $item->talla != "" ? "Talla: ".$item->talla : "ST(Sin Talla)" }} -
+                                                        {{ $item->precio != "" ? "Precio: ".$item->precio : 0 }} Bs.
+                                                    </option>
                                                     @else
-                                                    <option value="{{ $item->id }}" disabled>{{ "$item->nombre - $item->talla - $item->precio (deshabilitado)" }}</option>
+                                                    <option value="{{ $item->id }}" disabled>
+                                                        {{ $item->nombre }} -
+                                                        {{ $item->talla != "" ? "Talla: ".$item->talla : "ST(Sin Talla)" }} -
+                                                        {{ $item->precio != "" ? "Precio: ".$item->precio : 0 }} Bs. (deshabilitado)
+                                                    </option>
                                                 @endif
                                                 @endforeach
                                         </select>
@@ -265,7 +267,7 @@
                       <br>     
                       <div class="row">
                         <div class="col-md-2">
-                            <label for="exampleInputPassword1" class="form-label">Cantidad Ingreso: </label>
+                            <label for="modalInputCantidadIngreso" class="form-label">Cantidad Ingreso: </label>
                         </div>
                         <div class="col-md-8">
                             <input type="number" name="cantidad_ingreso" placeholder="0" class="form-control" id="modalInputCantidadIngreso">
@@ -353,17 +355,18 @@
 
     function editar(item)
     {
+        console.log(item);
         $("#exampleModal").modal("show");
-        $("#exampleModalLabel").html("<h3>Editar Producto</h3>");
-        $("#formularioRegistroActualizacion").attr("action","{{ route('actualizar_producto') }}");
-        $("#formularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
-        $("#id_categoria_producto").val(item.id_categoria);
-        $("#nombre_producto").val(item.nombre);
-        $("#precio_producto").val(item.precio);
-        $("#talla_producto").val(item.talla);
-        $("#btnGuardarActualizar").val("Actualizar");
-        $("#btnGuardarActualizar").on('click',function(){
-            $("#formularioRegistroActualizacion").submit();
+        $("#exampleModalLabel").html("<h3>Editar Item del Inventario Interno</h3>");
+        $("#modalFormularioRegistroActualizacion").attr("action","{{ route('actualizar_inventario_interno') }}");
+        $("#modalFormularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
+        $("#modalSelectSucursal").val(item.id_sucursal);
+        $("#modalSelectProducto").val(item.id_producto); 
+        $("#modalSelectTipoEntrada").val(item.id_tipo_ingreso_salida);
+        $("#modalInputCantidadIngreso").val( item.cantidad_ingreso );
+        $("#modalBtnGuardarActualizar").text("Actualizar");
+        $("#modalBtnGuardarActualizar").on('click',function(){
+            $("#modalFormularioRegistroActualizacion").submit();
             resestablecerValoresModal();
         });
     }
