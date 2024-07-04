@@ -329,6 +329,7 @@
             $("#buscarformulario").submit();
 
         } else if ($(this).attr('id') == 'modalBtnGuardarActualizar'){
+            $('#modalSelectSucursal').removeAttr('disabled');
             $("#modalFormularioRegistroActualizacion").submit();
 
         } else if ($(this).attr('id') == 'btnFormDataInventario'){
@@ -345,11 +346,12 @@
     function resestablecerValoresModal()
     {
         $("#exampleModalLabel").html("<h3>Nuevo Item para el Inventario Interno</h3>");
-        $("#formularioTipoIngresoSalida").attr("action","{{ route('nuevo_inventario_interno') }}");
+        $("#modalFormularioRegistroActualizacion").attr("action","{{ route('nuevo_inventario_interno') }}");
+        $('#modalSelectSucursal').removeAttr('disabled');
         $("#modalSelectProducto").val('seleccionado');
         $("#modalSelectTipoEntrada").val('seleccionado');
         $("#modalInputCantidadIngreso").val('');
-        $("#btnGuardarActualizar").val("Guardar");     
+        $("#modalBtnGuardarActualizar").text("Guardar");     
         // $("#id_categoria_producto").val('seleccionado');
     }
 
@@ -360,10 +362,11 @@
         $("#exampleModalLabel").html("<h3>Editar Item del Inventario Interno</h3>");
         $("#modalFormularioRegistroActualizacion").attr("action","{{ route('actualizar_inventario_interno') }}");
         $("#modalFormularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
+        $("#modalSelectSucursal").attr("disabled", "disabled");
         $("#modalSelectSucursal").val(item.id_sucursal);
         $("#modalSelectProducto").val(item.id_producto); 
         $("#modalSelectTipoEntrada").val(item.id_tipo_ingreso_salida);
-        $("#modalInputCantidadIngreso").val( item.cantidad_ingreso );
+        $("#modalInputCantidadIngreso").val(item.cantidad_ingreso);
         $("#modalBtnGuardarActualizar").text("Actualizar");
         $("#modalBtnGuardarActualizar").on('click',function(){
             $("#modalFormularioRegistroActualizacion").submit();

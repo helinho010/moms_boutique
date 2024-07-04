@@ -325,28 +325,27 @@ class InventarioInternoController extends Controller
     public function update(Request $request)
     {
         dd($request);
+        $request->validate([
+            'id' => 'required',
+            'id_sucursal' => 'required',
+            'id_producto' => 'required',
+            'id_tipo_ingreso_salida' => 'required',
+            'cantidad_ingreso' => 'required',
+        ]);
 
-        // $request->validate([
-        //     'nombre' => 'required',
-        //     'precio' => 'required',
-        //     'talla' => 'required',
-        // ]);
-
-        // $actualizarProducto = Producto::where("id",$request->id)->first();
-        // $actualizarProducto->nombre = $request->nombre;
-        // $actualizarProducto->precio = $request->precio;
-        // $actualizarProducto->talla = $request->talla;
-        // if (isset($request->id_categoria)) 
-        // {
-        //     $actualizarProducto->id_categoria = $request->id_categoria;
-        // }
+        $registroInventarioInterno = InventarioInterno::findOrFail($request->id);
+        $registroInventarioInterno->id_producto = $request->id_producto;
+        $registroInventarioInterno->id_usuario = auth()->user()->id;
+        $registroInventarioInterno->id_tipo_ingreso_salida = $request->id_tipo_ingreso_salida;
+        $registroInventarioInterno->stock = intval($registroInventarioInterno->stock) - intval($registroInventarioInterno->cantidad_ingreso) + intval($request->cantidad_ingreso);
+        $registroInventarioInterno->cantidad_ingreso = $request->cantidad_ingreso;
         
-        // $estado = 0;
-        // if ($actualizarProducto->save()) {
-        //     $estado = 1;
-        // }
-
-        // return redirect()->route('home_producto',['actualizado'=>$estado]);
+        $estado = 0;
+        if ($registroInventarioInterno->save()) {
+            $estado = 1;
+        }
+    
+        return redirect()->route('home_inventario_interno',['actualizado'=>$estado]);
     }
 
     public function update_estado(Request $request)
