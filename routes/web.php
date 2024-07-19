@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\Route;
 
 require(base_path('routes/route-list/route-auth.php'));
 
-Route::group(['middleware' => 'auth'], function () {
+Route::middleware(['auth'])->group(function () {
+
     // Home
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

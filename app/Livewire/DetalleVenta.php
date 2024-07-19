@@ -318,6 +318,7 @@ class DetalleVenta extends Component
 
     public function exportarPdf($idVenta)
     {
+        
         $datosVentaDetallado = DB::table('detalle_ventas')
                                  ->selectRaw('detalle_ventas.cantidad,
                                                         productos.nombre as nombre_producto,
@@ -329,7 +330,7 @@ class DetalleVenta extends Component
                                  ->get();
 
         $datosVenta = Venta::findOrFail($idVenta);
-
+        
         $datosCliente = Cliente::findOrFail($datosVenta['id_cliente']); 
         
         if(strtolower($this->titleLabel) == strtolower('Sucursal'))

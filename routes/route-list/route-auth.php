@@ -1,5 +1,6 @@
 <?php
 // Auth Login and Auth Logout
+
 Route::controller(App\Http\Controllers\Auth\LoginController::class)->group(function(){
     Route::get('login', 'showLoginForm')->name('login');
     Route::post('login', 'login');

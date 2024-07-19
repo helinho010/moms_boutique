@@ -182,12 +182,18 @@ class RealizarVenta extends Component
 
     public function almacenarDatos()
     {
-        // dd($this->productosAVender);
+        // dd($this->nitCliente);
+
+        $cliente = new Cliente();
+        $cliente->nit_ci = $this->nitCliente != "" ? $this->nitCliente : 0 ;
+        $cliente->razon_social = $this->nombreCliente != "" ? $this->nombreCliente : "S/N" ;
+        $cliente->save();
 
         $venta = new Venta();
         $venta->id_sucursal = 0;
         $venta->id_evento = session('eventoSeleccionadoParaVenta');
         $venta->id_usuario = auth()->user()->id;
+        $venta->id_cliente = $cliente->id;
         $venta->descuento = $this->descuento;
         $venta->total_venta = $this->total;
         $venta->efectivo_recibido = $this->efectivoRecivido;
@@ -197,12 +203,7 @@ class RealizarVenta extends Component
         $venta->referencia = $this->referencia;
         $venta->observacion = $this->observacion;
         $venta->nombre_pdf = "";
-        $venta->save();
-
-        $cliente = new Cliente();
-        $cliente->nit_ci = $this->nitCliente;
-        $cliente->razon_social = $this->nombreCliente;
-        $cliente->save();
+        $venta->save();        
 
         foreach ($this->productosAVender as $key => $producto) 
         {
