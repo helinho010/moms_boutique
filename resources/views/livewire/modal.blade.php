@@ -97,8 +97,3 @@
         }
     </style>
 @endassets
-
-@scripts
-    <script>
-    </script>
-@endscripts
