@@ -22,10 +22,13 @@ require(base_path('routes/route-list/route-auth.php'));
 Route::middleware(['auth'])->group(function () {
 
     // Home
-    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])
+        ->name('home');
 
     // Proveedor
-    Route::get('/proveedor', [ProveedorController::class,'index'])->name('home_proveedor');
+    Route::get('/proveedor', [ProveedorController::class,'index'])
+        ->name('home_proveedor')
+        ->middleware('control.rutas');
     Route::post('/proveedor', [ProveedorController::class,'buscar'])->name('buscar_proveedor');
     Route::post('/nuevo_proveedor', [ProveedorController::class,'store'])->name('nuevo_proveedor');
     Route::post('/actualizar_proveedor',[ProveedorController::class,'update'])->name('actualizar_proveedor');
@@ -39,7 +42,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/actualizar_estado',[CategoriaController::class,'update_estado'])->name('actualizar_estado');
 
     // Tipo Ingreso Salida
-    Route::get('/tipo_ingreso_salida', [TipoIngresoSalidaController::class,'index'])->name('home_tipo_ingreso_salida');
+    Route::get('/tipo_ingreso_salida', [TipoIngresoSalidaController::class,'index'])
+        ->name('home_tipo_ingreso_salida')
+        ->middleware('control.rutas');
     Route::post('/tipo_ingreso_salida', [TipoIngresoSalidaController::class,'buscar'])->name('buscar_tipo_ingreso_salida');
     Route::post('/nueva_tipo_ingreso_salida',[TipoIngresoSalidaController::class,'store'])->name('nuevo_tipo_ingreso_salida');
     Route::post('/actualizar_tipo_ingreso_salida',[TipoIngresoSalidaController::class,'update'])->name('actualizar_tipo_ingreso_salida');
@@ -68,7 +73,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/actualizar_estado_sucursal',[SucursalController::class,'update_estado'])->name('actualizar_estado_sucursal');
 
     // Inventario Interno
-    Route::get('/inventario_interno', [InventarioInternoController::class,'index'])->name('home_inventario_interno');
+    Route::get('/inventario_interno', [InventarioInternoController::class,'index'])
+        ->name('home_inventario_interno')
+        ->middleware('control.rutas');
     Route::get('/data_inventario_interno', [InventarioInternoController::class,'listarInventraio']);
     Route::get('/data_inventario_interno_page', [InventarioInternoController::class,'listarInventraioPost'])->name('data_inventario_interno');
     Route::post('/data_inventario_interno_page', [InventarioInternoController::class,'listarInventraioPost'])->name('data_inventario_interno_page');
@@ -79,7 +86,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/inventario_interno_pdf',[InventarioInternoController::class,'exportPdf'])->name('inventario_interno_pdf');
 
     // Inventario Externo
-    Route::get('/inventario_externo', [InventarioExternoController::class,'index'])->name('home_inventario_externo');
+    Route::get('/inventario_externo', [InventarioExternoController::class,'index'])
+        ->name('home_inventario_externo')
+        ->middleware('control.rutas');
     Route::post('/inventario_externo', [InventarioExternoController::class,'buscar'])->name('buscar_inventario_externo');
     Route::get('/data_inventario_externo', [InventarioExternoController::class,'listarInventraio']);
     Route::post('/data_inventario_externo', [InventarioExternoController::class,'listarInventraio'])->name('data_inventario_externo');
@@ -92,13 +101,18 @@ Route::middleware(['auth'])->group(function () {
 
 
     //Traspaso de Productos
-    Route::get('/traspaso_productos', [TrasporteProductosController::class,'index'])->name('home_traspaso_productos');
+    Route::get('/traspaso_productos', [TrasporteProductosController::class,'index'])
+        ->name('home_traspaso_productos')
+        ->middleware('control.rutas');
     Route::post('/traspaso_productos', [TrasporteProductosController::class,'store'])->name('nuevo_traspaso_productos');
 
 
 
     // Detalle Venta
-    Route::get('/venta', [VentaController::class,'index'])->name('home_venta');
+    Route::get('/venta', [VentaController::class,'index'])
+        ->name('home_venta')
+        ->middleware('control.rutas');
+
     Route::post('/detalle_venta', [DetalleVentaController::class,'buscar'])->name('buscar_detalle_venta');
     Route::post('/nuevo_detalle_venta',[DetalleVentaController::class,'store'])->name('nuevo_detalle_venta');
     Route::post('/actualizar_detalle_venta',[DetalleVentaController::class,'update'])->name('actualizar_detalle_venta');
@@ -117,7 +131,9 @@ Route::middleware(['auth'])->group(function () {
 
     
     // Tipo Pago
-    Route::get('/tipo_pago', [TipoPagoController::class,'index'])->name('home_tipo_pago');
+    Route::get('/tipo_pago', [TipoPagoController::class,'index'])
+        ->name('home_tipo_pago')
+        ->middleware('control.rutas');
     Route::post('/tipo_pago', [TipoPagoController::class,'buscar'])->name('buscar_tipo_pago');
     Route::post('/nuevo_tipo_pago',[TipoPagoController::class,'store'])->name('nuevo_tipo_pago');
     Route::post('/actualizar_tipo_pago',[TipoPagoController::class,'update'])->name('actualizar_tipo_pago');
@@ -125,20 +141,28 @@ Route::middleware(['auth'])->group(function () {
 
    
     // Usuarios
-    Route::get('/usuarios', [UsuariosController::class,'index'])->name('home_usuarios');
+    Route::get('/usuarios', [UsuariosController::class,'index'])
+        ->name('home_usuarios')
+        ->middleware('control.rutas');
     Route::post('/buscar_usuarios', [UsuariosController::class,'buscar'])->name('buscar_usuario');
     Route::post('/nuevo_usuario', [UsuariosController::class,'create'])->name('nuevo_usuario');
     Route::post('/consultar_usuario', [UsuariosController::class,'consulta'])->name('consulta_usuario');
-    Route::get('/editar_usuario', [UsuariosController::class,'editar'])->name('editar_usuario');
+    Route::get('/editar_usuario', [UsuariosController::class,'editar'])
+        ->name('editar_usuario')
+        ->middleware('control.rutas');
     Route::post('/update_usuario', [UsuariosController::class,'update'])->name('update_usuario');
     Route::post('/actualizar_estado_usuario', [UsuariosController::class,'update_estado'])->name('actualizar_estado_usuario');
 
 
     // Roles 
-    Route::get('/rol_usuarios', [UsertypeOpcController::class,'index'])->name('home_rol_usuarios');
+    Route::get('/rol_usuarios', [UsertypeOpcController::class,'index'])
+        ->name('home_rol_usuarios')
+        ->middleware('control.rutas');
     Route::post('/buscar_roles', [UsertypeOpcController::class,'buscar'])->name('buscar_roles');
     Route::post('/nuevo_rol', [UsertypeOpcController::class,'store'])->name('nuevo_rol');
-    Route::get('/editar_rol', [UsertypeOpcController::class,'editar'])->name('editar_rol');
+    Route::get('/editar_rol', [UsertypeOpcController::class,'editar'])
+        ->name('editar_rol')
+        ->middleware('control.rutas');
     Route::post('/update_rol', [UsertypeOpcController::class,'update'])->name('update_rol');
     Route::post('/consultar_rol', [UsertypeOpcController::class,'consultaRol'])->name('consultar_rol');
     Route::post('/actualizar_estado_rol', [UsertypeOpcController::class,'actualizarEstadoRol'])->name('actualizar_estado_rol');
