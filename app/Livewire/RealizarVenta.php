@@ -163,6 +163,7 @@ class RealizarVenta extends Component
 
     public function calcularValoresMonetarios()
     {
+        dd("Si se esta ejecutando");
         $this->total = 0;
 
         foreach ($this->productosAVender as $key => $producto) 

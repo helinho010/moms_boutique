@@ -178,3 +178,17 @@
         </div>
     </div>
 </div>
+
+
+@script
+<script>
+    function seleccionarContenidoInput(id)
+    {
+        $('#'+id).select();
+    }
+
+    $("#descuentoVenta").on('click', function(){
+        $(this).select();
+    });
+</script>
+@endscript

@@ -17,7 +17,7 @@ class ControlRutas
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // dd( basename($request->url()) );
+        // dd($request);
 
         if ( Auth::user()->usertype_id == 1)
         {
