@@ -89,13 +89,26 @@ class RealizarVenta extends Component
         $this->cantidadDelProductoSeleccionado = 0;
     }
 
+    public function literalTotal ()
+    {
+        // Literal de monto total
+        $litNum = new NumeroALetras();
+        $litNum->apocope = true;
+        if ($this->total >= 0){
+            $this->literalMonto = $litNum->toMoney($this->total, 2, 'bolivianos', 'centavos');    
+        }else{
+            $this->js("alert('El total de la factura no puede ser negativo')");
+        }
+    }
+
     public function mount()
     {
+
         $this->valoresIniciales();
-        $this->descuento = 0;
-        $this->total = 0;
-        $this->efectivoRecivido = 0;
-        $this->cambio = 0;
+        $this->descuento = "0.0";
+        $this->total = "0.0";
+        $this->efectivoRecivido = "0.0";
+        $this->cambio = "0.0";
         $this->productosAVender = array();
         $this->literalMonto = 0.0;
         $this->nitCliente = "";
@@ -159,11 +172,11 @@ class RealizarVenta extends Component
         $this->idProductoSeleccionado = 'seleccionado';
         $this->cantidadDelProductoSeleccionado = 0;
         
+        $this->calcularValoresMonetarios();
     }
 
     public function calcularValoresMonetarios()
     {
-        dd("Si se esta ejecutando");
         $this->total = 0;
 
         foreach ($this->productosAVender as $key => $producto) 
@@ -172,13 +185,9 @@ class RealizarVenta extends Component
         }
 
         $this->descuento = number_format($this->descuento != "" ? $this->descuento : 0 , 2);
-        $this->total = number_format($this->total - ($this->descuento!="" ? $this->descuento:0), 2);
+        $this->total = number_format($this->total - ($this->descuento!="" ? $this->descuento:0), 2);    
         $this->efectivoRecivido = number_format($this->efectivoRecivido != "" ? floatval($this->efectivoRecivido):0, 2);
         $this->cambio = number_format($this->efectivoRecivido - $this->total,2);
-        // Literal de monto total
-        $litNum = new NumeroALetras();
-        $litNum->apocope = true;
-        $this->literalMonto = $litNum->toMoney($this->total, 2, 'bolivianos', 'centavos');
     }
 
     public function almacenarDatos()
@@ -236,13 +245,15 @@ class RealizarVenta extends Component
             break;
           }
         }
+
+        $this->calcularValoresMonetarios();
     }
 
 
     public function render()
     {
         $this->valoresIniciales();
-        $this->calcularValoresMonetarios();
+        $this->literalTotal();
         return view('livewire.realizar-venta');
     }
 }

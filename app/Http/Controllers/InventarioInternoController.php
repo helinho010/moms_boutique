@@ -324,7 +324,7 @@ class InventarioInternoController extends Controller
 
     public function update(Request $request)
     {
-        dd($request);
+        
         $request->validate([
             'id' => 'required',
             'id_sucursal' => 'required',
@@ -335,6 +335,7 @@ class InventarioInternoController extends Controller
 
         $registroInventarioInterno = InventarioInterno::findOrFail($request->id);
         $registroInventarioInterno->id_producto = $request->id_producto;
+        $registroInventarioInterno->id_sucursal = $request->id_sucursal;
         $registroInventarioInterno->id_usuario = auth()->user()->id;
         $registroInventarioInterno->id_tipo_ingreso_salida = $request->id_tipo_ingreso_salida;
         $registroInventarioInterno->stock = intval($registroInventarioInterno->stock) - intval($registroInventarioInterno->cantidad_ingreso) + intval($request->cantidad_ingreso);
