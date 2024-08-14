@@ -44,6 +44,22 @@ return [
             'throw' => false,
         ],
 
+        'sucursales' => [
+            'driver' => 'local',
+            'root' => storage_path('app/sucursales'),
+            'url' => env('APP_URL').'/facturas-sucursales',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
+        'eventos' => [
+            'driver' => 'local',
+            'root' => storage_path('app/eventos'),
+            'url' => env('APP_URL').'/facturas-eventos',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -71,7 +87,8 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
-        // public_path('images') => storage_path('app/images'),
+        public_path('facturas-sucursales') => storage_path('app/sucursales'),
+        public_path('facturas-eventos') => storage_path('app/eventos'),
     ],
 
 ];

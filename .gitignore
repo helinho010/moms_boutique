@@ -2,7 +2,11 @@
 /public/build/
 /public/hot
 /public/storage
+/public/facturas-sucursales
+/public/facturas-eventos
 /storage/*.key
+/storage/app/sucursales/
+/storage/app/eventos/
 /vendor
 .env
 .env.backup

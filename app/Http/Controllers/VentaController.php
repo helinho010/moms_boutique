@@ -16,6 +16,7 @@ use Luecano\NumeroALetras\NumeroALetras;
 use App\Exports\VentaReporteExcelExport;
 use App\Models\Evento;
 use App\Models\UsuarioEvento;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class VentaController extends Controller
@@ -140,7 +141,7 @@ class VentaController extends Controller
     public function realizarVenta(Request $request)
     {
         try {
-                $this->nombre_archivo = date('Ymd-His').".pdf";
+                $this->nombre_archivo = "Sucursal_".date('Ymd_His').".pdf";
                 
                 $nuevoCliente = new Cliente();
                 $nuevoCliente->nit_ci = $request->nit_cliente != "" ? $request->nit_cliente : 0 ;
@@ -4496,7 +4497,8 @@ class VentaController extends Controller
         $dompdf->render();
         
         // $this->nombre_archivo = date('Ymd-His').".pdf";
-        file_put_contents($this->nombre_archivo, $dompdf->output());
+        // file_put_contents($this->nombre_archivo, $dompdf->output());
+        Storage::disk('sucursales')->put($this->nombre_archivo, $dompdf->output());
         // Output the generated PDF to Browser
         // $dompdf->stream(date('Ymd-His').".pdf");
     }

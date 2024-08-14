@@ -228,7 +228,7 @@
         {
             $.ajax({
                    type: "POST",
-                   url: "/numeros_a_letras",
+                   url: "{{ route('numeros_a_letras') }}",
                    data: {"efectivo" : parseFloat(efectivo) },
                    success: function (response) {
                    // console.log(response);
@@ -449,7 +449,7 @@
                         if ( parseInt($("#selectTipoPago").val()) > 0) {
                             $.ajax({
                                 type: "POST",
-                                url: "/realizar_venta",
+                                url: "{{ route('realizar_venta') }}",
                                 data: {
                                         "productos":arrayProductosVenta, 
                                         "idTipoPago":$("#selectTipoPago").val(), 
@@ -475,8 +475,8 @@
                                             timer: 1500
                                         });
                                         setTimeout(() => {
-                                            var win = window.open('/'+respuesta.nombreArchivo, '_blank');
-                                            $(location).attr('href','/detalle_ventas_rango_fechas');                            
+                                            var win = window.open('/facturas-sucursales/'+respuesta.nombreArchivo, '_blank');
+                                            $(location).attr('href', "{{ route('detalle_ventas_rango_fechas') }}" );                            
                                         }, 1600);
                                         
                                     } else {

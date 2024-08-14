@@ -12,6 +12,7 @@ use App\Models\UserSucursal;
 use App\Models\Venta;
 use Illuminate\Http\Request;
 use Dompdf\Dompdf;
+use Illuminate\Support\Facades\Storage;
 
 class DetalleVentaController extends Controller
 {
@@ -4541,7 +4542,8 @@ class DetalleVentaController extends Controller
         $dompdf->render();
         
         $this->nombre_archivo = date('Ymd_His').".pdf";
-        file_put_contents($this->nombre_archivo, $dompdf->output());
+        // file_put_contents($this->nombre_archivo, $dompdf->output());
+        Storage::disk('eventos')->put($this->nombre_archivo, $dompdf->output());
         // Output the generated PDF to Browser
         // $dompdf->stream(date('Ymd-His').".pdf");
     }

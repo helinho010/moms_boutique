@@ -19,7 +19,7 @@ use App\Models\Cliente;
 use App\Models\InventarioInterno;
 use Dompdf\Dompdf;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
 
 class DetalleVenta extends Component
 {
@@ -4630,7 +4630,13 @@ class DetalleVenta extends Component
         // Render the HTML as PDF
         $dompdf->render();
         
-        file_put_contents($this->titleLabel."_".date('Ymd', strtotime($datosVenta['created_at'])).".pdf", $dompdf->output());
+        $disk = strtolower($this->titleLabel) == strtolower('Sucursal') ? "sucursales" : "eventos";
+        // file_put_contents($this->titleLabel."_".date('Ymd', strtotime($datosVenta['created_at'])).".pdf", $dompdf->output());
+        if (! Storage::disk($disk)->exists($this->titleLabel."_".date('Ymd_Hi', strtotime($datosVenta['created_at'])).".pdf")) {
+            
+            Storage::disk($disk)->put($this->titleLabel."_".date('Ymd_Hi', strtotime($datosVenta['created_at'])).".pdf", $dompdf->output());
+        }
+        
         // Output the generated PDF to Browser
         // $dompdf->stream(date('Ymd His').".pdf");
 
@@ -4644,7 +4650,9 @@ class DetalleVenta extends Component
             $this->eventosOSucursales = $this->eventos;
         }
         
-        return response()->download($this->titleLabel."_".date('Ymd', strtotime($datosVenta['created_at'])).".pdf");
+        // return response()->download($this->titleLabel."_".date('Ymd', strtotime($datosVenta['created_at'])).".pdf");
+            
+        return Storage::disk($disk)->download($this->titleLabel."_".date('Ymd_Hi', strtotime($datosVenta['created_at'])).".pdf");
     }
 
     #[On('boton-on-of')]
