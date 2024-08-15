@@ -75,7 +75,7 @@
 @section('content')
   <div class="row">
     <div class="alert alert-warning" role="alert">
-        Por favo seleccione un rango de fechas, indicando la fecha de inicio y la fecha de finalización.
+        Por favor seleccione un rango de fechas, indicando la fecha de inicio y la fecha de finalización.
     </div>
   </div>
   <div class="row">
