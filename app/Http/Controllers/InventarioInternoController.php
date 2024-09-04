@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\InventarioInternoExport;
 use App\Models\InventarioInterno;
 use Illuminate\Http\Request;
 use App\Models\Producto;
@@ -12,6 +13,8 @@ use App\Models\UserSucursal;
 use Doctrine\DBAL\Schema\View;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Storage;
+use LaravelLang\Publisher\Console\Reset;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InventarioInternoController extends Controller
 {
@@ -4638,12 +4641,25 @@ class InventarioInternoController extends Controller
         // Render the HTML as PDF
         $dompdf->render();
         
-        $nombre_archivo = 'InventarioInterno_'.date('dmY_Hi').'.pdf';
-        file_put_contents($nombre_archivo, $dompdf->output());
+        $nombre_archivo = 'InventarioInterno_'.date('dmY_His').'.pdf';
+
+        Storage::disk('inventarios')->put($nombre_archivo,$dompdf->output());
+
+        // file_put_contents($nombre_archivo, $dompdf->output());
         // Output the generated PDF to Browser
         // $dompdf->stream(date('Ymd-His').".pdf");
 
-        // return Storage::download($nombre_archivo);
-        return response()->download(public_path($nombre_archivo));
+        return Storage::disk('inventarios')->download($nombre_archivo);
+        // return response()->download(public_path($nombre_archivo));
+    }
+
+    public function exportExcel (Request $request)
+    {
+        $inventarioInternoSucursal = InventarioInterno::inventarioXSucurusal($request->id_sucursal);
+
+        $nombre_archivo = 'InventarioInterno_'.date('dmY_His').'.csv';
+
+        // Exportar los datos a CSV
+        return Excel::download(new InventarioInternoExport($inventarioInternoSucursal), $nombre_archivo);
     }
 }

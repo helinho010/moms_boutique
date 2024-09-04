@@ -283,6 +283,7 @@
 @push('scripts')
 <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     
     $.ajaxSetup({
@@ -463,7 +464,7 @@
     }
 
     $(document).ready(function(){
-        // $('.select2').select2();
+        
         var parametroGetExito = getParameterByName('exito');
         var parametroGetActualizado = getParameterByName('actualizado');
         var pathname = window.location.pathname;
@@ -477,6 +478,13 @@
 
         $("#home").removeClass('active');
         $("#inventario\\ externo").addClass('active');
+
+        $('.select2Modal').select2({
+            theme: "bootstrap-5",
+            dropdownParent: $('#exampleModal'),
+            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+        });
     });
     
 </script>

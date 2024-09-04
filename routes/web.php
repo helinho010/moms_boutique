@@ -84,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/actualizar_inventario_interno',[InventarioInternoController::class,'update'])->name('actualizar_inventario_interno');
     Route::post('/actualizar_estado_inventario_interno',[InventarioInternoController::class,'update_estado'])->name('actualizar_estado_inventario_interno');
     Route::post('/inventario_interno_pdf',[InventarioInternoController::class,'exportPdf'])->name('inventario_interno_pdf');
+    Route::post('/inventario_interno_excel',[InventarioInternoController::class,'exportExcel'])->name('inventario_interno_excel');
 
     // Inventario Externo
     Route::get('/inventario_externo', [InventarioExternoController::class,'index'])

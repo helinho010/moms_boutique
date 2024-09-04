@@ -60,6 +60,14 @@ return [
             'throw' => false,
         ],
 
+        'inventarios' => [
+            'driver' => 'local',
+            'root' => storage_path('app/inventarios'),
+            'url' => env('APP_URL').'/inventarios',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -89,6 +97,7 @@ return [
         public_path('storage') => storage_path('app/public'),
         public_path('facturas-sucursales') => storage_path('app/sucursales'),
         public_path('facturas-eventos') => storage_path('app/eventos'),
+        public_path('inventarios') => storage_path('app/inventarios'),
     ],
 
 ];

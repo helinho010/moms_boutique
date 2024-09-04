@@ -11,6 +11,7 @@
         #btnExportDataInventarioPdf{
             height: 40px;
         }
+
     </style>
 @endsection
 
@@ -92,6 +93,7 @@
                              </select>
                              <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-search"></i></button>
                              <button class="input-group-text" id="btnExportDataInventarioPdf"><i class="far fa-file-pdf" style="color: red;font-size: 20px;"></i></button>
+                             <button class="input-group-text" id="btnExportDataInventarioExcel"><i class="far fa-file-excel" style="color: green;font-size: 20px;"></i></button>
                              {{-- @livewire('boton-invint-pdf') --}}
                         </div>
                     </form>
@@ -288,6 +290,7 @@
 @push('scripts')
 <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     
     $.ajaxSetup({
@@ -338,6 +341,11 @@
 
         }else if ($(this).attr('id') == 'btnExportDataInventarioPdf') {
             $('#dataformInventario').attr('action', "{{ route('inventario_interno_pdf') }}" );
+            $('#dataformInventario').submit();
+        }
+
+        else if ($(this).attr('id') == 'btnExportDataInventarioExcel') {
+            $('#dataformInventario').attr('action', "{{ route('inventario_interno_excel') }}" );
             $('#dataformInventario').submit();
         }
 
@@ -428,12 +436,19 @@
             setTimeout(() => {
                 $(location).attr('href',pathname);
             }, 10000);
-        } 
-    });
-
-    $(document).ready(function(){
+        }
+        
         $("#home").removeClass('active');
         $("#inventario\\ interno").addClass('active');
+
+        $('.select2').select2({
+            theme: "bootstrap-5",
+        });
+
+        $('.select2Modal').select2({
+            theme: "bootstrap-5",
+            dropdownParent: $('#exampleModal'),
+        });
     });
     
 </script>
