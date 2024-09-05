@@ -6,8 +6,12 @@ use App\Models\InventarioInterno;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 
-class InventarioInternoExport implements FromCollection, WithHeadings, WithMapping
+class InventarioInternoExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithColumnWidths
 {
 
     protected $inventario;
@@ -32,9 +36,9 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
     {
             return [
                 'A' => 5,
-                'B' => 20,
-                'C' => 12,
-                'D' => 5,
+                'B' => 25,
+                'C' => 13,
+                'D' => 8,
                 'E' => 10,
                 'F' => 10, 
             ];
@@ -49,6 +53,21 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
             $invoice->stock_inventario_internos != 0 ? $invoice->stock_inventario_internos:"0",
             $invoice->name_users,
             $invoice->estado == 1 ? "Activo":"Inactivo",
+        ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            // Style the first row as bold text.
+            1 => [
+                    'font' => ['bold' => true, 'size' => 11], 
+                    'alignment' => [
+                                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                                    'vertical' => Alignment::VERTICAL_CENTER,
+                                    'wrapText' => true,
+                                   ],
+                 ],
         ];
     }
 

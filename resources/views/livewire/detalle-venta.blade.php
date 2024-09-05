@@ -91,7 +91,7 @@
                     {{-- <th>{{"00001"}}</th> --}}
                     <th>{{"$item->updated_at_venta"}}</th>
                     <th>{{"$item->total_venta"}} Bs.</th>
-                    <th>{{"$item->descuento_venta"}} Bs.</th>
+                    <th>{{ number_format($item->descuento_venta,2) }} Bs.</th>
                     <th>{{$item->tipo_pagos}}</th>
                     <th>{{"$item->nombre_users"}}</th>
                     <td> 

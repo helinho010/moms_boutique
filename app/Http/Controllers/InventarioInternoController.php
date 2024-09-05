@@ -4655,11 +4655,12 @@ class InventarioInternoController extends Controller
 
     public function exportExcel (Request $request)
     {
+
         $inventarioInternoSucursal = InventarioInterno::inventarioXSucurusal($request->id_sucursal);
 
-        $nombre_archivo = 'InventarioInterno_'.date('dmY_His').'.csv';
+        $nombre_archivo = 'InventarioInterno_'.date('dmY_His').'.xlsx';
 
         // Exportar los datos a CSV
-        return Excel::download(new InventarioInternoExport($inventarioInternoSucursal), $nombre_archivo);
+        return Excel::download(new InventarioInternoExport($inventarioInternoSucursal), $nombre_archivo, \Maatwebsite\Excel\Excel::XLSX);
     }
 }

@@ -326,8 +326,11 @@ class DetalleVenta extends Component
                                                         productos.precio as precio_producto')
                                  ->join('venta', 'venta.id', 'detalle_ventas.id_venta')
                                  ->join('productos', 'productos.id', 'detalle_ventas.id_producto')
-                                 ->where('venta.id',$idVenta)
-                                 ->get();
+                                 ->where('venta.id',$idVenta);
+
+        $numeroItems = $datosVentaDetallado->count();
+
+        $datosVentaDetallado = $datosVentaDetallado->get();
 
         $datosVenta = Venta::findOrFail($idVenta);
         
@@ -381,6 +384,8 @@ class DetalleVenta extends Component
             <td>'.((float) $producto->cantidad * (float) $producto->precio_producto).'</td>
           </tr>';
         }
+
+        // dd(ceil($datosVenta['descuento'] * $numeroItems));
 
         $dompdf = new Dompdf();
         //$contenidoVistaVentaBlade = file_get_contents('../resources/views/Venta/exportFileVenta.html');
@@ -4590,7 +4595,7 @@ class DetalleVenta extends Component
                       <td></td>
                       <td></td>
                       <td class="rotulo">Descuento [Bs]</td>
-                      <td class="cantidades">'.$datosVenta['descuento'].'</td>
+                      <td class="cantidades">'.ceil($datosVenta['descuento'] * $numeroItems).'</td>
                     </tr>
                     <tr>
                       <td></td>

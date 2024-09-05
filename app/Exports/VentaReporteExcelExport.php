@@ -41,9 +41,11 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
             $columnas = 'detalle_ventas.descripcion,
                          detalle_ventas.precio_unitario,
                          detalle_ventas.cantidad,
-                         venta.descuento,
+                         detalle_ventas.subtotal,
+                         venta.descuento, 
                          tipo_pagos.tipo,
-                         venta.efectivo_recibido ,
+                         venta.efectivo_recibido,
+                         venta.total_venta,
                          venta.envio,
                          venta.referencia,
                          venta.observacion,
@@ -90,8 +92,8 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                 "Producto",             //C
                 "P/U [Bs]",             //D
                 "Cantidad",             //E    
-                "Descuento[Bs]",         //F
-                "Monto Recibido",       //G    
+                "Descuento[Bs]",        //F
+                "Sub Total",            //G    
                 "Tipo Pago",            //H
                 "Vendedor",             //I
                 "Envio" ,               //J
@@ -102,15 +104,15 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
 
         public function map($invoice): array
         {
-            // dd($invoice->direccion);
+            // dd($invoice);
             return [
                 $invoice->direccion != "" ? substr($invoice->direccion,0,45)."..." : $invoice->nombre,
                 $invoice->created_at,
                 $invoice->descripcion,
                 $invoice->precio_unitario,
                 $invoice->cantidad,
-                $invoice->descuento,
-                $invoice->efectivo_recibido, 
+                $invoice->descuento != 0 ? $invoice->descuento:"0" ,
+                $invoice->subtotal, 
                 $invoice->tipo,
                 $invoice->nombre_usuario,
                 $invoice->envio,
@@ -118,14 +120,14 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                 $invoice->observacion,
                 // $invoice->ciudad,
                 // Date::dateTimeToExcel($invoice->updated_at),
-                
             ];
         }
 
         public function columnFormats(): array
         {
             return [
-                // 'G' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+                'F' => NumberFormat::FORMAT_NUMBER_00,
+                'G' => NumberFormat::FORMAT_NUMBER_00,
             ];
         }
 

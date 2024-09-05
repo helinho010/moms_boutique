@@ -45,9 +45,15 @@ class InventarioInterno extends Model
                         ->join('productos', 'productos.id', 'inventario_internos.id_producto')
                         ->join('sucursals', 'sucursals.id', 'inventario_internos.id_sucursal')
                         ->join('users', 'users.id', 'inventario_internos.id_usuario')
-                        ->join('tipo_ingreso_salidas', 'tipo_ingreso_salidas.id', 'inventario_internos.id_tipo_ingreso_salida')
-                        ->where('sucursals.id', $idSucursal)
-                        ->get();
+                        ->join('tipo_ingreso_salidas', 'tipo_ingreso_salidas.id', 'inventario_internos.id_tipo_ingreso_salida');
+      if($idSucursal == 999 )
+      {
+        $inventario = $inventario->get();
+      }else{
+        $inventario = $inventario->where('sucursals.id', $idSucursal)
+                                 ->get();
+      }
+                        
       return $inventario;
     }
 }

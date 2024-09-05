@@ -140,6 +140,7 @@ class VentaController extends Controller
 
     public function realizarVenta(Request $request)
     {
+        // dd(collect($request->productos)->count());
         try {
                 $this->nombre_archivo = "Sucursal_".date('Ymd_His').".pdf";
                 
@@ -153,7 +154,7 @@ class VentaController extends Controller
                 $newVenta->id_tipo_pago = $request->idTipoPago;
                 $newVenta->id_usuario = auth()->user()->id;
                 $newVenta->id_cliente = $nuevoCliente->id;
-                $newVenta->descuento = $request->descuento_venta;
+                $newVenta->descuento = $request->descuento_venta / collect($request->productos)->count();
                 $newVenta->total_venta = $request->totalVenta;
                 $newVenta->efectivo_recibido = $request->efectivo_recibido;
                 $newVenta->cambio = $request->cambio_venta;
