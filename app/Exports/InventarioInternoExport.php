@@ -24,23 +24,26 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
     public function headings(): array
         {
             return [
-                "Nro.",                   //A
+                "Nro.",                //A
                 "Producto",            //B
-                "Tipo Ing. Sal.",      //C
-                "Stock",               //D
-                "Usuario",             //E    
-                "Estado",               //F
+                "Talla",               //C
+                "Precio [Bs]",         //D
+                "Tipo Ing. Sal.",      //E
+                "Stock",               //F
+                "Usuario",             //G    
+                "Estado",              //H
             ];
         }
     public function columnWidths(): array
     {
             return [
                 'A' => 5,
-                'B' => 25,
-                'C' => 13,
-                'D' => 8,
-                'E' => 10,
-                'F' => 10, 
+                'B' => 27,
+                'C' => 12,
+                'D' => 11,
+                'E' => 13,
+                'F' => 8, 
+                'G' => 8,
             ];
     }
 
@@ -49,6 +52,8 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
         return [
             $invoice->correlativo,
             $invoice->nombre_productos,
+            $invoice->talla_productos != "" ? $invoice->talla_productos : "ST (Sin Talla)",
+            $invoice->precio_productos,
             $invoice->tipo_tipo_ingreso_salidas,
             $invoice->stock_inventario_internos != 0 ? $invoice->stock_inventario_internos:"0",
             $invoice->name_users,
@@ -68,6 +73,14 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
                                     'wrapText' => true,
                                    ],
                  ],
+
+            'C' => [
+                     'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_LEFT,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                        'wrapText' => true,
+                     ],
+                   ],
         ];
     }
 
