@@ -31,6 +31,8 @@
         {
             if ($_GET['actualizado'] == 1) {
                 echo '<div class="alert alert-success" role="alert">La Sucursal fue actualizada correctamente</div>';
+            }else if ( $_GET['actualizado'] == 2 ) {
+                echo '<div class="alert alert-warning" role="alert">Ya existe una Sucursal Central</div>';    
             }else{
                 echo '<div class="alert alert-danger" role="alert">Error al actualizar la Sucursal</div>';
             }
@@ -260,6 +262,8 @@
             $("#formularioRegistroActualizacion").submit();
             resestablecerValoresModal();
         });
+
+        Livewire.dispatch('cambiar_id_sucursal', { id_sucursal_pased: item.id });
     }
 
     function habilitarDesabilitar(item)

@@ -85,11 +85,22 @@ class SucursalController extends Controller
         $actualizarSucursal->direccion = $request->direccion;
         $actualizarSucursal->telefonos = $request->telefonos;
         $actualizarSucursal->ciudad = $request->ciudad;
-
-        $estado = 0;
-        if ($actualizarSucursal->save()) {
-            $estado = 1;
+        $contarSucursalesCentrales = Sucursal::where('almacen_central', true);
+        if ( isset($request->almacen_central) && $contarSucursalesCentrales->count() == 0 ) 
+        {
+            $actualizarSucursal->almacen_central = true;
+            $estado = 0;
+        }else{
+            $actualizarSucursal->almacen_central = false;
+            $estado = 2;
         }
+
+        if ($estado != 2){
+            if ($actualizarSucursal->save()) {
+                $estado = 1;
+            }
+        }
+        
 
         return redirect()->route('home_sucursal',['actualizado'=>$estado]);
     }
