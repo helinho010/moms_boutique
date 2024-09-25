@@ -4707,42 +4707,44 @@ class InventarioExternoController extends Controller
     public function retornarProductos(Request $request)
     {
         try {
-                $eventoProductos = InventarioExterno::where('id_evento',$request->id_evento)->get();
-                
-                $idAlmcenCentral = (Sucursal::firstWhere('almacen_central',1))->id;
+            
+            $eventoProductos = InventarioExterno::where('id_evento', $request->id_evento)->get();
 
-                $idTipoIngreso = (TipoIngresoSalida::firstWhere('tipo','Traspaso'))->id;
+            if (is_null(Sucursal::almacenCentral())) {
+                return ['respuesta' => false, 'mensaje' => "Aun no se tiene un almacen central registrado" ];
+            } else {
+                $idAlmcenCentral = (Sucursal::firstWhere('almacen_central', 1))->id;
 
-                if ($eventoProductos->count() > 0 && $eventoProductos[0]->activo != 3 ) 
-                {
-                    foreach ($eventoProductos as $key => $value) 
-                    {
-                        
+                $idTipoIngreso = (TipoIngresoSalida::firstWhere('tipo', 'Traspaso'))->id;
+
+                if ($eventoProductos->count() > 0 && $eventoProductos[0]->activo != 3) {
+                    foreach ($eventoProductos as $key => $value) {
+
                         $itemInventarioInterno = InventarioInterno::updateOrCreate(
                             [
-                                'id_producto'=>$value->id_producto, 
-                                'id_sucursal'=>$idAlmcenCentral,
-                                'estado'=>1,    
+                                'id_producto' => $value->id_producto,
+                                'id_sucursal' => $idAlmcenCentral,
+                                'estado' => 1,
                             ],
                             [
-                                'id_producto'=>$value->id_producto, 
-                                'id_sucursal'=>$idAlmcenCentral,
-                                'id_usuario'=>auth()->user()->id,
-                                'id_tipo_ingreso_salida'=>$idTipoIngreso,
-                                'cantidad_ingreso'=>$value->cantidad,
-                                'stock' => DB::raw('IFNULL(stock, 0) +'.$value->cantidad),
+                                'id_producto' => $value->id_producto,
+                                'id_sucursal' => $idAlmcenCentral,
+                                'id_usuario' => auth()->user()->id,
+                                'id_tipo_ingreso_salida' => $idTipoIngreso,
+                                'cantidad_ingreso' => $value->cantidad,
+                                'stock' => DB::raw('IFNULL(stock, 0) +' . $value->cantidad),
                             ]
                         );
-                        
+
                         $value->update(['activo' => 3]);
                     }
-                    return ['respuesta'=>true, 'mensaje'=>'Datos actualizados correctamente'];
-                }else {
-                    return ['respuesta'=>true, 'mensaje'=>'Los datos ya fueron almacenados con ateoridad o no se tienen registros de ellos'];
+                    return ['respuesta' => true, 'mensaje' => 'Datos actualizados correctamente'];
+                } else {
+                    return ['respuesta' => true, 'mensaje' => 'Los datos ya fueron almacenados con ateoridad o no se tienen registros de ellos'];
                 }
-
+            }
         } catch (\Throwable $th) {
-            return ['respuesta'=>false, 'mensaje'=>$th->getMessage()];
+            return ['respuesta' => false, 'mensaje' => $th->getMessage()];
         }
     }
 
