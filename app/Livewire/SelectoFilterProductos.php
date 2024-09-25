@@ -68,6 +68,7 @@ class SelectoFilterProductos extends Component
                                                                   ')
                                                         ->join('productos', 'productos.id', 'inventario_internos.id_producto')
                                                         ->where('inventario_internos.id_sucursal',$this->id_sucursal_seleccionado)
+                                                        ->where('inventario_internos.estado',1)
                                                         ->orderBy('productos.nombre','asc')
                                                         ->get();
 

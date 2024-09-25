@@ -63,9 +63,8 @@ class InventarioExternoController extends Controller
                                     ->get();
         }
 
-        
-
         $productos = Producto::all();
+
         $tiposIngresosSalidas = TipoIngresoSalida::all();
 
         return view('inventarioExterno',[
