@@ -46,6 +46,7 @@ class CheckAlmacenCentral extends Component
             $this->idSucursalCentralBD = $almacenCentral[0]->id;
             $this->estado = "disabled";
             $this->mensaje = "Ya existe un Almacen Central (Bloqueado!)";
+            $this->almacen_central = false;
         } else {
             $this->idSucursalCentralBD = 0;
             $this->estado = "";

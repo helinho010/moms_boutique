@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Sucursal;
 
+use function PHPUnit\Framework\isNull;
+
 class SucursalController extends Controller
 {
     public function index(Request $request)
@@ -79,6 +81,16 @@ class SucursalController extends Controller
             'ciudad' => 'required',
         ]);
 
+        $sucursalCentralActual = Sucursal::where('almacen_central',1)->first();
+        
+        if (is_null($sucursalCentralActual) || $sucursalCentralActual->count() < 1) 
+        {
+            $idSucursalCentralActual = 0;
+        }else{
+            
+            $idSucursalCentralActual = $sucursalCentralActual->id ;
+        }
+
         $actualizarSucursal = Sucursal::where("id",$request->id)->first();
         $actualizarSucursal->nit = $request->nit;
         $actualizarSucursal->razon_social = $request->razon_social;
@@ -90,7 +102,14 @@ class SucursalController extends Controller
         {
             $actualizarSucursal->almacen_central = true;
             $estado = 0;
-        }else{
+        }else if($idSucursalCentralActual == $request->id ){
+            /**
+             * Estamos en este punto
+             */
+            $actualizarSucursal->almacen_central = false;
+            $estado = 1;
+        }
+        else{
             $actualizarSucursal->almacen_central = false;
             $estado = 2;
         }
