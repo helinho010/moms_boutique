@@ -8,6 +8,7 @@ use App\Models\Sucursal;
 use App\Models\TipoIngresoSalida;
 use App\Models\TrasporteProductos;
 use App\Models\UserSucursal;
+use App\View\Components\Formulario\input;
 use DragonCode\Contracts\Cashier\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -295,7 +296,7 @@ class TrasporteProductosController extends Controller
             <td>'.$producto["cantidad_trasporte_producto"].'</td>
             <td>'.$producto["tipo_tipo_ingreso_salidas"].'</td>
             <td>'.$producto["observaciones_trasporte_producto"].'</td>
-            <td>'.$producto["nombre_usuario"].'</td> 
+            <td> <input type="checkbox" id="checkProducto" > </td> 
           </tr>';
           $numeracionLineas++;
         }
@@ -407,6 +408,10 @@ class TrasporteProductosController extends Controller
                     border-top:1px solid black;
                     border-right:1px solid black;
                     border-radius: 5px;
+                }
+
+                #checkProducto{
+                    width: 15px;
                 }
         
                 footer {
@@ -4501,12 +4506,12 @@ class TrasporteProductosController extends Controller
             <div>
                 <table class="detalleVenta">
                     <tr class="detalleVentaTr">
-                      <th style="width: 6%;">#</th>  
+                      <th style="width: 6%;">Nro.</th>  
                       <th style="width: 25%;">Producto</th>
                       <th style="width: 10%;">Cantidad Enviada</th>
                       <th style="width: 10%;">Tipo Ingreso o Salida</th>
                       <th style="width: 20%;">Observaciones</th>
-                      <th style="width: 12%;">Usuario</th>
+                      <th style="width: 12%;">Revisado</th>
                     </tr>
                     '.$htmlProductos.'
                 </table>
@@ -4525,8 +4530,9 @@ class TrasporteProductosController extends Controller
                 </span>
                 <br><br>
                 <span>
-                  <b>Observacion:............................................................................<b>
+                  <b>Observacion:..........................................................................................................<b>
                 </span>
+                <br>
                 <br>
             </footer>
         </body>
