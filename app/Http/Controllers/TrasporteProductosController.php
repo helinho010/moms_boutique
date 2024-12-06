@@ -249,7 +249,6 @@ class TrasporteProductosController extends Controller
         $sucursales = Sucursal::where("id", $request->origen_sucursal_traspaso_productos)
                             ->orWhere('id', $request->destino_sucursal_traspaso_productos)
                             ->get();
-        // dd(auth()->user()->username);
 
         $productosTraspasados = TrasporteProductos::selectRaw('
                                                                 productos.id as id_producto,
@@ -281,8 +280,6 @@ class TrasporteProductosController extends Controller
                                                    ->whereRaw('trasporte_productos.id_sucursal_origen = '."$request->origen_sucursal_traspaso_productos".' and trasporte_productos.id_sucursal_destino = '."$request->destino_sucursal_traspaso_productos")
                                                    ->get();
 
-        // dd($productosTraspasados);
-
         $htmlProductos = '';
         $numeracionLineas = 1;
         
@@ -291,7 +288,10 @@ class TrasporteProductosController extends Controller
             $htmlProductos = $htmlProductos.'<tr>
             <td>'."$numeracionLineas".'</td>
             <td>'.$producto["nombre_producto"].'<br>'.
-                "Talla: ".($producto["talla_producto"] != "" ? $producto["talla_producto"] : "ST(Sin Talla)")." - Precio: ".($producto["precio_producto"] != "" ? $producto["precio_producto"] : "0").'</td>
+                "Talla: ".($producto["talla_producto"] != "" ? $producto["talla_producto"] : "ST(Sin Talla)").
+                " - ".
+                "Precio: ".($producto["precio_producto"] != "" ? $producto["precio_producto"] : "0").
+            '</td>
             <td>'.$producto["cantidad_trasporte_producto"].'</td>
             <td>'.$producto["tipo_tipo_ingreso_salidas"].'</td>
             <td>'.$producto["observaciones_trasporte_producto"].'</td>
@@ -330,7 +330,7 @@ class TrasporteProductosController extends Controller
                     width: 150px;
                 }
                 .notaVenta{
-                    font-size: 26px;
+                    font-size: 20px;
                     color: black;
                     display: block;
                     width: 100%;
@@ -4477,16 +4477,16 @@ class TrasporteProductosController extends Controller
                 </div>
                 <div style="margin: auto; height: auto">
                     <span>
-                        <b>Sucursal Origen:</b> '.$sucursales[0]->razon_social." ".$sucursales[0]->direccion.' 
+                        <b>Sucursal Origen:</b> '.$sucursales[0]->razon_social." - ".$sucursales[0]->direccion.' 
                     </span>
                     <span>
-                        <b>Sucursal Destino: </b> '.$sucursales[1]->razon_social." ".$sucursales[1]->direccion.'
+                        <b>Sucursal Destino: </b> '.$sucursales[1]->razon_social." - ".$sucursales[1]->direccion.'
                     </span>
                     <span>
                         <b>Fecha de Traspaso: </b> '.$request->fecha_form_traspaso_productos_pdf.'
                     </span>
                     <span>
-                        <b>Usuario: </b> '.auth()->user()->name." - ".auth()->user()->username.'
+                        <b>Usuario: </b> '.auth()->user()->name.'
                     </span>
                     <span>
                         <b>Ciudad: </b> La Paz
@@ -4503,7 +4503,7 @@ class TrasporteProductosController extends Controller
                     <tr class="detalleVentaTr">
                       <th style="width: 6%;">#</th>  
                       <th style="width: 25%;">Producto</th>
-                      <th style="width: 10%;">Cantidad</th>
+                      <th style="width: 10%;">Cantidad Enviada</th>
                       <th style="width: 10%;">Tipo Ingreso o Salida</th>
                       <th style="width: 20%;">Observaciones</th>
                       <th style="width: 12%;">Usuario</th>
@@ -4525,7 +4525,7 @@ class TrasporteProductosController extends Controller
                 </span>
                 <br><br>
                 <span>
-                  <b>Observacion:......................................................<b>
+                  <b>Observacion:............................................................................<b>
                 </span>
                 <br>
             </footer>
@@ -4545,11 +4545,6 @@ class TrasporteProductosController extends Controller
         $dompdf->stream($nombre_archivo);
 
         // return Storage::download($nombre_archivo);
-        
-
-        // return "$request->fecha_form_traspaso_productos_pdf <br> 
-        //         $request->origen_sucursal_traspaso_productos <br> 
-        //         $request->destino_sucursal_traspaso_productos";
-
+        return redirect()->route('home_traspaso_productos');
     }
 }
