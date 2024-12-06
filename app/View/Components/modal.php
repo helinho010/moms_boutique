@@ -1,29 +1,22 @@
 <?php
 
-namespace App\View\Components\Formulario;
+namespace App\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class input extends Component
+class modal extends Component
 {
     /**
      * Create a new component instance.
      */
     public function __construct(
-        public string $tipo,
-        public string $name,
         public string $id,
-        public string $placeholder,
+        public string $idformulario
     )
     {
         //
-    }
-
-    function fechaHoy()
-    {
-        return date("d/m/Y");
     }
 
     /**
@@ -31,6 +24,6 @@ class input extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.formulario.input');
+        return view('components.modal');
     }
 }

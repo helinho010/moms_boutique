@@ -50,6 +50,9 @@
                 <div class="input-group flex-nowrap">
                     <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
                     <button class="input-group-text" id="inputBuscar"><i class="fas fa-search"></i></button>
+                    <x-boton-pdf>
+                        <i class="far fa-file-pdf" style="font-size: 18px"></i>
+                    </x-boton-pdf>
                 </div>
             </form>
         </div>
@@ -282,6 +285,40 @@
             </div>
             </div>
         </div>
+        <!-- Fin Modal -->
+
+        <!-- Modal component -->
+        <x-modal id="modalComponentstaticBackdrop" idformulario="tra_prod_form_pdf">
+            <form action="{{route('traspaso_productos_formulario_pdf')}}" method="post" id="tra_prod_form_pdf">
+                @method('post')
+                @csrf
+                <x-slot:title>
+                    Formulario de Traspaso de Productos
+                </x-slot:title>
+                <x-formulario.label for="origen_sucursal_traspaso_productos">
+                    Sucursal Origen: 
+                </x-formulario.label>
+                <x-formulario.select :$sucursales id="origen_sucursal_traspaso_productos" name="origen_sucursal_traspaso_productos">
+                    
+                </x-formulario.select>
+                <x-formulario.label for="destino_sucursal_traspaso_productos">
+                    Sucursal Destino: 
+                </x-formulario.label>
+                <x-formulario.select :$sucursales id="destino_sucursal_traspaso_productos" name="destino_sucursal_traspaso_productos">
+                    
+                </x-formulario.select>
+                <x-formulario.label for="input_fecha_traspaso_productos">
+                    Seleccione la fecha de traspaso:
+                </x-formulario.label>
+                <x-formulario.input tipo="date" name="fecha_form_traspaso_productos_pdf" id="input_fecha_traspaso_productos" placeholder="--">
+
+                </x-formulario.input>
+                <x-slot:nombreBtn>
+                    Exportar
+                </x-slot:nombreBtn>
+            </form>
+        </x-modal>
+        <!-- Final Modal component-->
 @endsection
 
 

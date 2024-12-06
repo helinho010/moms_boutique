@@ -106,6 +106,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('home_traspaso_productos')
         ->middleware('control.rutas');
     Route::post('/traspaso_productos', [TrasporteProductosController::class,'store'])->name('nuevo_traspaso_productos');
+    Route::post('/exportar_traspaso_productos_formulario_pdf', [TrasporteProductosController::class,'traspasoProductosFormularioPdf'])->name('traspaso_productos_formulario_pdf');
 
 
 
