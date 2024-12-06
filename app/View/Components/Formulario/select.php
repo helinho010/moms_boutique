@@ -15,7 +15,8 @@ class select extends Component
      */
     public function __construct( 
         public $sucursales,
-        public string $id
+        public string $id,
+        public string $name
     )
     {}
 

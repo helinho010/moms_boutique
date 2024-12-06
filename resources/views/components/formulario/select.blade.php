@@ -1,7 +1,7 @@
 <div>
     <select class="form-select" 
             aria-label="Default select example"
-            id=""{{ $id }}
+            id="{{ $id }}"
             name="{{ $name }}"
     >
         <option selected disabled>Seleccione una opcion</option>
