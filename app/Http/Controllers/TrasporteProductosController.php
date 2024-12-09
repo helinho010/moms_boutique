@@ -247,6 +247,12 @@ class TrasporteProductosController extends Controller
 
     public function traspasoProductosFormularioPdf(Request $request)
     {
+        $validate = $request->validate([                              
+            'origen_sucursal_traspaso_productos' => 'required|numeric',
+            'destino_sucursal_traspaso_productos' => 'required|numeric',
+            'fecha_form_traspaso_productos_pdf' => 'required|date'
+        ]);
+        
         $sucursales = Sucursal::where("id", $request->origen_sucursal_traspaso_productos)
                             ->orWhere('id', $request->destino_sucursal_traspaso_productos)
                             ->get();

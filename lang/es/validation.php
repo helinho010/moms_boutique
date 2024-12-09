@@ -232,5 +232,8 @@ return [
         'user'                     => 'usuario',
         'username'                 => 'usuario',
         'year'                     => 'año',
+        'origen_sucursal_traspaso_productos' => 'origen sucrusal',
+        'destino_sucursal_traspaso_productos' => 'destino sucursal',
+        'fecha_form_traspaso_productos_pdf' => 'fecha de traspaso',
     ],
 ];

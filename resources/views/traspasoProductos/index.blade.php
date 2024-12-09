@@ -11,20 +11,17 @@
     </style>
 @endsection
 
-@section('h-title')
-    @php
-        if (isset($_GET['exito'])) 
-        {
-            if ($_GET['exito'] == 1) {
-                echo '<div class="alert alert-success" role="alert">La Categoria se registro correctamente</div>';
-            }else{
-                echo '<div class="alert alert-danger" role="alert">Error al registrar la Categoria</div>';
-            }
-        }
-        if ($errors->first('nombre') != '') {
-            echo '<div class="alert alert-danger" role="alert">'.$errors->first('nombre').'</div>';
-        }   
-    @endphp
+@section('mensaje-errores')
+  @if ($errors->any())
+    <x-formulario.mensaje-error-validacion-inputs color="warning">
+        <h5>Error al enviar datos al Sistema</h5>
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </x-formulario.mensaje-error-validacion-inputs>
+  @endif
 @endsection
 
 @section('card-title')
@@ -402,6 +399,11 @@
 
         $("#home").removeClass('active');
         $("#traspaso\\ productos").addClass('active');
+        if ({{$errors->any()}}) {
+            setTimeout(() => {
+                $("#mensaje-errores-inputs").hide();
+            }, 10000);
+        }
     });
 
 
