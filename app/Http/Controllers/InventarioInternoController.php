@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Storage;
 use LaravelLang\Publisher\Console\Reset;
 use Maatwebsite\Excel\Facades\Excel;
 
+use function PHPSTORM_META\type;
+
 class InventarioInternoController extends Controller
 {
     public function index()
@@ -375,7 +377,6 @@ class InventarioInternoController extends Controller
 
     public function exportPdf(Request $request)
     {
-        // dd($request);
 
         $sucursal = Sucursal::findOrFail($request->id_sucursal);
 
@@ -4657,6 +4658,19 @@ class InventarioInternoController extends Controller
     {
 
         $inventarioInternoSucursal = InventarioInterno::inventarioXSucurusal($request->id_sucursal);
+        
+        $inventarioInternoSucursal = $inventarioInternoSucursal->map(function($item){
+            $nombreCategoriaSegunProducto = Producto::selectRaw('
+                                                            categorias.nombre as nombre_categoria
+                                                           ')
+                                                    ->join('categorias', 'categorias.id', 'productos.id_categoria')
+                                                    ->where('productos.id',$item->id_productos)
+                                                    ->get();
+
+            $item->categoria = $nombreCategoriaSegunProducto ? $nombreCategoriaSegunProducto[0]->nombre_categoria : 'Sin categoría';
+            
+            return $item;
+        });
 
         $nombre_archivo = 'InventarioInterno_'.date('dmY_His').'.xlsx';
 

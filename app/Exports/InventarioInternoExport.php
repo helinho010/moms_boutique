@@ -25,25 +25,27 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
         {
             return [
                 "Nro.",                //A
-                "Producto",            //B
-                "Talla",               //C
-                "Precio [Bs]",         //D
-                "Tipo Ing. Sal.",      //E
-                "Stock",               //F
-                "Usuario",             //G    
-                "Estado",              //H
+                "Categoria",           //B
+                "Producto",            //C
+                "Talla",               //D
+                "Precio [Bs]",         //E
+                "Tipo Ing. Sal.",      //F
+                "Stock",               //G
+                "Usuario",             //H    
+                "Estado",              //I
             ];
         }
     public function columnWidths(): array
     {
             return [
                 'A' => 5,
-                'B' => 27,
-                'C' => 12,
-                'D' => 11,
-                'E' => 13,
-                'F' => 8, 
-                'G' => 8,
+                'B' => 12,
+                'C' => 27,
+                'D' => 12,
+                'E' => 11,
+                'F' => 13,
+                'G' => 8, 
+                'H' => 8,
             ];
     }
 
@@ -51,6 +53,7 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
     {
         return [
             $invoice->correlativo,
+            $invoice->categoria,
             $invoice->nombre_productos,
             $invoice->talla_productos != "" ? $invoice->talla_productos : "ST (Sin Talla)",
             $invoice->precio_productos,
