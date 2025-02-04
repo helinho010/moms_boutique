@@ -335,11 +335,12 @@
     {   
         event.preventDefault(); 
 
-        if ($(this).attr('id') == 'inputBuscar') 
-        {
+        if ($(this).attr('id') == 'inputBuscar') {
+
             $("#buscarformulario").submit();
-        } else if ($(this).attr('id') == 'inputNombreModal') 
-        {
+
+        } else if ( $(this).attr('id') == 'inputNombreModal' ) {
+
             Swal.fire({
             title: "Estas seguro de realizar el traspaso?",
             // text: "You won't be able to revert this!",
@@ -349,15 +350,17 @@
             cancelButtonColor: "#d33",
             confirmButtonText: "Confirmar!"
             }).then((result) => {
-            if (result.isConfirmed) 
-            {
-                $("#nuevo_traspaso_productos").submit();
-            }
+                if (result.isConfirmed) 
+                {
+                    $("#nuevo_traspaso_productos").submit();
+                }
             });
             
 
-        } else if ($(this).attr('class') == 'btn btn-danger cerrarModal' || $(this).attr('class') == 'btn-close cerrarModal') 
+        } else if ($(this).attr('class') == 'btn btn-danger cerrarModal' || 
+                   $(this).attr('class') == 'btn-close cerrarModal') 
         {
+            alert("Precionaste Cancelar");
             $("#modalSelectSucursal").val('seleccionado');
             $("#modalSelectSucursalDestino").val('seleccionado');
             $("#modalSelectProducto").val('seleccionado');
@@ -396,10 +399,9 @@
         //     console.log(parametroGet);
         //     $("#exampleModal").modal('show');
         // } 
-
         $("#home").removeClass('active');
         $("#traspaso\\ productos").addClass('active');
-        if ({{$errors->any()}}) {
+        if ( @json($errors->any()) ) {
             setTimeout(() => {
                 $("#mensaje-errores-inputs").hide();
             }, 10000);

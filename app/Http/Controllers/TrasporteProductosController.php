@@ -197,6 +197,13 @@ class TrasporteProductosController extends Controller
 
     public function store(Request $request)
     {
+        $validate = $request->validate([                              
+            'id_sucursal' => 'required|numeric',
+            'id_producto' => 'required|numeric',
+            'id_sucursal_destino' => 'required|numeric',
+            'id_tipo_salida' => 'required|numeric',
+            'cantidad' => 'required|numeric',
+        ]);
         
         $registroInvetarioSucursalOrigen = InventarioInterno::where('id_sucursal',$request->id_sucursal)
                                                       ->where('id_producto',$request->id_producto)
