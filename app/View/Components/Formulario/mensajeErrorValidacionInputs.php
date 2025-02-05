@@ -8,12 +8,12 @@ use Illuminate\View\Component;
 
 class mensajeErrorValidacionInputs extends Component
 {
-    public string $color;
+    
     /**
      * Create a new component instance.
      */
     public function __construct(
-        $color
+        public string $color
     )
     {
         //
