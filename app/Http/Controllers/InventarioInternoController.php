@@ -356,23 +356,32 @@ class InventarioInternoController extends Controller
 
     public function update_estado(Request $request)
     {
-        switch ($request->estado) 
-        {
-            case 0:
-                $itemInventarioInterno = InventarioInterno::where("id",$request->id)->first();
-                $itemInventarioInterno->estado = 1;
-            break;
+        // switch ($request->estado) 
+        // {
+        //     case 0:
+        //         $itemInventarioInterno = InventarioInterno::where("id",$request->id)->first();
+        //         $itemInventarioInterno->estado = 1;
+        //     break;
 
-            case 1:
-                $itemInventarioInterno = InventarioInterno::where("id",$request->id)->first();
-                $itemInventarioInterno->estado = 0;
-            break;
+        //     case 1:
+        //         $itemInventarioInterno = InventarioInterno::where("id",$request->id)->first();
+        //         $itemInventarioInterno->estado = 0;
+        //     break;
             
-            default:
+        //     default:
                 
-            break;
+        //     break;
+        // }
+        // $itemInventarioInterno->save();
+        $numeroFilasAfectadas = InventarioInterno::where("id",$request->id)
+                                                  ->delete();
+        $estado = false;
+        if ($numeroFilasAfectadas > 0) {
+            $estado = true;
         }
-        $itemInventarioInterno->save();
+        // Si el estado = false ; no se realizaron cambios
+        // Si el estado = true ; Se realizaion cambios
+        return ["estado" => $estado];
     }
 
     public function exportPdf(Request $request)

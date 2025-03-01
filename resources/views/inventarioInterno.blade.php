@@ -17,7 +17,7 @@
 
 @section('h-title')
     @php
-        if (isset($_GET['exito'])) 
+        if (isset($_GET['exito']))
         {
             if ($_GET['exito'] == 1) {
                 echo '<div class="alert alert-success" role="alert">El item del Inventario se registro correctamente</div>';
@@ -26,7 +26,7 @@
             }
         }
 
-        if (isset($_GET['actualizado'])) 
+        if (isset($_GET['actualizado']))
         {
             if ($_GET['actualizado'] == 1) {
                 echo '<div class="alert alert-success" role="alert">El Item del Inventario fue actualizado correctamente</div>';
@@ -38,7 +38,7 @@
         if ($errors->first('id_sucursal') != '' ||
             $errors->first('id_producto') != '' ||
             $errors->first('id_tipo_ingreso_salida') != '' ||
-            $errors->first('cantidad_ingreso') != '') 
+            $errors->first('cantidad_ingreso') != '')
             {
                 echo '<div class="alert alert-danger" role="alert">'.
                 $errors->first('id_sucursal')."<br>".
@@ -46,7 +46,7 @@
                 $errors->first('id_tipo_ingreso_salida')."<br>".
                 $errors->first('cantidad_ingreso')."<br>"
                 .'</div>';
-        }   
+        }
     @endphp
 @endsection
 
@@ -81,7 +81,7 @@
                                 @if (auth()->user()->usertype_id == 1)
                                   <option value="999" @if (isset($id_sucursal) && $id_sucursal == 999 ) selected  @endif>
                                     Todas las Sucursales
-                                  </option>    
+                                  </option>
                                 @endif
                                     @foreach ($sucursales as $item)
                                        @if ($item->estado_sucursal == 1)
@@ -98,9 +98,9 @@
                         </div>
                     </form>
                 </div>
-            </div>  
+            </div>
         </div>
-        
+
         <div class="col-md-4">
             <div class="row">
                 <form action="{{ route('buscar_inventario_interno') }}" method="POST" id="buscarformulario">
@@ -120,7 +120,7 @@
     </div>
     <br>
     <div class="row">
-        <table class="table table-striped"> 
+        <table class="table table-striped">
             <thead>
                 <tr>
                   <th scope="col">Opciones</th>
@@ -149,9 +149,9 @@
                             ]);
                         // var_dump($aux);
                         echo '<i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick=\'editar('.$auxdata.')\'></i>';
-                        if ($aux->estado_inventario_interno == 1) 
+                        if ($aux->estado_inventario_interno == 1)
                         {
-                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>'; 
+                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>';
                         }else{
                             echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>';
                         }
@@ -169,14 +169,14 @@
                     <th>{{$aux->cantidad_ingreso}}</th>
                     <th>{{$aux->stock}}</th>
                     <th>{{"$aux->nombre_usuario"}}</th>
-                    <td> 
+                    <td>
                         @if ( $aux->estado_inventario_interno == 1 )
-                            <span class="badge bg-success">Activo</span>    
+                            <span class="badge bg-success">Activo</span>
                         @else
-                            <span class="badge bg-warning">Inactivo</span>    
+                            <span class="badge bg-warning">Inactivo</span>
                         @endif
                     </td>
-                  </tr>    
+                  </tr>
                 @endforeach
               </tbody>
         </table>
@@ -192,7 +192,7 @@
                 <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close" onclick="resestablecerValoresModal()"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{{ route('nuevo_inventario_interno') }}" id="modalFormularioRegistroActualizacion"> 
+                    <form method="POST" action="{{ route('nuevo_inventario_interno') }}" id="modalFormularioRegistroActualizacion">
                       @csrf
                       @method('POST')
                       <div class="row">
@@ -264,9 +264,9 @@
                                         </select>
                                     </div>
                             </div>
-                        </div> 
+                        </div>
                       @endisset
-                      <br>     
+                      <br>
                       <div class="row">
                         <div class="col-md-2">
                             <label for="modalInputCantidadIngreso" class="form-label">Cantidad Ingreso: </label>
@@ -292,7 +292,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -301,10 +301,10 @@
 
     $(document).ready(function(){
         // alert($("#select_sucursal option:selected").attr('value'));
-        if ($("#select_sucursal option:selected").attr('value') > 0) 
+        if ($("#select_sucursal option:selected").attr('value') > 0)
         {
             $('#btnModalRegistroActualizacion').prop( "disabled", false );
-            $('#reqBtnAgregarItem').remove();     
+            $('#reqBtnAgregarItem').remove();
             $('#inputBuscar').prop( "disabled", false );
             $('#btnBuscarItem').remove();
             $('#id_sucursal').val($("#select_sucursal option:selected").attr('value'));
@@ -312,10 +312,10 @@
             // formularioRegistroActualizacion-selectSucursalRegAct
             $('#selectSucursalRegAct').val($("#select_sucursal option:selected").attr('value'))
         }
-        
+
     });
 
-    $("#select_sucursal").on('change',function(){  
+    $("#select_sucursal").on('change',function(){
         $('#btnModalRegistroActualizacion').prop( "disabled", false );
         $('#reqBtnAgregarItem').remove();
         $('#inputBuscar').prop( "disabled", false );
@@ -324,9 +324,9 @@
         $('#modalSelectSucursal').val($("#select_sucursal option:selected").attr('value'));
         $('#title_nombre_sucursal').text($("#select_sucursal option:selected").text());
     });
-    
-    $('button').on('click',function() 
-    {   
+
+    $('button').on('click',function()
+    {
         event.preventDefault();
         if ($(this).attr('id') == 'inputBuscar'){
             $("#buscarformulario").submit();
@@ -359,7 +359,7 @@
         $("#modalSelectProducto").val('seleccionado');
         $("#modalSelectTipoEntrada").val('seleccionado');
         $("#modalInputCantidadIngreso").val('');
-        $("#modalBtnGuardarActualizar").text("Guardar");     
+        $("#modalBtnGuardarActualizar").text("Guardar");
         // $("#id_categoria_producto").val('seleccionado');
     }
 
@@ -372,7 +372,7 @@
         $("#modalFormularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
         $("#modalSelectSucursal").attr("disabled", "disabled");
         $("#modalSelectSucursal").val(item.id_sucursal);
-        $("#modalSelectProducto").val(item.id_producto); 
+        $("#modalSelectProducto").val(item.id_producto);
         $("#modalSelectTipoEntrada").val(item.id_tipo_ingreso_salida);
         $("#modalInputCantidadIngreso").val(item.cantidad_ingreso);
         $("#modalBtnGuardarActualizar").text("Actualizar");
@@ -400,15 +400,20 @@
                 denyButtonText: `No`
                 }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) 
+                if (result.isConfirmed)
                 {
                     $.ajax({
                         type: "POST",
                         url: "{{ route('actualizar_estado_inventario_interno') }}",
                         data: {"id":item.id, "estado":item.estado},
                         success: function (response) {
-                          Swal.fire("Cambio Guardado!", "", "success");        
-                          location.reload();
+                          if (response.estado) {
+                            // Swal.fire("Cambio Guardado!", "", "success");
+                            $("#mensaje-errores-inputs").html('<div class="alert alert-success" role="alert">Registro eliminado exitosamente! </div>')
+                            setTimeout(() => {
+                                location.reload();
+                            }, 5000);
+                          }
                         }
                     });
                 } else if (result.isDenied) {
@@ -430,14 +435,14 @@
         var parametroGetExito = getParameterByName('exito');
         var parametroGetActualizado = getParameterByName('actualizado');
         var pathname = window.location.pathname;
-        
-        if (parametroGetExito == 1 || parametroGetActualizado == 1) 
+
+        if (parametroGetExito == 1 || parametroGetActualizado == 1)
         {
             setTimeout(() => {
                 $(location).attr('href',pathname);
             }, 10000);
         }
-        
+
         $("#home").removeClass('active');
         $("#inventario\\ interno").addClass('active');
 
@@ -450,6 +455,6 @@
             dropdownParent: $('#exampleModal'),
         });
     });
-    
+
 </script>
 @endpush
