@@ -9,6 +9,7 @@
                                                         usertypes.estado as estado_usertypes,
                                                         opciones_sistemas.id as id_opciones_sistemas,
                                                         opciones_sistemas.opcion as opcion_opciones_sistemas,
+                                                        opciones_sistemas.orden_opcion as orden_opciones_sistemas,
                                                         opciones_sistemas.icono as icono_opciones_sistemas,
                                                         opciones_sistemas.ruta as ruta_opciones_sistemas,
                                                         opciones_sistemas.estado as estado_opciones_sistemas
@@ -16,6 +17,7 @@
                                           ->join('usertypes', 'usertypes.id', 'usertype_opcs.id_tipo_usuario')
                                           ->join('opciones_sistemas', 'opciones_sistemas.id', 'usertype_opcs.id_opcion_sistema')
                                           ->where('usertypes.id', auth()->user()->usertype_id)
+                                          ->orderBy('opciones_sistemas.orden_opcion', 'asc')
                                           ->get();
 
       //home_traspaso_producto  
@@ -53,7 +55,42 @@
             
 
             @foreach ($opcionesHabilitadas as $opcion)
-                @if ($opcion->id_opciones_sistemas == 10)
+                @switch($opcion->orden_opciones_sistemas)
+                    @case(10)
+                        <li class="sidebar-item" id="{{ strtolower($opcion->opcion_opciones_sistemas) }}">
+                            <a data-bs-target="#ui" data-bs-toggle="collapse" class="sidebar-link collapsed" aria-expanded="false">
+                                <i class="fas fa-cart-arrow-down"></i>
+                                <span class="align-middle">Venta</span>
+                            </a>
+                            <ul id="ui" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_venta') }}">Realizar Venta</a></li>
+                                <li class="sidebar-item"><a class="sidebar-link" href="{{ route('detalle_ventas_rango_fechas') }}">Detalle Ventas</a></li>
+                                <li class="sidebar-item"><a class="sidebar-link" href="{{ route('reporte_venta') }}">Reporte Ventas</a></li>
+                            </ul>
+                        </li>
+                    @break
+                    @case(11)
+                        <li class="sidebar-item" id="{{ strtolower($opcion->opcion_opciones_sistemas) }}">
+                            <a data-bs-target="#{{ strtolower($opcion->opcion_opciones_sistemas) }}-a" data-bs-toggle="collapse" class="sidebar-link collapsed" aria-expanded="false">
+                                <i class="{{$opcion->icono_opciones_sistemas}}"></i>
+                                <span class="align-middle">{{ $opcion->opcion_opciones_sistemas }}</span>
+                            </a>
+                            <ul id="{{ strtolower($opcion->opcion_opciones_sistemas) }}-a" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                {{-- <li class="sidebar-item"><a class="sidebar-link" href="#">Apertura Caja</a></li> --}}
+                                <li class="sidebar-item"><a class="sidebar-link" href="{{ route('cierre_caja') }}">Cierre Caja</a></li>
+                            </ul>
+                        </li>
+                    @break
+                    @default
+                        <li class="sidebar-item" id="{{ strtolower($opcion->opcion_opciones_sistemas) }}">
+                            <a class="sidebar-link" href="{{ route($opcion->ruta_opciones_sistemas) }}">
+                                <i class="{{$opcion->icono_opciones_sistemas}}"></i>
+                                <span class="align-middle">{{$opcion->opcion_opciones_sistemas}}</span>
+                            </a>
+                        </li>
+                @endswitch
+
+                {{-- @if ($opcion->id_opciones_sistemas == 10)
                     <li class="sidebar-item" id="{{ strtolower($opcion->opcion_opciones_sistemas) }}">
                         <a data-bs-target="#ui" data-bs-toggle="collapse" class="sidebar-link collapsed" aria-expanded="false">
                             <i class="fas fa-cart-arrow-down"></i>
@@ -72,7 +109,7 @@
                             <span class="align-middle">{{$opcion->opcion_opciones_sistemas}}</span>
                         </a>
                     </li>    
-                @endif
+                @endif --}}
             @endforeach
 
             {{-- <li class="sidebar-item">

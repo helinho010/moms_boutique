@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CajaController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\TipoPagoController;
 use App\Http\Controllers\TipoIngresoSalidaController;
@@ -172,6 +173,10 @@ Route::middleware(['auth'])->group(function () {
     
     // Graficos
     Route::post('/productos_mas_vendidos', [GraficosController::class,'productosMasVendidos'])->name('productos_mas_vendidos');
+
+
+    // Caja
+    Route::get('/cierre_caja', [CajaController::class, 'index'])->name('cierre_caja');
 
 });
 
