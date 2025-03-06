@@ -1,9 +1,17 @@
+@props([
+    'value' => "",
+    'disabled' => false,
+])
+
 <div>
     <div class="mb-3">
-        <input type="{{ $tipo }}"
-               name="{{ $name }}" 
+        <input type="{{ $attributes->get('tipo') }}"
+               name="{{ $attributes->get('name') }}" 
                class="form-control" 
-               id="{{ $id }}" 
-               placeholder="{{ $placeholder }}">
+               id="{{ $attributes->get('id') }}" 
+               value="{{ $value }}"
+               placeholder="{{ $attributes->get('placeholder') }}"
+               {{ $disabled ? 'readonly' : '' }}
+        >
     </div>
 </div>

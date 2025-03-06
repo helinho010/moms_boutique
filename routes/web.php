@@ -177,7 +177,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Caja
     Route::get('/cierre_caja', [CajaController::class, 'index'])->name('cierre_caja');
-
+    Route::post('/add_cierre_caja', [CajaController::class, 'nuevoCierreCaja'])->name('add_cierre_caja');
 });
 
 

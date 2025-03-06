@@ -13,7 +13,15 @@ return new class extends Migration
     {
         Schema::create('cajas', function (Blueprint $table) {
             $table->id();
+            $table->date("fecha_cierre");
+            $table->float("efectivo",10,2);
+            $table->float("transferencia",10,2);
+            $table->float("qr",10,2);
+            $table->text("observacion");
+            $table->unsignedBigInteger("id_usuario");
             $table->timestamps();
+
+            $table->foreign('id_usuario')->references('id')->on('users');
         });
     }
 
