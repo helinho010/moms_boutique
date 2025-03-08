@@ -80,11 +80,15 @@
                     <i class="fas fa-check-double fa-xl" style="color: #22ac1d"></i>
                   @else
                     @if (auth()->user()->id != 1)
-                        <button type="button" class="btn btn-outline-primary"><i class="fas fa-edit fa-xl" style="color:#6BA9FA"></i></button>        
+                        <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit fa-xl" style="color:#6BA9FA"></i>
+                        </a>
                     @endif
                     
                     @if (auth()->user()->id == 1)
-                        <button type="button" class="btn btn-outline-primary"><i class="fas fa-registered fa-xl" style="color:#6BA9FA"></i></button>
+                        <button type="button" class="btn btn-outline-primary" id="btn-editarCierreCaja" data-bs-toggle="modal" data-bs-target="#editarCierreCaja" >
+                            <i class="fas fa-registered fa-xl" style="color:#6BA9FA"></i>
+                        </button>
                     @endif
                   @endif  
                 </th>
@@ -207,6 +211,10 @@
         </form>
 
     </x-modal>
+
+    <x-modal id="editarCierreCaja" title="Edicion de Cierre de Caja" idformulario="revCierreCaja" nombre-btn="Enviar">
+        
+    </x-modal>
 @endsection
 
 
@@ -260,7 +268,7 @@
                     },
                     type: "POST",
                     dataType : "json",
-                    
+                    async : false,
                     beforeSend:function(){
                         $("#load").attr('hidden',false);
                         
@@ -308,7 +316,8 @@
         }
 
         $(document).on("change", "#sucursal", function(){
-            obtenerVentaSucursal($(this).val(), $("#fecha").val())
+            obtenerVentaSucursal($(this).val(), $("#fecha").val());
+            sumarValores();
         });
         
         $(document).ready(function(){
@@ -327,7 +336,8 @@
             $("button").click(function(){
                 if ($(this).attr("data-bs-dismiss") == "modal") {
                     borrarDatosInputs();    
-                }              
+                }
+
             });
         });
 

@@ -180,6 +180,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cierre_caja', [CajaController::class, 'index'])->name('cierre_caja');
     Route::post('/add_cierre_caja', [CajaController::class, 'nuevoCierreCaja'])->name('add_cierre_caja');
     Route::post('/venta_sucursal_dia', [CajaController::class, 'ventaSucursalDia'])->name('calcular_total_venta_dia');
+    Route::get('/editar_cierre/{id_cierre}', [CajaController::class, 'editarCierre'])->name('editar_cierre');
+    Route::patch('/editar_cierre/guardar/{id}', [CajaController::class, 'guardarEditadoCierre'])->name('actualizar_cierre');
 });
 
 

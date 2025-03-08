@@ -16,6 +16,7 @@ class CajaController extends Controller
                               ->get();
 
         $registros = Caja::selectRaw('
+                                        cajas.id as id_cierre_caja,
                                         cajas.fecha_cierre as fecha_cierre_caja,
                                         cajas.efectivo as efectivo_caja,
                                         cajas.transferencia as transferencia_caja, 
@@ -38,7 +39,8 @@ class CajaController extends Controller
             $registros = $registros->where('users.id', auth()->user()->id);
         }
 
-        $registros = $registros->paginate(6);
+        $registros = $registros->orderBy("cajas.updated_at","desc")
+                               ->paginate(6);
 
         return view("caja.index", [
             "cierres_caja" => $registros,
@@ -105,6 +107,46 @@ class CajaController extends Controller
                          ->first();
 
         return ["venta" => $ventaDia && $ventaDia->total_vendido !== null ? $ventaDia->total_vendido : 0];
+    }
+
+    public function editarCierre($id_cierre){
+        
+        $cierre = Caja::findOrFail($id_cierre);
+
+        if ($cierre->id_usuario != auth()->user()->id) {
+            return redirect()->route('cierre_caja');            
+        }
+
+        $sucursales = Sucursal::where('activo',1)
+                        ->get();
+        return view('caja.edit',[
+            "sucursales" => $sucursales,
+            "cierre" => $cierre,
+        ]);
+    }
+
+    public function guardarEditadoCierre(Request $request, $id_cierre){
+        
+        $validated = $request->validate([
+            'fecha' => "required|string",
+            'sucursal' => 'required|integer',
+            'efectivo' => "required|numeric",
+            'transferencia' => 'required|numeric',
+            'qr' => 'required|numeric',
+            'venta_sistema' => 'required|numeric',
+            'total_declarado' => 'required|numeric',
+            'observacion' => 'string|nullable'
+        ]);
+
+        $cierre = Caja::findOrFail($id_cierre);
+        
+        $actualizado = $cierre->update($request->only(["fecha","sucursal","efectivo","transferencia", "qr", "venta_sistema", "total_declarado", "observacion"]));
+        
+        if ($actualizado) {
+            return redirect()->route('cierre_caja')->with("exito", "¡Actualización exitosa!");
+        } else {
+            return redirect()->route('cierre_caja')->with("error", "Hubo un error al actualizar los datos.");
+        }
     }
 
     public function verificarCierre(){
