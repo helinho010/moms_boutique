@@ -15,5 +15,8 @@ class Caja extends Model
         'qr',
         'observacion',
         'id_usuario',
+        'id_sucursal',
+        'venta_sistema',
+        'total_declarado',
     ];
 }

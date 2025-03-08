@@ -4,9 +4,6 @@
             id="{{ $id }}"
             name="{{ $name }}"
     >
-        <option selected disabled>Seleccione una opcion</option>
-        @foreach ($sucursales as $sucursal)
-            <option value="{{ $sucursal->id_sucursal }}"> {{ $sucursal->direccion_sucursal }} </option>
-        @endforeach
+        {{$slot}}
     </select>
 </div>
