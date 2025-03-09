@@ -167,4 +167,17 @@ class CajaController extends Controller
             return redirect()->route('cierre_caja')->with("error", "No se hizo ningun cambio al cierre seleccionado");
         }
     }
+
+    public function exportarCierrePdf(Request $request){
+        $validacion = $request->validate([
+            "fecha_inicio" => "required|date",
+            "fecha_final" => "required|date",
+        ]);
+        
+        if ($request->fecha_inicio <= $request->fecha_final) {
+            return redirect()->route('cierre_caja')->with("exito", "Exportacion exitosa");
+        } else{
+            return redirect()->route('cierre_caja')->with("error", "La fecha de inicio no puede ser mayor a la fecha de fin");
+        }
+    }
 }
