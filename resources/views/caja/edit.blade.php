@@ -62,7 +62,7 @@
     <div class="row">
         <div class="col">
             <x-formulario.label for="fecha">Sucursal:</x-formulario.label>
-            <x-formulario.select id="sucursal" name="sucursal">
+            <x-formulario.select id="sucursal" name="id_sucursal">
                 <option value="0" disabled>Seleccione una opcion</option>
                 @foreach ($sucursales as $sucursal)
                   <option value="{{ $sucursal->id }}" @if ( $sucursal->id == $cierre->id_sucursal) selected @endif>
@@ -74,7 +74,7 @@
 
         <div class="col">
             <x-formulario.label for="fecha">Fecha de Cierre:</x-formulario.label>
-            <x-formulario.input tipo="date" :value="$cierre->fecha_cierre" name="fecha" id="fecha" placeholder="" />
+            <x-formulario.input tipo="date" :value="$cierre->fecha_cierre" name="fecha_cierre" id="fecha" placeholder="" />
         </div>
 
     </div>

@@ -128,8 +128,8 @@ class CajaController extends Controller
     public function guardarEditadoCierre(Request $request, $id_cierre){
         
         $validated = $request->validate([
-            'fecha' => "required|string",
-            'sucursal' => 'required|integer',
+            'fecha_cierre' => "required|string",
+            'id_sucursal' => 'required|integer',
             'efectivo' => "required|numeric",
             'transferencia' => 'required|numeric',
             'qr' => 'required|numeric',
@@ -140,7 +140,7 @@ class CajaController extends Controller
 
         $cierre = Caja::findOrFail($id_cierre);
         
-        $actualizado = $cierre->update($request->only(["fecha","sucursal","efectivo","transferencia", "qr", "venta_sistema", "total_declarado", "observacion"]));
+        $actualizado = $cierre->update($request->only(["fecha_cierre","id_sucursal","efectivo","transferencia", "qr", "venta_sistema", "total_declarado", "observacion"]));
         
         if ($actualizado) {
             return redirect()->route('cierre_caja')->with("exito", "¡Actualización exitosa!");
@@ -149,7 +149,22 @@ class CajaController extends Controller
         }
     }
 
-    public function verificarCierre(){
+    public function verificarCierre(Request $request){
+        // dd($request->request);
+        $validacion = $request->validate([
+            "id_cierre" => "required|integer",
+        ]);
 
+        $actualizado = false;
+        if (isset($request->verificado_cierre)) {
+            $cierre = Caja::findOrFail($request->id_cierre);
+            $actualizado = $cierre->update(["verificado" => true]);
+        }
+
+        if ($actualizado) {
+            return redirect()->route('cierre_caja')->with("exito", "¡Verificacion de cierre exitosa!");
+        } else {
+            return redirect()->route('cierre_caja')->with("error", "No se hizo ningun cambio al cierre seleccionado");
+        }
     }
 }

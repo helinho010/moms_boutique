@@ -28,16 +28,16 @@
 @endsection
 
 @section('card-title')
-<div class="row">
-    <div class="col">
-        <h4><strong>Cierre de Caja</strong></h4>
+    <div class="row">
+        <div class="col">
+            <h4><strong>Cierre de Caja</strong></h4>
+        </div>
+        <div class="col text-end">
+            <button type="button" class="btn btn-success" id="btn-nuevoCierreCaja" data-bs-toggle="modal" data-bs-target="#nuevoCierreCaja">
+                <i class="fas fa-plus"></i> Cierre de Caja
+            </button>
+        </div>
     </div>
-    <div class="col text-end">
-        <button type="button" class="btn btn-success" id="btn-nuevoCierreCaja" data-bs-toggle="modal" data-bs-target="#nuevoCierreCaja">
-            <i class="fas fa-plus"></i> Cierre de Caja
-        </button>
-    </div>
-</div>
 @endsection
 
 @section('content')
@@ -50,6 +50,8 @@
             <div class="input-group flex-nowrap">
                 <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
                 <button class="input-group-text" id="inputBuscar"><i class="fas fa-search"></i></button>
+                <button class="input-group-text" id="inputBuscar" style="color:red;"><i class="far fa-file-pdf fa-xl"></i></button>
+                <button class="input-group-text" id="inputBuscar" style="color:green;"><i class="far fa-file-excel fa-xl"></i></button>
             </div>
         </form>
     </div>
@@ -86,7 +88,10 @@
                     @endif
                     
                     @if (auth()->user()->id == 1)
-                        <button type="button" class="btn btn-outline-primary" id="btn-editarCierreCaja" data-bs-toggle="modal" data-bs-target="#editarCierreCaja" >
+                        <button type="button" class="btn btn-outline-primary" id="btn-editarCierreCaja" 
+                                data-bs-toggle="modal" data-bs-target="#editarCierreCaja" 
+                                onclick="verificarDatos({{ json_encode($cierre) }})"
+                        >
                             <i class="fas fa-registered fa-xl" style="color:#6BA9FA"></i>
                         </button>
                     @endif
@@ -212,22 +217,117 @@
 
     </x-modal>
 
-    <x-modal id="editarCierreCaja" title="Edicion de Cierre de Caja" idformulario="revCierreCaja" nombre-btn="Enviar">
+    <x-modal id="editarCierreCaja" idformulario="revCierreCaja" nombre-btn="Enviar">
+        <x-slot:title>Verificar Cierre de Caja</x-slot:title>
+        <div class="row">
+            <div class="col-md-12 text-center title h4">
+                Datos del Cierre
+            </div>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <span>Fecha de Cierre: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_fecha_cierre">Y-m-d</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <span>Sucursal: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_sucursal">...</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <span>Usuario: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_usuario">...</span>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+            <div class="col-md-6">
+                <span>Vental registrada en el sistema: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_venta_sistema">0</span>
+            </div>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <span>Efectivo Registrado: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_efectivo">0</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <span>Tarjeta Registrado: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_tarjeta">0</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <span>QR Registrado: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_qr">0</span>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+            <div class="col-md-6">
+                <span>Total Declarado: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_total_declarado">0</span>
+            </div>
+            <div class="col-md-6">
+                <span>Diferencia Declarada: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_diferencia_declarada">0</span>
+            </div>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <span>Observacion: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_observacion">...</span>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <form action="{{ route('verificar_cierre') }}" method="post" id="revCierreCaja">
+                    @csrf
+                    @method("PATCH")
+                    <input type="text" name="id_cierre" id="verif_id_cierre" hidden>
+                    <input type="checkbox" name="verificado_cierre" id="verificado_cierre"> Esta correcto los datos?
+                </form>
+            </div>
+        </div>
         
     </x-modal>
+
 @endsection
 
 
 @push('scripts')
     <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
     
-    <script>
-        $.ajaxSetup({
-            headers: {
-             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
+    <script>    
         function sumarValores(){
             // Captura de valores de los inputs
             let efectivo = $("#efectivo").val() != "" ?  parseFloat($("#efectivo").val()) : 0.0 ;
@@ -315,6 +415,20 @@
             $("#observacion").val("");
         }
 
+        function verificarDatos(data){
+            $("#verif_id_cierre").val(data.id_cierre_caja);
+            $("#verif_fecha_cierre").text(data.fecha_cierre_caja);
+            $("#verif_sucursal").text(data.direccion_sucursal);
+            $("#verif_usuario").text(data.name_usuario);
+            $("#verif_venta_sistema").text(data.venta_sistema_caja.toFixed(2) + " Bs");
+            $("#verif_efectivo").text(data.efectivo_caja.toFixed(2) + " Bs");
+            $("#verif_tarjeta").text(data.transferencia_caja.toFixed(2) + " Bs");
+            $("#verif_qr").text(data.qr_caja.toFixed(2) + " Bs");
+            $("#verif_total_declarado").text(data.total_declarado_caja.toFixed(2) + " Bs");
+            $("#verif_diferencia_declarada").text((data.venta_sistema_caja - data.total_declarado_caja).toFixed(2) + " Bs");
+            $("#verif_observacion").text(data.observacion_caja);
+        }
+
         $(document).on("change", "#sucursal", function(){
             obtenerVentaSucursal($(this).val(), $("#fecha").val());
             sumarValores();
@@ -322,6 +436,11 @@
         
         $(document).ready(function(){
             $("#caja").addClass('active');
+            $.ajaxSetup({
+            headers: {
+             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
         });
 
         $("input").change(function(){
@@ -335,9 +454,8 @@
         $(document).ready(function(){
             $("button").click(function(){
                 if ($(this).attr("data-bs-dismiss") == "modal") {
-                    borrarDatosInputs();    
+                    borrarDatosInputs();  
                 }
-
             });
         });
 

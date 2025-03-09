@@ -182,6 +182,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/venta_sucursal_dia', [CajaController::class, 'ventaSucursalDia'])->name('calcular_total_venta_dia');
     Route::get('/editar_cierre/{id_cierre}', [CajaController::class, 'editarCierre'])->name('editar_cierre');
     Route::patch('/editar_cierre/guardar/{id}', [CajaController::class, 'guardarEditadoCierre'])->name('actualizar_cierre');
+    Route::patch('/editar_cierre/verificado', [CajaController::class, 'verificarCierre'])->name('verificar_cierre');
 });
 
 

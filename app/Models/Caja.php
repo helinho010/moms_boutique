@@ -18,5 +18,6 @@ class Caja extends Model
         'id_sucursal',
         'venta_sistema',
         'total_declarado',
+        'verificado',
     ];
 }
