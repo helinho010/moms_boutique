@@ -285,6 +285,9 @@
         <!-- Fin Modal -->
 
         <!-- Modal component -->
+        @php
+            $fechahoy = date('Y-m-d');
+        @endphp
         <x-modal id="modalComponentstaticBackdrop" idformulario="tra_prod_form_pdf">
             <form action="{{route('traspaso_productos_formulario_pdf')}}" method="post" id="tra_prod_form_pdf">
                 @method('post')
@@ -295,19 +298,28 @@
                 <x-formulario.label for="origen_sucursal_traspaso_productos">
                     Sucursal Origen: 
                 </x-formulario.label>
-                <x-formulario.select :$sucursales id="origen_sucursal_traspaso_productos" name="origen_sucursal_traspaso_productos">
-                    
+                <x-formulario.select id="origen_sucursal_traspaso_productos" name="origen_sucursal_traspaso_productos">
+                    <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
+                    @foreach ($sucursales as $sucursal)
+                      <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->razon_social_sucursal }} - {{ substr($sucursal->direccion_sucursal,0,35)."..." }}</option>
+                    @endforeach
                 </x-formulario.select>
                 <x-formulario.label for="destino_sucursal_traspaso_productos">
                     Sucursal Destino: 
                 </x-formulario.label>
-                <x-formulario.select :$sucursales id="destino_sucursal_traspaso_productos" name="destino_sucursal_traspaso_productos">
-                    
+                <x-formulario.select id="destino_sucursal_traspaso_productos" name="destino_sucursal_traspaso_productos">
+                    <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
+                    @foreach ($sucursales as $sucursal)
+                      <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->razon_social_sucursal }} - {{ substr($sucursal->direccion_sucursal,0,35)."..." }}</option>
+                    @endforeach
                 </x-formulario.select>
                 <x-formulario.label for="input_fecha_traspaso_productos">
                     Seleccione la fecha de traspaso:
                 </x-formulario.label>
-                <x-formulario.input tipo="date" name="fecha_form_traspaso_productos_pdf" id="input_fecha_traspaso_productos" placeholder="--">
+                <x-formulario.input tipo="date" name="fecha_form_traspaso_productos_pdf" 
+                                    id="input_fecha_traspaso_productos" placeholder="--"
+                                    value="{{ $fechahoy }}"
+                >
 
                 </x-formulario.input>
                 <x-slot:nombreBtn>
@@ -360,7 +372,6 @@
         } else if ($(this).attr('class') == 'btn btn-danger cerrarModal' || 
                    $(this).attr('class') == 'btn-close cerrarModal') 
         {
-            alert("Precionaste Cancelar");
             $("#modalSelectSucursal").val('seleccionado');
             $("#modalSelectSucursalDestino").val('seleccionado');
             $("#modalSelectProducto").val('seleccionado');

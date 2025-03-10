@@ -49,13 +49,19 @@
             @csrf
             <div class="input-group flex-nowrap">
                 <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
-                <button class="input-group-text" id="inputBuscar"><i class="fas fa-search"></i></button>
+                <button class="input-group-text" id="input-buscar-cierre-caja">
+                    <i class="fas fa-search"></i>
+                </button>
                 <button type="button" class="input-group-text" 
-                        id="inputBuscar" style="color:red;"
+                        id="id-export-pdf-cierre-caja" style="color:red;"
                         data-bs-toggle="modal" data-bs-target="#modalExportarPdfCierreCaja">
                         <i class="far fa-file-pdf fa-xl"></i>
                 </button>
-                <button class="input-group-text" id="inputBuscar" style="color:green;"><i class="far fa-file-excel fa-xl"></i></button>
+                <button type="button" class="input-group-text" 
+                        id="id-export-excel-cierre-caja" style="color:green;"
+                        data-bs-toggle="modal" data-bs-target="#modalExportarExcelCierreCaja"
+                ><i class="far fa-file-excel fa-xl"></i>
+                </button>
             </div>
         </form>
     </div>
@@ -338,6 +344,42 @@
         <form action="{{ route('exportar_cierre_pdf') }}" method="post" id="formExportCierreierreCaja">
             @csrf
             @method('POST')
+            <div class="alert alert-warning" role="alert">
+                <i class="fa-solid fa-triangle-exclamation"></i> Precaucion, la fecha final debe ser mayor a la fecha inicial.
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <x-formulario.label for="fechaInicial">fecha Inicio: </x-formulario.label>
+                    <x-formulario.input tipo="date" name="fecha_inicio" 
+                                        id="fecha-inicio" placeholder=""
+                                        :value="$fechahoy"
+                    >
+                    </x-formulario.input>
+                </div>
+                <div class="col-md-6">
+                    <x-formulario.label for="fechaFicial">fecha Final: </x-formulario.label>
+                    <x-formulario.input tipo="date" name="fecha_final" 
+                                        id="fecha-final" placeholder=""
+                                        :value="$fechahoy"
+                    >
+                    </x-formulario.input>
+                </div>
+            </div>
+        </form>
+    </x-modal>
+
+    {{-- Modal ExportarExcel --}}
+    <x-modal id="modalExportarExcelCierreCaja" idformulario="formExportCierreierreCajaExcel" nombre-btn="Exportar Excel">
+        <x-slot:title>
+            Exportar Cierre a Excel
+        </x-slot:title>
+        
+        @php $fechahoy = date('Y-m-d')  @endphp
+
+        <form action="{{ route('exportar_cierre_excel') }}" method="post" id="formExportCierreierreCajaExcel">
+            @csrf
+            @method('POST')
+
             <div class="alert alert-warning" role="alert">
                 <i class="fa-solid fa-triangle-exclamation"></i> Precaucion, la fecha final debe ser mayor a la fecha inicial.
             </div>
