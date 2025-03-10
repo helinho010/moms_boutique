@@ -4480,28 +4480,58 @@ class CajaController extends Controller
         }
     }
 
-    public function exportarCierreExcel(Request $request)
-    {
-        $cierres = Caja::all();
+    public function exportarCierreExcel(Request $request){
+        $cierres = Caja::selectRaw('
+                                    cajas.id as id_caja,
+                                    cajas.fecha_cierre as fecha_cierre_caja,
+                                    cajas.efectivo as efectivo_caja,
+                                    cajas.transferencia as transferencia_caja, 
+                                    cajas.qr as qr_caja,
+                                    cajas.venta_sistema as venta_sistema_caja,
+                                    cajas.total_declarado as total_declarado_caja,
+                                    cajas.observacion as observacion_caja,
+                                    cajas.verificado as verificado_caja,
+                                    sucursals.id as id_sucursal,
+                                    sucursals.razon_social as razon_social_sucursal,
+                                    sucursals.direccion as direccion_sucursal,
+                                    users.name as name_usuario,
+                                    users.username as nombre_usuario,
+                                    users.id as id_usuario
+                                  ')
+                        ->join("users", "users.id", "cajas.id_usuario")
+                        ->join("sucursals", "sucursals.id", "cajas.id_sucursal")
+                        ->orderBy('fecha_cierre','asc')
+                        ->where('fecha_cierre', '>=', $request->fecha_inicio)
+                        ->where('fecha_cierre', '<=', $request->fecha_final);
+
+        if (auth()->user()->id == 1) {
+            $cierres = $cierres->get();
+        } else {
+            $cierres = $cierres->where('id_usuario',auth()->user()->id)
+                            ->get();
+        }
+        
+        $numeroRegistro = 1;
         $exportData = [];
 
         foreach ($cierres as $cierre) {
             $exportData[] = [
-                'Nro' => $cierre->id,
-                'Sucursal' => $cierre->id_sucursal,
-                'Fecha' => $cierre->fecha_cierre,
-                'Efectivo' => $cierre->efectivo,
-                'Tarjeta' => $cierre->transaccion,
-                'QR' => $cierre->qr,
-                'Venta Sistema' => $cierre->venta_sistema,
-                'Total Declarado' => $cierre->total_declarado,
-                'Observacion' => $cierre->observacion,
-                'Usuario' => $cierre->id_usuario,
-                'Verificado' => $cierre->verificado ? 'Sí' : 'No',
+                'Nro' => $numeroRegistro,
+                'Sucursal' => $cierre->direccion_sucursal,
+                'Fecha' => $cierre->fecha_cierre_caja,
+                'Efectivo' => $cierre->efectivo_caja,
+                'Tarjeta' => $cierre->transferencia_caja,
+                'QR' => $cierre->qr_caja,
+                'Venta Sistema' => $cierre->venta_sistema_caja,
+                'Total Declarado' => $cierre->total_declarado_caja,
+                'Observacion' => $cierre->observacion_caja,
+                'Usuario' => $cierre->name_usuario,
+                'Verificado' => $cierre->verificado_caja ? 'Sí' : 'No',
             ];
+            $numeroRegistro++;
         }
 
         $filename = 'CierreCaja_' . date('Ymd_His') . '.xlsx';
-        return Excel::download(new CierreCajaExport($exportData), $filename);
+        return Excel::download(new CierreCajaExport(collect($exportData)), $filename);
     }
 }
