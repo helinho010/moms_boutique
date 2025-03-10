@@ -177,7 +177,9 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Caja
-    Route::get('/cierre_caja', [CajaController::class, 'index'])->name('cierre_caja');
+    Route::get('/caja', [CajaController::class, 'index'])
+        ->name('home_caja')
+        ->middleware('control.rutas');
     Route::post('/add_cierre_caja', [CajaController::class, 'nuevoCierreCaja'])->name('add_cierre_caja');
     Route::post('/venta_sucursal_dia', [CajaController::class, 'ventaSucursalDia'])->name('calcular_total_venta_dia');
     Route::get('/editar_cierre/{id_cierre}', [CajaController::class, 'editarCierre'])->name('editar_cierre');

@@ -77,7 +77,7 @@
                             </a>
                             <ul id="{{ strtolower($opcion->opcion_opciones_sistemas) }}-a" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                                 {{-- <li class="sidebar-item"><a class="sidebar-link" href="#">Apertura Caja</a></li> --}}
-                                <li class="sidebar-item"><a class="sidebar-link" href="{{ route('cierre_caja') }}">Cierre Caja</a></li>
+                                <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_caja') }}">Cierre Caja</a></li>
                             </ul>
                         </li>
                     @break
