@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             OpcionesSistemaSeeder::class,
             UsertypeOpcSeeder::class,
             // UserOpcSucSeeder::class,
+            OrdenOpcionesSistemaSeeder::class,
     	]);
     }
 }

@@ -98,11 +98,18 @@
                     @endif
                     
                     @if (auth()->user()->id == 1)
+                        
+                        @if ( auth()->user()->id == $cierre->id_usuario_caja )
+                            <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit" style="color:#6BA9FA"></i>
+                            </a>
+                        @endif
+
                         <button type="button" class="btn btn-outline-primary" id="btn-editarCierreCaja" 
                                 data-bs-toggle="modal" data-bs-target="#editarCierreCaja" 
                                 onclick="verificarDatos({{ json_encode($cierre) }})"
                         >
-                            <i class="fas fa-registered fa-xl" style="color:#6BA9FA"></i>
+                            <i class="fas fa-registered" style="color:#6BA9FA"></i>
                         </button>
                     @endif
                   @endif  

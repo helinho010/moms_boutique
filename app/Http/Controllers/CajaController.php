@@ -28,6 +28,7 @@ class CajaController extends Controller
 	                                    cajas.total_declarado as total_declarado_caja,
                                         cajas.observacion as observacion_caja,
                                         cajas.verificado as verificado_caja,
+                                        cajas.id_usuario as id_usuario_caja,
                                         sucursals.id as id_sucursal,
                                         sucursals.razon_social as razon_social_sucursal,
                                         sucursals.direccion as direccion_sucursal,
@@ -89,9 +90,9 @@ class CajaController extends Controller
                 "id_sucursal" => $request->sucursal,
                ]);    
 
-            return redirect()->route('cierre_caja')->with('exito', "Cierre alamcenado correctamente");
+            return redirect()->route('home_caja')->with('exito', "Cierre alamcenado correctamente");
         } else{
-            return redirect()->route('cierre_caja')->with("error", "Ya existe un cierre de caja Dia: $existeCierreCajaEnFecha->fecha_cierre_caja , Sucursal: $existeCierreCajaEnFecha->direccion_sucursal y Usuario: $existeCierreCajaEnFecha->nombre_usuario ");
+            return redirect()->route('home_caja')->with("error", "Ya existe un cierre de caja Dia: $existeCierreCajaEnFecha->fecha_cierre_caja , Sucursal: $existeCierreCajaEnFecha->direccion_sucursal y Usuario: $existeCierreCajaEnFecha->nombre_usuario ");
         }        
     }
 
@@ -117,7 +118,7 @@ class CajaController extends Controller
         $cierre = Caja::findOrFail($id_cierre);
 
         if ($cierre->id_usuario != auth()->user()->id) {
-            return redirect()->route('cierre_caja');            
+            return redirect()->route('home_caja');            
         }
 
         $sucursales = Sucursal::where('activo',1)
@@ -146,9 +147,9 @@ class CajaController extends Controller
         $actualizado = $cierre->update($request->only(["fecha_cierre","id_sucursal","efectivo","transferencia", "qr", "venta_sistema", "total_declarado", "observacion"]));
         
         if ($actualizado) {
-            return redirect()->route('cierre_caja')->with("exito", "¡Actualización exitosa!");
+            return redirect()->route('home_caja')->with("exito", "¡Actualización exitosa!");
         } else {
-            return redirect()->route('cierre_caja')->with("error", "Hubo un error al actualizar los datos.");
+            return redirect()->route('home_caja')->with("error", "Hubo un error al actualizar los datos.");
         }
     }
 
@@ -165,9 +166,9 @@ class CajaController extends Controller
         }
 
         if ($actualizado) {
-            return redirect()->route('cierre_caja')->with("exito", "¡Verificacion de cierre exitosa!");
+            return redirect()->route('home_caja')->with("exito", "¡Verificacion de cierre exitosa!");
         } else {
-            return redirect()->route('cierre_caja')->with("error", "No se hizo ningun cambio al cierre seleccionado");
+            return redirect()->route('home_caja')->with("error", "No se hizo ningun cambio al cierre seleccionado");
         }
     }
 
@@ -4474,9 +4475,9 @@ class CajaController extends Controller
             // Output the generated PDF to Browser
             $dompdf->stream($nombre_archivo);
 
-            return redirect()->route('cierre_caja')->with("exito", "Exportacion exitosa $nombre_archivo");
+            return redirect()->route('home_caja')->with("exito", "Exportacion exitosa $nombre_archivo");
         } else {
-            return redirect()->route('cierre_caja')->with("error", "La fecha de inicio no puede ser mayor a la fecha de fin");
+            return redirect()->route('home_caja')->with("error", "La fecha de inicio no puede ser mayor a la fecha de fin");
         }
     }
 
