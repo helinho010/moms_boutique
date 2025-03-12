@@ -72,7 +72,7 @@
     <table class="table table-striped"> 
         <thead>
             <tr>
-              <th scope="col">Opciones</th>
+              <th scope="col" style="width: 10%" >Opciones</th>
               <th scope="col" style="width: 15%">Sucursal</th>
               <th scope="col">Fecha</th>
               <th scope="col">Efectivo</th>
@@ -92,7 +92,7 @@
                     <i class="fas fa-check-double fa-xl" style="color: #22ac1d"></i>
                   @else
                     @if (auth()->user()->usertype_id != 1)
-                        <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary">
+                        <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary btn-sm">
                             <i class="fas fa-edit fa-xl" style="color:#6BA9FA"></i>
                         </a>
                     @endif
@@ -100,12 +100,12 @@
                     @if (auth()->user()->usertype_id == 1)
                         
                         @if ( auth()->user()->id == $cierre->id_usuario_caja )
-                            <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary">
+                            <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-edit" style="color:#6BA9FA"></i>
                             </a>
                         @endif
 
-                        <button type="button" class="btn btn-outline-primary" id="btn-editarCierreCaja" 
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="btn-editarCierreCaja" 
                                 data-bs-toggle="modal" data-bs-target="#editarCierreCaja" 
                                 onclick="verificarDatos({{ json_encode($cierre) }})"
                         >

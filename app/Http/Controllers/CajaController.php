@@ -34,12 +34,13 @@ class CajaController extends Controller
                                         sucursals.direccion as direccion_sucursal,
                                         users.name as name_usuario,
                                         users.username as nombre_usuario,
-                                        users.id as id_usuario
+                                        users.id as id_usuario,
+                                        users.usertype_id as id_tipo_usuario
                                     ')
                           ->join("users", "users.id", "cajas.id_usuario")
                           ->join("sucursals", "sucursals.id", "cajas.id_sucursal");
 
-        if ( auth()->user()->id != 1 ) {
+        if ( auth()->user()->usertype_id != 1 ) {
             $registros = $registros->where('users.id', auth()->user()->id);
         }
 
@@ -196,14 +197,15 @@ class CajaController extends Controller
                                             sucursals.direccion as direccion_sucursal,
                                             users.name as name_usuario,
                                             users.username as nombre_usuario,
-                                            users.id as id_usuario
+                                            users.id as id_usuario,
+                                            users.usertype_id as id_tipo_usuario
                                           ')
                 ->join("users", "users.id", "cajas.id_usuario")
                 ->join("sucursals", "sucursals.id", "cajas.id_sucursal")
                 ->where('fecha_cierre', '>=', $request->fecha_inicio)
                 ->where('fecha_cierre', '<=', $request->fecha_final);
             
-            if (auth()->user()->id != 1) {
+            if (auth()->user()->usertype_id != 1) {
                 $cierresCaja = $cierresCaja->where('users.id', auth()->user()->id);
             } 
                 $cierresCaja = $cierresCaja->orderBy('cajas.fecha_cierre', 'asc')
@@ -4505,7 +4507,7 @@ class CajaController extends Controller
                         ->where('fecha_cierre', '>=', $request->fecha_inicio)
                         ->where('fecha_cierre', '<=', $request->fecha_final);
 
-        if (auth()->user()->id == 1) {
+        if (auth()->user()->usertype_id == 1) {
             $cierres = $cierres->get();
         } else {
             $cierres = $cierres->where('id_usuario',auth()->user()->id)
