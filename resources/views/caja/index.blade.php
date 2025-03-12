@@ -91,13 +91,13 @@
                   @if ( $cierre->verificado_caja == 1)
                     <i class="fas fa-check-double fa-xl" style="color: #22ac1d"></i>
                   @else
-                    @if (auth()->user()->id != 1)
+                    @if (auth()->user()->usertype_id != 1)
                         <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary">
                             <i class="fas fa-edit fa-xl" style="color:#6BA9FA"></i>
                         </a>
                     @endif
                     
-                    @if (auth()->user()->id == 1)
+                    @if (auth()->user()->usertype_id == 1)
                         
                         @if ( auth()->user()->id == $cierre->id_usuario_caja )
                             <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary">
