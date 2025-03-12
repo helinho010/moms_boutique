@@ -238,8 +238,7 @@
     </x-modal>
 
     {{-- Modal para editar un cierre de caja --}}
-    <x-modal id="editarCierreCaja" idformulario="revCierreCaja" nombre-btn="Enviar">
-        <x-slot:title>Verificar Cierre de Caja</x-slot:title>
+    <x-modal id="editarCierreCaja" title="Verificar Cierre de Caja" idformulario="revCierreCaja" nombre-btn="Enviar">
         <div class="row">
             <div class="col-md-12 text-center title h4">
                 Datos del Cierre
@@ -343,10 +342,7 @@
     </x-modal>
 
     {{-- Modal para reporte Pdf --}}
-    <x-modal id="modalExportarPdfCierreCaja" idformulario="formExportCierreierreCaja" nombre-btn="Exportar pdf">
-        <x-slot:title>
-            Exportar Cierre a Pdf
-        </x-slot:title>
+    <x-modal id="modalExportarPdfCierreCaja" title="Exportar Cierre a Pdf" idformulario="formExportCierreierreCaja" nombre-btn="Exportar pdf">
         
         @php $fechahoy = date('Y-m-d')  @endphp
 
@@ -378,10 +374,7 @@
     </x-modal>
 
     {{-- Modal ExportarExcel --}}
-    <x-modal id="modalExportarExcelCierreCaja" idformulario="formExportCierreierreCajaExcel" nombre-btn="Exportar Excel">
-        <x-slot:title>
-            Exportar Cierre a Excel
-        </x-slot:title>
+    <x-modal id="modalExportarExcelCierreCaja" title="Exportar Cierre a Excel" idformulario="formExportCierreierreCajaExcel" nombre-btn="Exportar Excel">
         
         @php $fechahoy = date('Y-m-d')  @endphp
 
