@@ -140,7 +140,8 @@
     @endphp
 
     {{-- Modal para registrar un nuevo cierre de caja--}}
-    <x-modal id="nuevoCierreCaja" title="Cierre de Caja" idformulario="frm-cierre-caja" nombre-btn="Guardar">
+    <x-modal id="nuevoCierreCaja" title="Cierre de Caja" 
+             idformulario="frm-cierre-caja" nombre-btn="Guardar">
         <div class="row" style="font-size: 1rem; font-weight: bold">
             <div class="col">
                 <span class="h5">Ventas del Sistema:</span>
@@ -238,7 +239,8 @@
     </x-modal>
 
     {{-- Modal para editar un cierre de caja --}}
-    <x-modal id="editarCierreCaja" title="Verificar Cierre de Caja" idformulario="revCierreCaja" nombre-btn="Enviar">
+    <x-modal id="editarCierreCaja" title="Verificar Cierre de Caja" 
+             idformulario="revCierreCaja" nombre-btn="Enviar">
         <div class="row">
             <div class="col-md-12 text-center title h4">
                 Datos del Cierre
@@ -342,7 +344,8 @@
     </x-modal>
 
     {{-- Modal para reporte Pdf --}}
-    <x-modal id="modalExportarPdfCierreCaja" title="Exportar Cierre a Pdf" idformulario="formExportCierreierreCaja" nombre-btn="Exportar pdf">
+    <x-modal id="modalExportarPdfCierreCaja" title="Exportar Cierre a Pdf" 
+             idformulario="formExportCierreierreCaja" nombre-btn="Exportar pdf">
         
         @php $fechahoy = date('Y-m-d')  @endphp
 
@@ -374,7 +377,8 @@
     </x-modal>
 
     {{-- Modal ExportarExcel --}}
-    <x-modal id="modalExportarExcelCierreCaja" title="Exportar Cierre a Excel" idformulario="formExportCierreierreCajaExcel" nombre-btn="Exportar Excel">
+    <x-modal id="modalExportarExcelCierreCaja" title="Exportar Cierre a Excel" 
+             idformulario="formExportCierreierreCajaExcel" nombre-btn="Exportar Excel">
         
         @php $fechahoy = date('Y-m-d')  @endphp
 
