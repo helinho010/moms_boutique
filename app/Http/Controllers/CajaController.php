@@ -4470,7 +4470,7 @@ class CajaController extends Controller
             // Render the HTML as PDF
             $dompdf->render();
   
-            $nombre_archivo = 'CierreCaja_'.$cierre["fecha_cierre_caja"].'.pdf';
+            $nombre_archivo = 'CierreCaja_'. date('Ymd_His') .'.pdf';
 
             // Output the generated PDF to Browser
             $dompdf->stream($nombre_archivo);
