@@ -1,6 +1,6 @@
 @props([
-    'value' => "",
-    'disabled' => false,
+    'value' => " ",
+    'disabled' => "false",
 ])
 
 <div>

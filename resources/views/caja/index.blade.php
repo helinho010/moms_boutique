@@ -164,7 +164,9 @@
             <div class="row">
                 <div class="col">
                     <x-formulario.label for="fecha">Fecha de Cierre:</x-formulario.label>
-                    <x-formulario.input tipo="date" :value="$fechaActual" name="fecha" id="fecha" placeholder="" />
+                    <x-formulario.input tipo="date" :value="$fechaActual" 
+                                        name="fecha" id="fecha" placeholder="" 
+                    />
                 </div>
             </div>
 
