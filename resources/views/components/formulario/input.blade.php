@@ -11,7 +11,7 @@
                id="{{ $attributes->get('id') }}" 
                value="{{ $value }}"
                placeholder="{{ $attributes->get('placeholder') }}"
-               {{ $disabled ? 'readonly' : '' }}
+               {{ $disabled == 'true' ? 'readonly' : '' }}
         >
     </div>
 </div>

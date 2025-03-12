@@ -16,7 +16,7 @@ class input extends Component
         public string $name,
         public string $id,
         public string $value,
-        public $disabled,
+        // public $disabled,
         public string $placeholder,
     )
     {
