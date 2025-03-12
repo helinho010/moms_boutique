@@ -1,5 +1,5 @@
 @props([
-    'value' => " ",
+    'value' => "",
     'disabled' => false,
     "tipo",
     "name",
