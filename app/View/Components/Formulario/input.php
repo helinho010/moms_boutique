@@ -15,7 +15,7 @@ class input extends Component
         public string $tipo,
         public string $name,
         public string $id,
-        public string $value,
+        // public string $value,
         // public $disabled,
         public string $placeholder,
     )
