@@ -288,13 +288,11 @@
         @php
             $fechahoy = date('Y-m-d');
         @endphp
-        <x-modal id="modalComponentstaticBackdrop" idformulario="tra_prod_form_pdf">
+        <x-modal id="modalComponentstaticBackdrop" title="Formulario de Traspaso de Productos" 
+                 idformulario="tra_prod_form_pdf" nombre-btn="Exportar">
             <form action="{{route('traspaso_productos_formulario_pdf')}}" method="post" id="tra_prod_form_pdf">
                 @method('post')
                 @csrf
-                <x-slot:title>
-                    Formulario de Traspaso de Productos
-                </x-slot:title>
                 <x-formulario.label for="origen_sucursal_traspaso_productos">
                     Sucursal Origen: 
                 </x-formulario.label>
@@ -322,9 +320,6 @@
                 >
 
                 </x-formulario.input>
-                <x-slot:nombreBtn>
-                    Exportar
-                </x-slot:nombreBtn>
             </form>
         </x-modal>
         <!-- Final Modal component-->
