@@ -65,6 +65,7 @@
                   <th scope="col">Total Venta</th>
                   <th scope="col">Descuento</th>
                   <th scope="col">Tipo de Pago</th>
+                  <th scope="col">Num. Factura</th>
                   <th scope="col">Usuario</th>
                   <th scope="col">Estado</th>
                 </tr>
@@ -93,6 +94,7 @@
                     <th>{{"$item->total_venta"}} Bs.</th>
                     <th>{{ number_format($item->descuento_venta,2) }} Bs.</th>
                     <th>{{$item->tipo_pagos}}</th>
+                    <th class="text-center">{{$item->numero_factura_venta === null ? '-':$item->numero_factura_venta}}</th>
                     <th>{{"$item->nombre_users"}}</th>
                     <td> 
                         @if ( $item->estado_venta == 1 )

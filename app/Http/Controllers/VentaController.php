@@ -140,7 +140,21 @@ class VentaController extends Controller
 
     public function realizarVenta(Request $request)
     {
-        // dd(collect($request->productos)->count());
+        // $validacion = $request->validate([
+        //     "productos" => "required",
+        //     "idTipoPago" => "required",
+        //     "nit_cliente" => "required",
+        //     "nombre_cliente" => "required",
+        //     "totalVenta" => "required",
+        //     "efectivo_recibido" => "required",
+        //     "descuento_venta" => "required",
+        //     "cambio_venta" => "required",
+        //     "factura" => "required",
+        //     "envio" => "required",
+        //     "referencia" => "required",
+        //     "observacion" => "required",
+        // ]);
+
         try {
                 $this->nombre_archivo = "Sucursal_".date('Ymd_His').".pdf";
                 
@@ -158,6 +172,7 @@ class VentaController extends Controller
                 $newVenta->total_venta = $request->totalVenta;
                 $newVenta->efectivo_recibido = $request->efectivo_recibido;
                 $newVenta->cambio = $request->cambio_venta;
+                $newVenta->numero_factura = $request->factura;
                 $newVenta->envio = $request->envio;
                 $newVenta->referencia = $request->referencia;
                 $newVenta->observacion = $request->observacion;

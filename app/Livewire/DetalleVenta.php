@@ -108,6 +108,7 @@ class DetalleVenta extends Component
         venta.total_venta,
         venta.efectivo_recibido,
         venta.cambio,
+        venta.numero_factura as numero_factura_venta,
         venta.envio as envio_venta,
         venta.referencia as referencia_venta,
         venta.observacion as observacion_venta,

@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Venta;
+use Dom\Text;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -46,6 +47,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                          tipo_pagos.tipo,
                          venta.efectivo_recibido,
                          venta.total_venta,
+                         venta.numero_factura,
                          venta.envio,
                          venta.referencia,
                          venta.observacion,
@@ -96,9 +98,10 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                 "Sub Total",            //G    
                 "Tipo Pago",            //H
                 "Vendedor",             //I
-                "Envio" ,               //J
-                "Referencia",           //K
-                "observacion"           //L    
+                "Numero Factura",       //J
+                "Envio" ,               //k
+                "Referencia",           //L
+                "observacion"           //M    
             ];
         }
 
@@ -115,6 +118,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                 $invoice->subtotal, 
                 $invoice->tipo,
                 $invoice->nombre_usuario,
+                $invoice->numero_factura  === null ? "-":"$invoice->numero_factura",
                 $invoice->envio,
                 $invoice->referencia,
                 $invoice->observacion,
@@ -128,6 +132,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
             return [
                 'F' => NumberFormat::FORMAT_NUMBER_00,
                 'G' => NumberFormat::FORMAT_NUMBER_00,
+                'J' => NumberFormat::FORMAT_TEXT,
             ];
         }
 
@@ -143,9 +148,10 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                 'G' => 18,
                 'H' => 18,
                 'I' => 13,
-                'J' => 13, 
+                'J' => 15, 
                 'K' => 15,   
-                'L' => 20, 
+                'L' => 20,
+                'M' => 20,
             ];
         }
 

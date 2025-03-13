@@ -191,6 +191,10 @@
                 </select>
             </div>
             <div class="input-group mb-3">
+                <label class="input-group-text" for="factura">Factura:</label>
+                <input type="text" class="form-control" id="factura" placeholder="Intraduzca el numero de factura">
+            </div>
+            <div class="input-group mb-3">
                 <label class="input-group-text" for="envio">Envios:</label>
                 <input type="text" class="form-control" id="envio" placeholder="Intraduzca el envio">
             </div>
@@ -224,8 +228,7 @@
             }
         });
 
-        function cambiarNumeroALiterarEfectivo(efectivo)
-        {
+        function cambiarNumeroALiterarEfectivo(efectivo){
             $.ajax({
                    type: "POST",
                    url: "{{ route('numeros_a_letras') }}",
@@ -237,8 +240,8 @@
             });
         }
 
-        function agregarRegistrsoVenta()
-        {
+        function agregarRegistrsoVenta(){
+
             let id_producto_seleccionado = $("#select_producto").val();
             let cantidad = $("#cantidad").val();
             
@@ -444,8 +447,7 @@
                 confirmButtonText: "Si, estoy seguro"
                 }).then((result) => {
                    if (result.isConfirmed) {
-                      if (arrayProductosVenta.length > 0 && $("#selectTipoPago").val() > 0) 
-                      {
+                      if (arrayProductosVenta.length > 0 && $("#selectTipoPago").val() > 0) {
                         if ( parseInt($("#selectTipoPago").val()) > 0) {
                             $.ajax({
                                 type: "POST",
@@ -459,6 +461,7 @@
                                         "efectivo_recibido":$("#efectivoRecebido").val() == '' ? 0:$("#efectivoRecebido").val(),
                                         "descuento_venta":$("#descuentoVenta").val() == '' ? 0:$("#descuentoVenta").val(),
                                         "cambio_venta":$("#cambio").text(),
+                                        "factura":$("#factura").val(),
                                         "envio":$("#envio").val(),
                                         "referencia":$("#referencia").val(),
                                         "observacion":$("#observacion").val(),
@@ -466,7 +469,7 @@
                                 success: function (response) {
                                     var respuesta = JSON.stringify(response);
                                     var respuesta = JSON.parse(respuesta);
-                                    console.log(respuesta);
+                                    
                                     if (respuesta.estado == 1) {
                                         Swal.fire({
                                             title: "Venta Realizada Exitosamente!",
@@ -486,6 +489,28 @@
                                             icon: "error"
                                         }); 
                                     }
+                                },
+                                
+                                error: function(xhr){
+                                    let errores = "";
+
+                                    if (xhr.status === 422) {
+                                        let errors = xhr.responseJSON.errors;  // Captura los errores de validación
+
+                                        // Recorre los errores y muéstralos en la consola o en la página
+                                        $.each(errors, function(key, value) {
+                                            // errores = errores + key + ": " + value[0] + "\n";  // Muestra cada error
+                                            // $("#" + key).css("border","1px solid red");  // Opcional: Mostrar en un span con id "error-campo"
+                                            console.log(errors);
+                                        });
+                                    } else {
+                                        console.log("Error desconocido:", xhr.responseText);
+                                    }
+                                    Swal.fire({
+                                            title: "Hubo un Error!",
+                                            text: "Contactese con el administrador"+ errores,
+                                            icon: "error"
+                                        });
                                 }
                             }); 
                         } else {
@@ -498,7 +523,7 @@
                         
                       } else {
                         Swal.fire({
-                            title: "No Existe items registrados para la venta",
+                            title: "No Existe items registrados para la venta o el  tipo de pago no es valido", 
                             // text: "That thing is still around?",
                             icon: "error",
                         });
