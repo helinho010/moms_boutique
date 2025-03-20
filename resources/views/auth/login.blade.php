@@ -72,9 +72,12 @@ login-box
                             {{-- <a href="{{ route('register') }}" class="text-center">Registrar nuevo usuario</a> --}}
                         </p>
                     </div>
-
+                    @if ( session('mensaje') )
+                        <x-formulario.mensaje-error-validacion-inputs color="danger">
+                            {{ session('mensaje') }}
+                        </x-formulario.mensaje-error-validacion-inputs>    
+                    @endif
                 </form>
-                
             </div>
             <!-- /.card-body -->
         </div>

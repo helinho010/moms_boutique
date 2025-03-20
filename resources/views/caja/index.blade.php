@@ -49,7 +49,7 @@
             @csrf
             <div class="input-group flex-nowrap">
                 <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
-                <button class="input-group-text" id="input-buscar-cierre-caja">
+                <button type="button" class="input-group-text" id="input-buscar-cierre-caja">
                     <i class="fas fa-search"></i>
                 </button>
                 <button type="button" class="input-group-text" 

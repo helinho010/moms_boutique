@@ -5,7 +5,7 @@ Route::controller(App\Http\Controllers\Auth\LoginController::class)->group(funct
     Route::get('login', 'showLoginForm')->name('login');
     Route::post('login', 'login');
     Route::post('logout', 'logout')->name('logout');
-});
+})->middleware(['restrinccion.ip']);
 
 // Auth Register
 // Route::controller(App\Http\Controllers\Auth\RegisterController::class)->group(function(){
