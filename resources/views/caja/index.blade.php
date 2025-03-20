@@ -238,9 +238,9 @@
 
     </x-modal>
 
-    {{-- Modal para editar un cierre de caja --}}
+    {{-- Modal para revisar un cierre de caja --}}
     <x-modal id="editarCierreCaja" title="Verificar Cierre de Caja" 
-             idformulario="revCierreCaja" nombre-btn="Enviar">
+             idformulario="revCierreCaja" nombre-btn="Registrar">
         <div class="row">
             <div class="col-md-12 text-center title h4">
                 Datos del Cierre
@@ -271,15 +271,20 @@
                 <span id="verif_usuario">...</span>
             </div>
         </div>
-        <div class="row">
-            <hr>
+        <div class="row" 
+             style="border-top: 1px solid black; 
+                    border-bottom: 1px solid black; 
+                    margin:20px 0px 20px 0px;
+                    padding: 10px 0px 10px 0px;
+                    background-color: #267026;
+                    color: #fff;
+        ">
             <div class="col-md-6">
                 <span>Vental registrada en el sistema: </span> 
             </div>
             <div class="col-md-6">
                 <span id="verif_venta_sistema">0</span>
             </div>
-            <hr>
         </div>
         <div class="row">
             <div class="col-md-6">
@@ -305,8 +310,14 @@
                 <span id="verif_qr">0</span>
             </div>
         </div>
-        <div class="row">
-            <hr>
+        <div class="row"
+            style="border-top: 1px solid black; 
+            border-bottom: 1px solid black; 
+            margin:20px 0px 20px 0px;
+            padding: 10px 0px 10px 0px;
+            background-color: #c95622;
+            color: #fff;
+        ">
             <div class="col-md-6">
                 <span>Total Declarado: </span> 
             </div>
@@ -319,7 +330,6 @@
             <div class="col-md-6">
                 <span id="verif_diferencia_declarada">0</span>
             </div>
-            <hr>
         </div>
         <div class="row">
             <div class="col-md-6">

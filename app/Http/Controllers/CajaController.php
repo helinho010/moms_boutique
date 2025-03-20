@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\CierreCajaExport;
 use App\Models\Caja;
 use App\Models\Sucursal;
+use App\Models\UserSucursal;
 use App\Models\Venta;
 use Dompdf\Dompdf;
 use Illuminate\Http\Request;
@@ -15,8 +16,10 @@ class CajaController extends Controller
 {
     public function index(){
         
-        $sucursales = Sucursal::where('activo', '1')
-                              ->get();
+        // $sucursales = Sucursal::where('activo', '1')
+        //                       ->get();
+
+        $sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id);
 
         $registros = Caja::selectRaw('
                                         cajas.id as id_cierre_caja,
