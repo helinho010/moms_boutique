@@ -11,6 +11,11 @@ class UserSucursal extends Model
 
     protected $fillable = ['id_usuario', 'id_sucursal'];
 
+    /**
+     * Obtiene las sucursales habilitadas para un usuario
+     * @param int $id_usuario
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public static function sucursalesHabilitadasUsuario($id_usuario){
         $sucursales = self::selectRaw('
                                     sucursals.*,

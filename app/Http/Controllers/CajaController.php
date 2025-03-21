@@ -125,8 +125,8 @@ class CajaController extends Controller
             return redirect()->route('home_caja');            
         }
 
-        $sucursales = Sucursal::where('activo',1)
-                        ->get();
+        $sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id);
+        
         return view('caja.edit',[
             "sucursales" => $sucursales,
             "cierre" => $cierre,

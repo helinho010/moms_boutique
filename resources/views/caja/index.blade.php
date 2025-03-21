@@ -235,7 +235,6 @@
             <x-formulario.label for="observacion">Observacion: </x-formulario.label>
             <x-formulario.textarea name="observacion" id="observacion" placeholder="Tiene alguna observacion?"></x-formulario.textarea>
         </form>
-
     </x-modal>
 
     {{-- Modal para revisar un cierre de caja --}}
@@ -426,7 +425,17 @@
 @push('scripts')
     <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
     
-    <script>    
+    <script>   
+    
+        $(document).ready(function(){
+            $("#caja").addClass('active');
+                $.ajaxSetup({
+                    headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+        });
+
         function sumarValores(){
             // Captura de valores de los inputs
             let efectivo = $("#efectivo").val() != "" ?  parseFloat($("#efectivo").val()) : 0.0 ;
@@ -470,7 +479,6 @@
                     async : false,
                     beforeSend:function(){
                         $("#load").attr('hidden',false);
-                        
                     }
                 }) 
 
@@ -511,7 +519,7 @@
             $("#totalDeclarado").text("0");
             $("#diferencia").text("0");
             $("#sobranteFaltante").text("");
-            $("#observacion").val("");
+            $("#observacion").text("");
         }
 
         function verificarDatos(data){
@@ -533,14 +541,6 @@
             sumarValores();
         });
         
-        $(document).ready(function(){
-            $("#caja").addClass('active');
-            $.ajaxSetup({
-            headers: {
-             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        });
 
         $("input").change(function(){
             if ($(this).attr('id') == "fecha") {
