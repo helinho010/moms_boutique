@@ -161,15 +161,6 @@
         <form action="{{route('add_cierre_caja')}}" method="post" class="row" id="frm-cierre-caja">
             @csrf
             @method("post")
-            
-            <div class="row">
-                <div class="col">
-                    <x-formulario.label for="fecha">Fecha de Cierre:</x-formulario.label>
-                    <x-formulario.input tipo="date" :value="$fechaActual" 
-                                        name="fecha" id="fecha" placeholder="" 
-                    />
-                </div>
-            </div>
 
             <div class="row">
                 <div class="col">
@@ -182,6 +173,15 @@
                             </option>
                         @endforeach
                     </x-formulario.select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <x-formulario.label for="fecha">Fecha de Cierre:</x-formulario.label>
+                    <x-formulario.input tipo="date" :value="$fechaActual" 
+                                        name="fecha" id="fecha" placeholder="" 
+                    />
                 </div>
             </div>
             
@@ -519,7 +519,7 @@
             $("#totalDeclarado").text("0");
             $("#diferencia").text("0");
             $("#sobranteFaltante").text("");
-            $("#observacion").text("");
+            $("#observacion").val("");
         }
 
         function verificarDatos(data){
