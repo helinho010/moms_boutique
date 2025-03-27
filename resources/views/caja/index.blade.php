@@ -44,12 +44,10 @@
 <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
-        <form action="{{ route('buscar_evento') }}" method="POST" id="buscarformulario">
-            @method('POST')
-            @csrf
+        <form action="{{ route('home_caja') }}" method="GET" id="buscarformulario">
             <div class="input-group flex-nowrap">
                 <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
-                <button type="button" class="input-group-text" id="input-buscar-cierre-caja">
+                <button type="submit" class="input-group-text" id="input-buscar-cierre-caja">
                     <i class="fas fa-search"></i>
                 </button>
                 <button type="button" class="input-group-text" 

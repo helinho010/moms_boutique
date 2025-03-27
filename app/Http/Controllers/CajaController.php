@@ -14,44 +14,27 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class CajaController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
         
-        // $sucursales = Sucursal::where('activo', '1')
-        //                       ->get();
+        $validacion = $request->validate([
+            "buscar" => "string|nullable",
+        ]);
+
+        $tipo_usuario = auth()->user()->usertype_id;
+        $id_usuario = auth()->user()->id;
+
+        if (!isset($request->buscar)) {
+            
+            $cierresCaja = Caja::registrosCajaXUsuario($tipo_usuario, $id_usuario);
+        }else {
+            
+            $cierresCaja = Caja::buscar($request->buscar, $tipo_usuario, $id_usuario, 6)->withQueryString();
+        }
 
         $sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id);
 
-        $registros = Caja::selectRaw('
-                                        cajas.id as id_cierre_caja,
-                                        cajas.fecha_cierre as fecha_cierre_caja,
-                                        cajas.efectivo as efectivo_caja,
-                                        cajas.transferencia as transferencia_caja, 
-                                        cajas.qr as qr_caja, 
-                                        cajas.venta_sistema as venta_sistema_caja,
-	                                    cajas.total_declarado as total_declarado_caja,
-                                        cajas.observacion as observacion_caja,
-                                        cajas.verificado as verificado_caja,
-                                        cajas.id_usuario as id_usuario_caja,
-                                        sucursals.id as id_sucursal,
-                                        sucursals.razon_social as razon_social_sucursal,
-                                        sucursals.direccion as direccion_sucursal,
-                                        users.name as name_usuario,
-                                        users.username as nombre_usuario,
-                                        users.id as id_usuario,
-                                        users.usertype_id as id_tipo_usuario
-                                    ')
-                          ->join("users", "users.id", "cajas.id_usuario")
-                          ->join("sucursals", "sucursals.id", "cajas.id_sucursal");
-
-        if ( auth()->user()->usertype_id != 1 ) {
-            $registros = $registros->where('users.id', auth()->user()->id);
-        }
-
-        $registros = $registros->orderBy("cajas.updated_at","desc")
-                               ->paginate(6);
-
         return view("caja.index", [
-            "cierres_caja" => $registros,
+            "cierres_caja" => $cierresCaja,
             "sucursales" => $sucursales,
         ]);
     }
@@ -4540,4 +4523,5 @@ class CajaController extends Controller
         $filename = 'CierreCaja_' . date('Ymd_His') . '.xlsx';
         return Excel::download(new CierreCajaExport(collect($exportData)), $filename);
     }
+
 }
