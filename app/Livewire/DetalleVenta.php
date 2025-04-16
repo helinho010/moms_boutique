@@ -16,6 +16,7 @@ use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\On;
 use App\Http\Controllers\VentaController;
 use App\Models\Cliente;
+use App\Models\InventarioExterno;
 use App\Models\InventarioInterno;
 use Dompdf\Dompdf;
 use Illuminate\Http\Request;
@@ -151,11 +152,13 @@ class DetalleVenta extends Component
                 $ventas = $ventas->join('sucursals', 'sucursals.id', 'venta.id_sucursal')                 
                                  ->whereRaw("( venta.created_at like '%{$buscar}%' or venta.updated_at like '%{$buscar}%' or venta.descuento like '%{$buscar}%' or venta.total_venta like '%{$buscar}%' or venta.envio like '%{$buscar}%' or venta.referencia like '%{$buscar}%' or venta.observacion like '%{$buscar}%' or tipo_pagos.tipo like '%{$buscar}%' or users.name like '%{$buscar}%' )")
                                  ->where('sucursals.id',intval($id))
+                                 ->where('venta.estado', 1)
                                  ->orderBy('venta.created_at','desc')
                                  ->paginate(10);
             }else{
                 $ventas = $ventas->join('sucursals', 'sucursals.id', 'venta.id_sucursal')
                                  ->where('sucursals.id',intval($id))
+                                 ->where('venta.estado', 1)
                                  ->orderBy('venta.created_at','desc')
                                  ->paginate(10);
             }
@@ -166,11 +169,13 @@ class DetalleVenta extends Component
                 $ventas = $ventas->join('eventos', 'eventos.id', 'venta.id_evento')
                                 ->where('eventos.id',intval($id))
                                 ->whereRaw("( venta.created_at like '%$buscar%' or venta.updated_at like '%$buscar%' or venta.descuento like '%$buscar%' or venta.total_venta like '%$buscar%' or venta.envio like '%$buscar%' or venta.referencia like '%$buscar%' or venta.observacion like '%$buscar%' or tipo_pagos.tipo like '%$buscar%' or users.name like '%$buscar%' )")
+                                ->where('venta.estado', 1)
                                 ->orderBy('venta.created_at','desc')
                                 ->paginate(10);
             }else{
                 $ventas = $ventas->join('eventos', 'eventos.id', 'venta.id_evento')
                                  ->where('eventos.id',intval($id))
+                                 ->where('venta.estado', 1)
                                  ->orderBy('venta.created_at','desc')
                                  ->paginate(10);
             }
@@ -259,48 +264,70 @@ class DetalleVenta extends Component
 
         $controlActualizacion = 0;
 
+        if ($this->titleLabel == "Sucursal") {
+            $campBDBusqueda =  "id_sucursal";
+            $modeloClase = InventarioInterno::class;
+        } else {
+            $campBDBusqueda = "id_evento";
+            $modeloClase = InventarioExterno::class;
+        }
+        
         switch ($estadoVenta) 
         {
             case 0:
-                foreach ($detalleVenta as $key => $value) 
-                {
-                    $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
-                                                            ->where('id_producto',$value->id_producto)
-                                                            ->first();
-                    if ($inventarioSucursal->stock - $value->cantidad >= 0) 
-                    {      
-                        $controlActualizacion++;
-                    } 
-                }
+                // foreach ($detalleVenta as $key => $value) 
+                // {
+                //     $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
+                //                                             ->where('id_producto',$value->id_producto)
+                //                                             ->first();
+                //     if ($inventarioSucursal->stock - $value->cantidad >= 0) 
+                //     {      
+                //         $controlActualizacion++;
+                //     } 
+                // }
                 
-                if ($controlActualizacion == $detalleVenta->count()) 
-                {
-                    foreach ($detalleVenta as $key => $value) 
-                    {
-                        $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
-                                                                ->where('id_producto',$value->id_producto)
-                                                                ->first();
-                        $inventarioSucursal->stock = $inventarioSucursal->stock - $value->cantidad;
-                        $inventarioSucursal->save();
-                    }
-                    $venta->estado = 1;
-                    $venta->save();
-                }
+                // if ($controlActualizacion == $detalleVenta->count()) 
+                // {
+                //     foreach ($detalleVenta as $key => $value) 
+                //     {
+                //         $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
+                //                                                 ->where('id_producto',$value->id_producto)
+                //                                                 ->first();
+                //         $inventarioSucursal->stock = $inventarioSucursal->stock - $value->cantidad;
+                //         $inventarioSucursal->save();
+                //     }
+                //     $venta->estado = 1;
+                //     $venta->save();
+                // }
                 
             break;
 
             case 1:
                 foreach ($detalleVenta as $key => $value) 
                 {
-                    $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
+                    $registroInventario = $modeloClase::where($campBDBusqueda, $venta->$campBDBusqueda)
                                                             ->where('id_producto',$value->id_producto)
                                                             ->first();
-                    $inventarioSucursal->cantidad_ingreso = $value->cantidad; 
-                    $inventarioSucursal->stock = $inventarioSucursal->stock + $value->cantidad;
-                    $inventarioSucursal->save();
+                                                           
+                    if ($this->titleLabel == "Sucursal") {
+                        $registroInventario->cantidad_ingreso = $value->cantidad; 
+                        $registroInventario->stock = $registroInventario->stock + $value->cantidad;
+                        $registroInventario->save();
+                        $venta->estado = 0;
+                        $venta->save();
+                    } else {
+                        if ($registroInventario->activo < 3) {
+                            $registroInventario->cantidad = $registroInventario->cantidad + $value->cantidad;
+                            $registroInventario->save();
+                            $venta->estado = 0;
+                            $venta->save();
+                        } else{
+                            $this->js("alert('No se puede eliminar la venta, ya que los Items del evento ya fueron devueltos a la Sucursal Central');");
+                            break;
+                        }
+                    }
                 }
-                $venta->estado = 0;
-                $venta->save();
+                
             break;
             
             default:
