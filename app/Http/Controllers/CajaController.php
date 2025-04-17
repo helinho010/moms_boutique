@@ -93,6 +93,7 @@ class CajaController extends Controller
                             sum(total_venta) as total_vendido
                          ')
                          ->where('id_sucursal',$request->id_sucursal)
+                         ->where('estado',1)
                          ->where('created_at', '>=', $request->fecha." 00:00")
                          ->where('created_at', '<=', $request->fecha." 23:59")
                          ->first();
