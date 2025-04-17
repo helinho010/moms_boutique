@@ -139,11 +139,11 @@ class UsuariosController extends Controller
         $validatedData = $request->validate([
             'nombre_usuario' => 'required|string|max:255',
             'usuario' => 'required|string|max:100',
-            'contrasenia' => 'required|string',
-            'confirmar_contrasenia' => 'required|string',
-            'correo' => 'required|email|max:255',
+            'contrasenia' => 'required|string|min:8',
+            'confirmar_contrasenia' => 'required|string|min:8|same:contrasenia',
+            'correo' => 'required|email|max:255|unique:users,email',
             'tipo_usuario' => 'required|numeric|gt:0',
-            // 'sucursales_seleccionadas' => 'required|array|min:1',
+            'sucursales_seleccionadas' => 'required|array|min:1',
         ]);
         
         $newUsuario = User::create([
@@ -154,8 +154,8 @@ class UsuariosController extends Controller
             'password' => Hash::make($request['contrasenia']),
         ]);
 
-        if ($request->tipo_usuario == 1) 
-        {
+        if ($request->tipo_usuario == 1) {
+
             $allSucursales = Sucursal::where('activo',1)->get();
             foreach ($allSucursales as $key => $sucursal) 
             {
@@ -163,19 +163,8 @@ class UsuariosController extends Controller
                     'id_usuario' => $newUsuario->id,
                     'id_sucursal' => $sucursal->id,
                 ]);
-            }    
-        }else{
-            foreach ($request->sucursales_seleccionadas as $key => $sucursal) 
-            {
-                UserSucursal::create([
-                    'id_usuario' => $newUsuario->id,
-                    'id_sucursal' => $sucursal,
-                ]);
-            }
-        }
+            }  
 
-        if ($request->tipo_usuario == 1) 
-        {
             $allEventos = Evento::where('estado',1)->get();
 
             foreach ($allEventos as $key => $evento) 
@@ -184,14 +173,25 @@ class UsuariosController extends Controller
                     'id_usuario' => $newUsuario->id,
                     'id_evento' => $evento->id,
                 ]);
-            }    
+            }  
+
         }else{
-            foreach ($request->eventos_seleccionados as $key => $evento) 
+            foreach ($request->sucursales_seleccionadas as $key => $sucursal) 
             {
                 UserSucursal::create([
                     'id_usuario' => $newUsuario->id,
-                    'id_sucursal' => $evento,
+                    'id_sucursal' => $sucursal,
                 ]);
+            }
+
+            if (isset($request->eventos_seleccionados)) {
+                foreach ($request->eventos_seleccionados as $key => $evento) 
+                {
+                    UserSucursal::create([
+                        'id_usuario' => $newUsuario->id,
+                        'id_sucursal' => $evento,
+                    ]);
+                }
             }
         }
 

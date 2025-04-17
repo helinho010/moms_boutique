@@ -11,7 +11,7 @@
     </style>
 @endsection
 
-@section('h-title')
+@section('mensaje-errores')
     @php
         if (isset($_GET['exito'])) 
         {
@@ -42,6 +42,14 @@
                 '</div>';
         }   
     @endphp
+
+    @if ($errors->any())
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            @foreach ($errors->all() as $error)
+                * {{ $error }} <br>
+            @endforeach
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
 @endsection
 
 @section('card-title')
@@ -161,7 +169,7 @@
                             <div class="col-md">
                                 <div class="mb-3">
                                     <label for="usuario" class="form-label">Usuario:</label>
-                                    <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Introduzca el usuario"> 
+                                    <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Introduzca el usuario" autocomplete="off"> 
                                     <span id="existeUsuarioBdComentario" style="display: none;">Usuario ya existe</span>
                                 </div>
                             </div>
@@ -171,7 +179,7 @@
                             <div class="col-md">
                                 <div class="mb-3">
                                     <label for="contrasenia" class="form-label">Contraseña:</label>
-                                    <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Introduzca la Contraseña"> 
+                                    <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Introduzca la Contraseña" autocomplete="off"> 
                                 </div>
                             </div>
                             <div class="col-md">
@@ -274,6 +282,17 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    function limpiarInputs(){
+        $("#nombre_usuario").val('');
+        $("#usuario").val('');
+        $("#contrasenia").val('');
+        $("#confirmar_contrasenia").val('');
+        $("#correo").val('');
+        $("#tipo_usuario").val(0);
+        $('#sucursalesHabilitadas1').remove();
+        $('#sucursalesHabilitadas0').append('<div id="sucursalesHabilitadas1"></div>');
+    }
     
     $('button').on('click',function() 
     {   
@@ -286,7 +305,9 @@
             $("#contrasenia").val('');
             $("#confirmar_contrasenia").val('');
             $("#exampleModal").show();
-        }{
+        }else if ($(this).attr('data-bs-dismiss') == 'modal') {
+            limpiarInputs();
+        }else{
 
         } 
     });
