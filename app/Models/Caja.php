@@ -13,6 +13,7 @@ class Caja extends Model
     protected $fillable = [
         'fecha_cierre',
         'efectivo',
+        'tarjeta',
         'transferencia',
         'qr',
         'observacion',
@@ -24,10 +25,12 @@ class Caja extends Model
     ];
 
     public static function registrosCajaXUsuario(int $tipo_usuario, int $id_usuario, int $paginate = 10){
+        
         $registros = Caja::selectRaw('
                                         cajas.id as id_cierre_caja,
                                         cajas.fecha_cierre as fecha_cierre_caja,
                                         cajas.efectivo as efectivo_caja,
+                                        cajas.tarjeta as tarjeta_caja,
                                         cajas.transferencia as transferencia_caja, 
                                         cajas.qr as qr_caja, 
                                         cajas.venta_sistema as venta_sistema_caja,
@@ -61,6 +64,7 @@ class Caja extends Model
         $registros = Self::selectRaw('cajas.id as id_cierre_caja,
                                         cajas.fecha_cierre as fecha_cierre_caja,
                                         cajas.efectivo as efectivo_caja,
+                                        cajas.tarjeta as tarjeta_caja,
                                         cajas.transferencia as transferencia_caja, 
                                         cajas.qr as qr_caja, 
                                         cajas.venta_sistema as venta_sistema_caja,
@@ -90,6 +94,7 @@ class Caja extends Model
             ->where(function($query) use ($cadenaBusqueda) {
                 $query->where('fecha_cierre', 'like', '%' . $cadenaBusqueda . '%')
                       ->orWhere('efectivo', 'like', '%' . $cadenaBusqueda . '%')
+                      ->orWhere('tarjeta', 'like', '%' . $cadenaBusqueda . '%')
                       ->orWhere('transferencia', 'like', '%' . $cadenaBusqueda . '%')
                       ->orWhere('qr', 'like', '%' . $cadenaBusqueda . '%')
                       ->orWhere('observacion', 'like', '%' . $cadenaBusqueda . '%')

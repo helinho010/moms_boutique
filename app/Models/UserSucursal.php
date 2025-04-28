@@ -16,7 +16,8 @@ class UserSucursal extends Model
      * @param int $id_usuario
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function sucursalesHabilitadasUsuario($id_usuario){
+    public static function sucursalesHabilitadasUsuario($id_usuario) 
+    {
         $sucursales = self::selectRaw('
                                     sucursals.*,
                                     user_sucursals.id as id_user_sucursal,
@@ -28,6 +29,7 @@ class UserSucursal extends Model
                           ->where('user_sucursals.estado', 1)
                           ->where('sucursals.activo', 1)
                           ->get();
+                          
         return $sucursales;
     }
 }

@@ -75,6 +75,7 @@
               <th scope="col">Fecha</th>
               <th scope="col">Efectivo</th>
               <th scope="col">Tarjeta</th>
+              <th scope="col">Transf.</th>
               <th scope="col">Qr</th>
               <th scope="col">Total Sistema</th>
               <th scope="col">Total Declarado</th>
@@ -115,6 +116,7 @@
                 <td>{{ $cierre->direccion_sucursal }}</td>
                 <td>{{ $cierre->fecha_cierre_caja }}</td>
                 <td>{{ $cierre->efectivo_caja }}</td>
+                <td>{{ $cierre->tarjeta_caja }}</td>
                 <td>{{ $cierre->transferencia_caja }}</td>
                 <td>{{ $cierre->qr_caja }}</td>
                 <td>{{ number_format($cierre->venta_sistema_caja, 2) }}</td>
@@ -191,8 +193,8 @@
                 </div>
 
                 <div class="col">
-                    <x-formulario.label for="transferencia">Tarjeta Bs.:</x-formulario.label>
-                    <x-formulario.input tipo="text" name="transferencia" id="tarjeta" placeholder="Introduzca el efectivo"/>
+                    <x-formulario.label for="tarjeta">Tarjeta Bs.:</x-formulario.label>
+                    <x-formulario.input tipo="text" name="tarjeta" id="tarjeta" placeholder="Introduzca el efectivo"/>
                 </div>
             </div>
             
@@ -200,6 +202,10 @@
                 <div class="col-6">
                     <x-formulario.label for="qr">QR Bs.:</x-formulario.label>
                     <x-formulario.input tipo="text" name="qr" id="qr" placeholder="Introduzca el efectivo"/>
+                </div>
+                <div class="col">
+                    <x-formulario.label for="transferencia">Transferencia Bs.:</x-formulario.label>
+                    <x-formulario.input tipo="text" name="transferencia" id="transferencia" placeholder="Introduzca el efectivo"/>
                 </div>
             </div>
             
@@ -297,6 +303,14 @@
             </div>
             <div class="col-md-6">
                 <span id="verif_tarjeta">0</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <span>Transferencia Registrada: </span> 
+            </div>
+            <div class="col-md-6">
+                <span id="verif_transferencia">0</span>
             </div>
         </div>
         <div class="row">
@@ -438,8 +452,9 @@
             // Captura de valores de los inputs
             let efectivo = $("#efectivo").val() != "" ?  parseFloat($("#efectivo").val()) : 0.0 ;
             let tarjeta = $("#tarjeta").val() != "" ?  parseFloat($("#tarjeta").val()) : 0.0 ;
+            let transferencia = $("#transferencia").val() != "" ?  parseFloat($("#transferencia").val()) : 0.0 ;
             let qr = $("#qr").val() != "" ?  parseFloat($("#qr").val()) : 0.0 ;
-            let sum = (efectivo + tarjeta + qr).toFixed(2);
+            let sum = (efectivo + tarjeta + transferencia + qr).toFixed(2);
             $("#totalDeclarado").text( sum );
 
             //Captura de datos para ser recalculados
@@ -513,6 +528,7 @@
             $("#sucursal").val(0);
             $("#efectivo").val("");
             $("#tarjeta").val("");
+            $("#transferencia").val("");
             $("#qr").val("");
             $("#totalDeclarado").text("0");
             $("#diferencia").text("0");
@@ -527,7 +543,8 @@
             $("#verif_usuario").text(data.name_usuario);
             $("#verif_venta_sistema").text(data.venta_sistema_caja.toFixed(2) + " Bs");
             $("#verif_efectivo").text(data.efectivo_caja.toFixed(2) + " Bs");
-            $("#verif_tarjeta").text(data.transferencia_caja.toFixed(2) + " Bs");
+            $("#verif_tarjeta").text(data.tarjeta_caja.toFixed(2) + " Bs");
+            $("#verif_transferencia").text(data.transferencia_caja.toFixed(2) + " Bs");
             $("#verif_qr").text(data.qr_caja.toFixed(2) + " Bs");
             $("#verif_total_declarado").text(data.total_declarado_caja.toFixed(2) + " Bs");
             $("#verif_diferencia_declarada").text((data.venta_sistema_caja - data.total_declarado_caja).toFixed(2) + " Bs");

@@ -27,11 +27,12 @@ class CierreCajaExport implements FromCollection, WithStrictNullComparison, With
             'D' => 10,
             'E' => 10,
             'F' => 10,
-            'G' => 15,
+            'G' => 10,
             'H' => 15,
-            'I' => 30,
-            'J' => 15,
-            'K' => 6,
+            'I' => 15,
+            'J' => 30,
+            'K' => 15,
+            'L' => 6,
         ];
     }
 
@@ -43,6 +44,7 @@ class CierreCajaExport implements FromCollection, WithStrictNullComparison, With
             'Fecha Cierre',
             'Efectivo',
             'Tarjeta',
+            'Transferencia',
             'QR',
             'Venta Sistema',
             'Total Declarado',

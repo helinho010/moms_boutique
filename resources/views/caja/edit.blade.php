@@ -90,20 +90,28 @@
         </div>
 
         <div class="col">
-            <x-formulario.label for="transferencia">Tarjeta Bs.:</x-formulario.label>
-            <x-formulario.input tipo="text" name="transferencia" 
+            <x-formulario.label for="tarjeta">Tarjeta Bs.:</x-formulario.label>
+            <x-formulario.input tipo="text" name="tarjeta" 
                                 id="tarjeta" placeholder="Introduzca el efectivo"
-                                value="{{ $cierre->transferencia }}" 
+                                value="{{ $cierre->tarjeta }}" 
             />
         </div>
     </div>
 
     <div class="row">
-        <div class="col-6">
+        <div class="col">
             <x-formulario.label for="qr">QR Bs.:</x-formulario.label>
             <x-formulario.input tipo="text" name="qr" 
                                 id="qr" placeholder="Introduzca el efectivo" 
                                 value="{{ $cierre->qr }}"
+            />
+        </div>
+
+        <div class="col">
+            <x-formulario.label for="transferencia">Transferencia Bs.:</x-formulario.label>
+            <x-formulario.input tipo="text" name="transferencia" 
+                                id="transferencia" placeholder="Introduzca el efectivo"
+                                value="{{ $cierre->transferencia }}" 
             />
         </div>
     </div>
@@ -167,8 +175,9 @@
             // Captura de valores de los inputs
             let efectivo = $("#efectivo").val() != "" ?  parseFloat($("#efectivo").val()) : 0.0 ;
             let tarjeta = $("#tarjeta").val() != "" ?  parseFloat($("#tarjeta").val()) : 0.0 ;
+            let transferencia = $("#transferencia").val() != "" ?  parseFloat($("#transferencia").val()) : 0.0 ;
             let qr = $("#qr").val() != "" ?  parseFloat($("#qr").val()) : 0.0 ;
-            let sum = (efectivo + tarjeta + qr).toFixed(2);
+            let sum = (efectivo + tarjeta + transferencia +  qr).toFixed(2);
             $("#totalDeclarado").text( sum );
 
             //Captura de datos para ser recalculados
@@ -243,6 +252,7 @@
             $("#sucursal").val(0);
             $("#efectivo").val("");
             $("#tarjeta").val("");
+            $("#transferencia").val("");
             $("#qr").val("");
             $("#totalDeclarado").text("0");
             $("#diferencia").text("0");

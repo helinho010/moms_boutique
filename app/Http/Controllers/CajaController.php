@@ -31,7 +31,7 @@ class CajaController extends Controller
             $cierresCaja = Caja::buscar($request->buscar, $tipo_usuario, $id_usuario, 6)->withQueryString();
         }
 
-        $sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id);
+        $sucursales = auth()->user()->usertype_id != 1 ? UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id) : Sucursal::where('activo',1)->get();
 
         return view("caja.index", [
             "cierres_caja" => $cierresCaja,
@@ -40,11 +40,12 @@ class CajaController extends Controller
     }
 
     public function nuevoCierreCaja(Request $request){
-        //  dd($request->request);
+        
         $validated = $request->validate([
             'fecha' => "required|string",
             'sucursal' => 'required|integer',
             'efectivo' => "required|numeric",
+            'tarjeta' => "required|numeric",
             'transferencia' => 'required|numeric',
             'qr' => 'required|numeric',
             'venta_sistema' => 'required|numeric',
@@ -68,6 +69,7 @@ class CajaController extends Controller
             $addCierreCaja = Caja::create([
                 "fecha_cierre" => $request->fecha,
                 "efectivo" => $request->efectivo,
+                "tarjeta" => $request->tarjeta,
                 "transferencia" => $request->transferencia,
                 "qr" => $request->qr,
                 "venta_sistema" => $request->venta_sistema,
@@ -109,7 +111,7 @@ class CajaController extends Controller
             return redirect()->route('home_caja');            
         }
 
-        $sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id);
+        $sucursales = auth()->user()->usertype_id != 1 ? UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id) : Sucursal::where('activo',1)->get();
         
         return view('caja.edit',[
             "sucursales" => $sucursales,
@@ -123,6 +125,7 @@ class CajaController extends Controller
             'fecha_cierre' => "required|string",
             'id_sucursal' => 'required|integer',
             'efectivo' => "required|numeric",
+            'tarjeta' => "required|numeric",
             'transferencia' => 'required|numeric',
             'qr' => 'required|numeric',
             'venta_sistema' => 'required|numeric',
@@ -132,7 +135,7 @@ class CajaController extends Controller
 
         $cierre = Caja::findOrFail($id_cierre);
         
-        $actualizado = $cierre->update($request->only(["fecha_cierre","id_sucursal","efectivo","transferencia", "qr", "venta_sistema", "total_declarado", "observacion"]));
+        $actualizado = $cierre->update($request->only(["fecha_cierre","id_sucursal","efectivo","tarjeta","transferencia", "qr", "venta_sistema", "total_declarado", "observacion"]));
         
         if ($actualizado) {
             return redirect()->route('home_caja')->with("exito", "¡Actualización exitosa!");
@@ -173,6 +176,7 @@ class CajaController extends Controller
                                             cajas.id as id_caja,
                                             cajas.fecha_cierre as fecha_cierre_caja,
                                             cajas.efectivo as efectivo_caja,
+                                            cajas.tarjeta as tarjeta_caja,
                                             cajas.transferencia as transferencia_caja, 
                                             cajas.qr as qr_caja,
                                             cajas.venta_sistema as venta_sistema_caja,
@@ -208,6 +212,7 @@ class CajaController extends Controller
             <td>'.$cierre["direccion_sucursal"].'<br>'.'</td>
             <td>'.$cierre["fecha_cierre_caja"].'</td>
             <td>'.$cierre["efectivo_caja"].'</td>
+            <td>'.$cierre["tarjeta_caja"].'</td>
             <td>'.$cierre["transferencia_caja"].'</td>
             <td>'.$cierre["qr_caja"].'</td>
             <td>'.$cierre["venta_sistema_caja"].'</td>
@@ -4423,6 +4428,7 @@ class CajaController extends Controller
                                               <th style="width: 10%;">Fecha</th>
                                               <th style="width: 10%;">Efectivo</th>
                                               <th style="width: 10%;">Tarjeta</th>
+                                              <th style="width: 10%;">Transf.</th>
                                               <th style="width: 10%;">qr</th>
                                               <th style="width: 12%;">Venta Sistema</th>
                                               <th style="width: 12%;">Total Declarado</th>
@@ -4475,6 +4481,7 @@ class CajaController extends Controller
                                     cajas.id as id_caja,
                                     cajas.fecha_cierre as fecha_cierre_caja,
                                     cajas.efectivo as efectivo_caja,
+                                    cajas.tarjeta as tarjeta_caja,
                                     cajas.transferencia as transferencia_caja, 
                                     cajas.qr as qr_caja,
                                     cajas.venta_sistema as venta_sistema_caja,
@@ -4510,7 +4517,8 @@ class CajaController extends Controller
                 'Sucursal' => $cierre->direccion_sucursal,
                 'Fecha' => $cierre->fecha_cierre_caja,
                 'Efectivo' => $cierre->efectivo_caja,
-                'Tarjeta' => $cierre->transferencia_caja,
+                'Tarjeta' => $cierre->tarjeta_caja,
+                'Transferencia' => $cierre->transferencia_caja,
                 'QR' => $cierre->qr_caja,
                 'Venta Sistema' => $cierre->venta_sistema_caja,
                 'Total Declarado' => $cierre->total_declarado_caja,
