@@ -113,7 +113,7 @@
         {{ $traspasos->links() }}
     </div>
 
-        <!-- Modal -->
+        <!-- Modal para agregar un nuevo iten a traspaso de Productos-->
         <div class="modal fade" id="exampleModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -282,9 +282,9 @@
             </div>
             </div>
         </div>
-        <!-- Fin Modal -->
+        <!-- Fin Modal para agregar un nuevo iten a traspaso de Productos -->
 
-        <!-- Modal component -->
+        <!-- Modal component export PDF -->
         @php
             $fechahoy = date('Y-m-d');
         @endphp
@@ -322,7 +322,7 @@
                 </x-formulario.input>
             </form>
         </x-modal>
-        <!-- Final Modal component-->
+        <!-- Final Modal component export PDF -->
 @endsection
 
 

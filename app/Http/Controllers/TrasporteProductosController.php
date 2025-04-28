@@ -84,15 +84,6 @@ class TrasporteProductosController extends Controller
                                                             ->join('users', 'users.id', 'trasporte_productos.id_usuario')
                                                             ->orderBy('trasporte_productos.updated_at','desc')
                                                             ->paginate(10);
-            $sucursales = Sucursal::selectRaw('
-                                                sucursals.id as id_sucursal,
-                                                sucursals.razon_social as razon_social_sucursal,
-                                                sucursals.ciudad as ciudad_sucursal,
-                                                sucursals.activo as estado_sucursal,
-                                                sucursals.direccion as direccion_sucursal
-                                             ')
-                                    ->where('sucursals.activo',1)
-                                    ->get();
                                                             
         }else {
             $detalleTraspasoProductos = TrasporteProductos::selectRaw('
@@ -127,7 +118,7 @@ class TrasporteProductosController extends Controller
                                                             ->orderBy('trasporte_productos.updated_at','desc')
                                                             ->paginate(10);
 
-            $sucursales = UserSucursal::selectRaw('
+            /*$sucursales = UserSucursal::selectRaw('
                                             user_sucursals.id as id_user_sucursals,
                                             user_sucursals.estado as estado_user_sucursals,
                                             user_sucursals.updated_at as updated_at_user_sucursals,
@@ -145,7 +136,7 @@ class TrasporteProductosController extends Controller
                                      ->join('users', 'users.id', 'user_sucursals.id_usuario')
                                      ->where('sucursals.activo',1)
                                      ->where('users.id',auth()->user()->id)
-                                     ->get();
+                                     ->get();*/
         }
 
         if (isset($request->id_sucursal)) 
@@ -181,6 +172,16 @@ class TrasporteProductosController extends Controller
                                                      ->where('sucursals.activo',1)
                                                      ->get();
         }
+
+        $sucursales = Sucursal::selectRaw('
+                                                sucursals.id as id_sucursal,
+                                                sucursals.razon_social as razon_social_sucursal,
+                                                sucursals.ciudad as ciudad_sucursal,
+                                                sucursals.activo as estado_sucursal,
+                                                sucursals.direccion as direccion_sucursal
+                                             ')
+                                    ->where('sucursals.activo',1)
+                                    ->get();
 
         $tipoIngresoSalida = TipoIngresoSalida::where('estado',1)->get();
 
