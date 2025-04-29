@@ -10,8 +10,11 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 
-class InventarioInternoExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithColumnWidths
+class InventarioInternoExport implements FromCollection, WithStrictNullComparison,
+                                         WithHeadings, WithMapping, 
+                                         WithStyles, WithColumnWidths
 {
 
     protected $inventario;
@@ -28,11 +31,12 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
                 "Categoria",           //B
                 "Producto",            //C
                 "Talla",               //D
-                "Precio [Bs]",         //E
-                "Tipo Ing. Sal.",      //F
-                "Stock",               //G
-                "Usuario",             //H    
-                "Estado",              //I
+                "Costo [Bs]",          //E
+                "Precio [Bs]",         //F
+                "Tipo Ing. Sal.",      //G
+                "Stock",               //H
+                "Usuario",             //I    
+                "Estado",              //J
             ];
         }
     public function columnWidths(): array
@@ -43,9 +47,10 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
                 'C' => 27,
                 'D' => 12,
                 'E' => 11,
-                'F' => 13,
-                'G' => 8, 
-                'H' => 8,
+                'F' => 11,
+                'G' => 13,
+                'H' => 8, 
+                'I' => 8,
             ];
     }
 
@@ -56,6 +61,7 @@ class InventarioInternoExport implements FromCollection, WithHeadings, WithMappi
             $invoice->categoria,
             $invoice->nombre_productos,
             $invoice->talla_productos != "" ? $invoice->talla_productos : "ST (Sin Talla)",
+            $invoice->costo_productos,
             $invoice->precio_productos,
             $invoice->tipo_tipo_ingreso_salidas,
             $invoice->stock_inventario_internos != 0 ? $invoice->stock_inventario_internos:"0",

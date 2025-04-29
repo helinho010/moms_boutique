@@ -124,8 +124,8 @@
             <thead>
                 <tr>
                   <th scope="col">Opciones</th>
-                  <th scope="col">Producto</th>
                   <th scope="col">Sucursal</th>
+                  <th scope="col">Producto</th>
                   <th scope="col">Tipo Ingreso Salida</th>
                   <th scope="col">Ult. Cant. Ing.</th>
                   <th scope="col">Stock</th>
@@ -158,13 +158,15 @@
                       @endphp
 
                     </th>
+                    <th>{{"$aux->razon_social_sucursal - $aux->ciudad_sucursal"}}</th>
                     <th>
                         {{$aux->nombre_producto}} <br>
                         Talla: <span class="badge bg-primary">{{ $aux->talla!=""?$aux->talla:"ST(Sin Talla)" }}</span>
                         Precio: <span class="badge bg-info text-dark">{{ $aux->precio}} Bs.</span> <br>
-                        {{-- {{"$aux->nombre_producto - Talla: $aux->talla - Precio: $aux->precio Bs"}} --}}
+                        @if (auth()->user()->usertype_id == 1)
+                          Costo:  <span class="badge bg-secondary">{{ $aux->costo }} Bs.</span>
+                        @endif
                     </th>
-                    <th>{{"$aux->razon_social_sucursal - $aux->ciudad_sucursal"}}</th>
                     <th>{{"$aux->nombre_tipo_ingreso_salida"}}</th>
                     <th>{{$aux->cantidad_ingreso}}</th>
                     <th>{{$aux->stock}}</th>
