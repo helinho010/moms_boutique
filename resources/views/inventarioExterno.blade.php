@@ -118,9 +118,9 @@
     </div>
     <br>
     <div class="row">
-        <table class="table table-striped align-middle"> 
+        <table class="table table-striped align-middle table-bordered"> 
             <thead>
-                <tr>
+                <tr class="align-middle">
                   <th style="width: 8%">Opciones</th>
                   <th style="width: 20%">Sucursal</th>
                   <th style="width: 30%">Producto</th>

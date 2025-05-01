@@ -82,9 +82,9 @@
     </div>
     <br>
     <div class="row">
-        <table class="table table-striped"> 
+        <table class="table table-striped table-bordered"> 
             <thead>
-                <tr class="text-center">
+                <tr class="text-center align-middle">
                   <th scope="col">Opciones</th>
                   <th scope="col">Nombre</th>
                   <th scope="col">Usuario</th>

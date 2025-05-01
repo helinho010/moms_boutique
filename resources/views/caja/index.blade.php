@@ -67,9 +67,9 @@
 </div>
 <br>
 <div class="row">
-    <table class="table table-striped"> 
+    <table class="table table-striped table-bordered"> 
         <thead>
-            <tr>
+            <tr class="align-middle">
               <th scope="col" style="width: 10%" >Opciones</th>
               <th scope="col" style="width: 15%">Sucursal</th>
               <th scope="col">Fecha</th>

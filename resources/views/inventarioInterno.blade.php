@@ -122,7 +122,7 @@
     </div>
     <br>
     <div class="row">
-        <table class="table table-striped">
+        <table class="table table-striped table-bordered">
             <thead>
                 <tr>
                   <th scope="col">Opciones</th>

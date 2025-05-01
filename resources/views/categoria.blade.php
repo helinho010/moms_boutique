@@ -57,9 +57,9 @@
     </div>
     <br>
     <div class="row">
-        <table class="table table-striped"> 
+        <table class="table table-striped table-bordered"> 
             <thead>
-                <tr>
+                <tr class="align-middle">
                   <th scope="col">Opciones</th>
                   <th scope="col">Nombre Categoria</th>
                   <th scope="col">Estado</th>

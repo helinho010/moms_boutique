@@ -57,10 +57,9 @@
     </div>
     <br>
     <div class="row">
-        <table class="table table-striped"> 
+        <table class="table table-striped table-bordered"> 
             <thead>
-                <tr>
-                  
+                <tr class="align-middle">
                   <th style="width: 15%;">Sucursal Origen</th>
                   <th style="width: 15%;">Sucursal Destino</th>
                   <th style="width: 20%;">Producto</th>
