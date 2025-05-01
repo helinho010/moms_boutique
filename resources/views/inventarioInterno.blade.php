@@ -93,7 +93,9 @@
                              </select>
                              <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-search"></i></button>
                              <button class="input-group-text" id="btnExportDataInventarioPdf"><i class="far fa-file-pdf" style="color: red;font-size: 20px;"></i></button>
-                             <button class="input-group-text" id="btnExportDataInventarioExcel"><i class="far fa-file-excel" style="color: green;font-size: 20px;"></i></button>
+                             @if (auth()->user()->usertype_id == 1)
+                                <button class="input-group-text" id="btnExportDataInventarioExcel"><i class="far fa-file-excel" style="color: green;font-size: 20px;"></i></button> 
+                             @endif
                              {{-- @livewire('boton-invint-pdf') --}}
                         </div>
                     </form>
