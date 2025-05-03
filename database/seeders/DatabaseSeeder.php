@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
             UsertypeOpcSeeder::class,
             // UserOpcSucSeeder::class,
             OrdenOpcionesSistemaSeeder::class,
+            RolesSeeder::class,
+            PermisosSeeder::class,
     	]);
     }
 }
