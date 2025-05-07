@@ -30,7 +30,8 @@ Route::middleware(['auth'])->group(function () {
     // Proveedor
     Route::get('/proveedor', [ProveedorController::class,'index'])
         ->name('home_proveedor')
-        ->middleware('control.rutas');
+        // ->middleware(['permission:create proveedor'])
+        ;
     Route::post('/proveedor', [ProveedorController::class,'buscar'])->name('buscar_proveedor');
     Route::post('/nuevo_proveedor', [ProveedorController::class,'store'])->name('nuevo_proveedor');
     Route::post('/actualizar_proveedor',[ProveedorController::class,'update'])->name('actualizar_proveedor');
@@ -147,13 +148,13 @@ Route::middleware(['auth'])->group(function () {
     // Usuarios
     Route::get('/usuarios', [UsuariosController::class,'index'])
         ->name('home_usuarios')
-        ->middleware('control.rutas');
-    Route::post('/buscar_usuarios', [UsuariosController::class,'buscar'])->name('buscar_usuario');
+        // ->middleware(['permission:crear usuario'])
+        ;
     Route::post('/nuevo_usuario', [UsuariosController::class,'create'])->name('nuevo_usuario');
     Route::post('/consultar_usuario', [UsuariosController::class,'consulta'])->name('consulta_usuario');
     Route::get('/editar_usuario', [UsuariosController::class,'editar'])
         ->name('editar_usuario')
-        ->middleware('control.rutas');
+        ->middleware('permission:editar usuario');
     Route::post('/update_usuario', [UsuariosController::class,'update'])->name('update_usuario');
     Route::post('/actualizar_estado_usuario', [UsuariosController::class,'update_estado'])->name('actualizar_estado_usuario');
 

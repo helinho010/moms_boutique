@@ -50,6 +50,31 @@
             @endforeach
         </x-formulario.mensaje-error-validacion-inputs>
     @endif
+
+    @if (session('usuarioNoEncontrado'))
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5><i class="fas fa-exclamation-triangle"></i> {{session('usuarioNoEncontrado')}} </h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+
+    @if (session('usuarioEditado'))
+        <x-formulario.mensaje-error-validacion-inputs color="success">
+            <h5><i class="fas fa-thumbs-up"></i> Usuario editado Correctamente</h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+
+    @if (session('usuarioCreado'))
+        <x-formulario.mensaje-error-validacion-inputs color="success">
+            <h5><i class="fas fa-check-circle"></i> {{ session('usuarioCreado') }} </h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    
+    @if (session('usuarioNoCreado'))
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5><i class="fas fa-exclamation-circle"></i> {{ session('usuarioNoCreado') }} </h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+
 @endsection
 
 @section('card-title')
@@ -58,9 +83,13 @@
             <h4>Usuarios</h4>
         </div>
         <div class="col text-end">
-            <button type="button" class="btn btn-success" id="modalUsuario" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <i class="fas fa-plus"></i> Agregar Usuario 
-            </button>
+            @can('crear usuario')  
+                <button type="button" class="btn btn-success" 
+                        id="modalUsuario" data-bs-toggle="modal" 
+                        data-bs-target="#crearUsuarioModal">
+                    <i class="fas fa-plus"></i> Agregar Usuario 
+                </button>
+            @endcan
         </div>
     </div>
 @endsection
@@ -69,12 +98,10 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <form action="{{ route('buscar_usuario') }}" method="POST" id="buscarformulario">
-                @method('POST')
-                @csrf
+            <form action="{{ route('home_usuarios') }}" method="GET" id="buscarformulario">
                 <div class="input-group flex-nowrap">
-                    <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
-                    <button class="input-group-text" id="inputBuscar"><i class="fas fa-search"></i></button>
+                    <input type="text" name="buscar" class="form-control" placeholder="Buscar...">
+                    <button type="submit" class="input-group-text"><i class="fas fa-search"></i></button>
                 </div>
             </form>
         </div>
@@ -109,7 +136,6 @@
                                     "tipo_usuario" => $usuario->id_tipo_usuario,
                                     "estado" => $usuario->estado_usuario,
                                     "sucursales" => $sucursales,
-                                    "sucursales_habilitadas" => $sucursales_habilitadas,
                                 ]);
                                 if ($usuario->estado_usuario == 1) 
                                 {
@@ -123,16 +149,29 @@
                     <td>{{ $usuario->nombre_usuario }}</td>
                     <td>{{ $usuario->usuario }}</td>
                     <td>
-                        @foreach ($sucursales_habilitadas as $sucursal)
-                            @if ( $sucursal->id_usuario == $usuario->id_usuario)
-                                {{ $sucursal->razon_social_sucursal }} - {{ $sucursal->ciudad_sucursal }} - {{ $sucursal->direccion_sucursal }} <br>    
-                            @else      
-                                
-                            @endif
+                        @foreach (App\Models\UserSucursal::sucursalesHabilitadasUsuario($usuario->id_usuario) as $sucursal)
+                           {{ $sucursal->ciudad }} - {{ $sucursal->direccion }} <br>
                         @endforeach
                     </td>
                     <td>{{ $usuario->updated_at_usuario }}</td>
-                    <td>{{ $usuario->tipo_usuario }}</td>    
+                    <td>        
+                        @foreach (App\Models\User::getUsersRoles($usuario->id_usuario) as $rol)
+
+                            @if ( $loop->count > 1)
+                                @if ($loop->first)
+                                    {{ $rol }} |
+                                @else
+                                    @if ( $loop->last)
+                                        {{ $rol }}
+                                    @else
+                                        {{ $rol }} |
+                                    @endif
+                                @endif
+                            @else
+                                {{ $rol }}
+                            @endif
+                        @endforeach
+                    </td>    
                     <td> 
                         @if ( $usuario->estado_usuario == 1 )
                             <span class="badge bg-success">Activo</span>    
@@ -148,125 +187,127 @@
     </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Nuevo Usuario</h5>
-                <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ route('nuevo_usuario') }}" id="nuevo_usuario">
-                        @csrf
-                        @method('POST')
-                        <div class="row">
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="nombre_usuario" class="form-label">Nombre Completo del Usuario:</label>
-                                    <input type="text" class="form-control" name="nombre_usuario" id="nombre_usuario" placeholder="Introduzca el nombre del usuario"> 
-                                  </div>
-                            </div>
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="usuario" class="form-label">Usuario:</label>
-                                    <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Introduzca el usuario" autocomplete="off"> 
-                                    <span id="existeUsuarioBdComentario" style="display: none;">Usuario ya existe</span>
+        @can('crear usuario')
+            <div class="modal fade" id="crearUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="crearUsuarioModalLabel">Nuevo Usuario</h5>
+                    <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="{{ route('nuevo_usuario') }}" id="nuevo_usuario">
+                            @csrf
+                            @method('POST')
+                            <div class="row">
+                                <div class="col-md">
+                                    <div class="mb-3">
+                                        <label for="nombre_usuario" class="form-label">Nombre Completo del Usuario:</label>
+                                        <input type="text" class="form-control" name="nombre_usuario" id="nombre_usuario" placeholder="Introduzca el nombre del usuario"> 
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div class="mb-3">
+                                        <label for="usuario" class="form-label">Usuario:</label>
+                                        <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Introduzca el usuario" autocomplete="off"> 
+                                        <span id="existeUsuarioBdComentario" style="display: none;">Usuario ya existe</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="contrasenia" class="form-label">Contraseña:</label>
-                                    <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Introduzca la Contraseña" autocomplete="off"> 
+                            <div class="row">
+                                <div class="col-md">
+                                    <div class="mb-3">
+                                        <label for="contrasenia" class="form-label">Contraseña:</label>
+                                        <input type="password" class="form-control" name="contrasenia" id="contrasenia" placeholder="Introduzca la Contraseña" autocomplete="off"> 
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div class="mb-3">
+                                        <label for="confirmar_contrasenia" class="form-label">Repita la Contraseña:</label>
+                                        <input type="password" class="form-control" name="confirmar_contrasenia" id="confirmar_contrasenia" placeholder="Confirmar Contraseña"> 
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="confirmar_contrasenia" class="form-label">Repita la Contraseña:</label>
-                                    <input type="password" class="form-control" name="confirmar_contrasenia" id="confirmar_contrasenia" placeholder="Confirmar Contraseña"> 
+                            <div class="row">
+                                <div class="col-md">
+                                    <div class="mb-3">
+                                        <label for="correo" class="form-label">Correo Electronico:</label>
+                                        <input type="email" class="form-control" name="correo" id="correo" placeholder="Introduzca el Correo Electronico"> 
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="correo" class="form-label">Correo Electronico:</label>
-                                    <input type="email" class="form-control" name="correo" id="correo" placeholder="Introduzca el Correo Electronico"> 
-                                </div>
-                            </div>
-                            <div class="col-md">
-                                <div class="mb-3">
-                                    <label for="ciudad_proveedor" class="form-label">Tipo de Usuario:</label>
-                                    <div class="row">
-                                        <div class="col-10">
-                                            <select class="form-select" aria-label="Default select example" name="tipo_usuario" id="tipo_usuario">
-                                                <option value="0" selected disabled>Seleccione una opcion...</option>
-                                                @foreach ($roles as $rol)
-                                                    <option value="{{ $rol->id }}">{{ $rol->type}}</option>    
-                                                @endforeach
-                                            </select>
+                                <div class="col-md">
+                                    <div class="mb-3">
+                                        <label for="ciudad_proveedor" class="form-label">Tipo de Usuario:</label>
+                                        <div class="row">
+                                            <div class="col-10">
+                                                <select class="form-select" aria-label="Default select example" name="tipo_usuario" id="tipo_usuario">
+                                                    <option value="0" selected disabled>Seleccione una opcion...</option>
+                                                    @foreach ($roles as $rol)
+                                                        <option value="{{ $rol->name }}">{{ $rol->name}}</option>    
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-2"><i class="fa fa-square-plus" style="font-size: 2vw;" onclick="agregarRol()"></i></div>
                                         </div>
-                                        <div class="col-2"><i class="fa fa-square-plus" style="font-size: 2vw;" onclick="agregarRol()"></i></div>
                                     </div>
                                 </div>
-                            </div>
-                            <hr><br>
-                            <div class="row">
-                                <div class="col-md text-center">
-                                    <h5>Seleccione Sucursales a Habilitar</h5>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-1"></div>
-                                <div class="col-md-10">
-                                    <div id="sucursalesHabilitadas0"></div>
-                                    <div id="sucursalesHabilitadas">
-                                        @foreach ($sucursales as $sucursal)
-                                            <div class="form-check">
-                                                <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id}}" id="flexCheckChecked" name=sucursales_seleccionadas[]>
-                                                <label class="form-check-label" for="flexCheckChecked">
-                                                    {{ $sucursal->ciudad}} - {{substr($sucursal->direccion,0,30)}}... 
-                                                </label>
-                                            </div>
-                                        @endforeach
+                                <hr><br>
+                                <div class="row">
+                                    <div class="col-md text-center">
+                                        <h5>Seleccione Sucursales a Habilitar</h5>
                                     </div>
                                 </div>
-                                <div class="col-md-1"></div>
-                            </div>
-                            <br><hr><br>
-                            <div class="row">
-                                <div class="col-md text-center">
-                                    <h5>Seleccione Eventos a Habilitar</h5>
+                                <div class="row">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-10">
+                                        <div id="sucursalesHabilitadas0"></div>
+                                        <div id="sucursalesHabilitadas">
+                                            @foreach ($sucursales as $sucursal)
+                                                <div class="form-check">
+                                                    <input class="form-check-input soloLectura" type="checkbox" value="{{ $sucursal->id}}" id="flexCheckChecked" name=sucursales_seleccionadas[]>
+                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                        {{ $sucursal->ciudad}} - {{substr($sucursal->direccion,0,30)}}... 
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1"></div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-1"></div>
-                                <div class="col-md-10">
-                                    <div id="eventosHabilitados">
-                                        @foreach ($eventos as $evento)
-                                            <div class="form-check">
-                                                <input class="form-check-input soloLectura" type="checkbox" value="{{ $evento->id}}" name=eventos_seleccionados[]>
-                                                <label class="form-check-label" for="flexCheckChecked">
-                                                    {{ $evento->nombre}} - Fecha: {{ $evento->fecha_evento }}
-                                                </label>
-                                            </div>
-                                        @endforeach
+                                <br><hr><br>
+                                <div class="row">
+                                    <div class="col-md text-center">
+                                        <h5>Seleccione Eventos a Habilitar</h5>
                                     </div>
                                 </div>
-                                <div class="col-md-1"></div>
-                            </div>                               
-                        </div>
-                      </form>
+                                <div class="row">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-10">
+                                        <div id="eventosHabilitados">
+                                            @foreach ($eventos as $evento)
+                                                <div class="form-check">
+                                                    <input class="form-check-input soloLectura" type="checkbox" value="{{ $evento->id}}" name=eventos_seleccionados[]>
+                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                        {{ $evento->nombre}} - Fecha: {{ $evento->fecha_evento }}
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>                               
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-success" id="btnGuardarActualizar" onclick="guardarActualizarUsuario()">Guardar</button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger cerrarModal" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-success" id="btnGuardarActualizar" onclick="guardarActualizarUsuario()">Guardar</button>
                 </div>
             </div>
-            </div>
-        </div>
+        @endcan
         <!-- Fin Modal -->
 @endsection
 
@@ -296,7 +337,7 @@
     
     $('button').on('click',function() 
     {   
-        event.preventDefault();
+        // event.preventDefault();
         if ($(this).attr('id') == 'inputBuscar') 
         {
             $("#buscarformulario").submit();
@@ -445,7 +486,7 @@
         {
             $('#usuario').attr('style','border:2px green solid');
             $('#existeUsuarioBdComentario').attr('style','display:block; color:green;');
-            $('#existeUsuarioBdComentario').text('Usuario Correcto');
+            $('#existeUsuarioBdComentario').text('Usuario Valido');
 
             if(contrasenia === confirmar_contrasenia)
             {
@@ -477,8 +518,7 @@
     $(document).ready(function(){
         $("#home").removeClass('active');
         $("#usuarios").addClass('active');
-    });
-    
+    });    
 
 </script>
 @endpush

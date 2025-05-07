@@ -59,9 +59,11 @@
                     <select class="form-select" aria-label="Default select example" name="tipo_usuario" id="tipo_usuario">
                         <option value="0" selected disabled>Seleccione una opcion...</option>
                         @foreach ($roles as $rol)
-                            <option value="{{ $rol->id }}" @if ($rol->id == $usuario[0]->id_tipo_usuario)
-                                selected
-                            @endif>{{ $rol->type}}</option>    
+                            <option value="{{ $rol->name }}" 
+                                @if($rol->name == $rolUsuario)
+                                    selected
+                                @endif
+                            >{{ $rol->name }}</option>    
                         @endforeach
                     </select>
                     @error('tipo_usuario')

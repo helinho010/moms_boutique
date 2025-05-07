@@ -65,8 +65,8 @@ class ReporteVentasComponent extends Component
                                                         sucursals.direccion as direccion,
                                                         sucursals.ciudad as ciudad,
                                                         sucursals.activo as estado,
-                                                        users.name as nombre_usuario,
-                                                        users.usertype_id as tipo_usuario')
+                                                        users.name as nombre_usuario
+                                                        ')
                                        ->join('sucursals','sucursals.id','user_sucursals.id_sucursal')
                                        ->join('users', 'users.id','user_sucursals.id_usuario')
                                        ->where('user_sucursals.id_usuario',intval($idUsuario))

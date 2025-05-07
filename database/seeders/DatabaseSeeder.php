@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             OrdenOpcionesSistemaSeeder::class,
             RolesSeeder::class,
             PermisosSeeder::class,
+            AsignarRolSuperAdminUsuarioSeeder::class,
     	]);
     }
 }

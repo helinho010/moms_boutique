@@ -9,52 +9,38 @@ use App\Models\UserSucursal;
 use App\Models\Usertype;
 use App\Models\UsuarioEvento;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
-
+use Spatie\Permission\Models\Role;
 
 class UsuariosController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $usuarios = User::selectRaw('
-                                    users.id as id_usuario,
-                                    users.name as nombre_usuario,
-                                    users.username as usuario,
-                                    users.email as email_usuario,
-                                    users.estado as estado_usuario,
-                                    users.updated_at as updated_at_usuario,
-                                    usertypes.id as id_tipo_usuario,
-                                    usertypes.`type` as tipo_usuario
+        $validacion = $request->validate([
+            "buscar" => "string|nullable",
+        ]);
+
+        if (!isset($request->buscar)) {
+            $usuarios = User::selectRaw('
+                                        users.id as id_usuario,
+                                        users.name as nombre_usuario,
+                                        users.username as usuario,
+                                        users.email as email_usuario,
+                                        users.estado as estado_usuario,
+                                        users.updated_at as updated_at_usuario
                                     ')
-                        ->join('usertypes', 'usertypes.id', 'users.usertype_id')
-                        // ->where('estado',1)
-                        ->orderBy('users.updated_at','desc')
-                        ->paginate(5);
-               
-        $roles = Usertype::where('estado',1)
-                         ->get();
+                            ->where('users.estado',1)
+                            ->orderBy('users.updated_at','desc')
+                            ->paginate(5); 
+        }else{
+           $usuarios = User::buscar($request->buscar)->withQueryString();
+        }
+        
+        $roles = Role::all();
 
         $sucursales = Sucursal::where('activo',1)->get();
-        
-        $sucursalesHabilitadasUsuario = UserSucursal::selectRaw('
-                                                                    user_sucursals.id as id_user_sucursals,
-                                                                    user_sucursals.estado as estado_user_sucursals,
-                                                                    user_sucursals.updated_at as updated_at_user_sucursals,
-                                                                    sucursals.id as id_sucursal,
-                                                                    sucursals.razon_social as razon_social_sucursal,
-                                                                    sucursals.ciudad as ciudad_sucursal,
-                                                                    sucursals.activo as estado_sucursal,
-                                                                    sucursals.direccion as direccion_sucursal,
-                                                                    users.id as id_usuario,
-                                                                    users.name as nombre_usuario,
-                                                                    users.username as usuario,
-                                                                    users.estado as estado_usuario
-                                                                    ')
-                                                        ->join('sucursals', 'sucursals.id', 'user_sucursals.id_sucursal')
-                                                        ->join('users', 'users.id', 'user_sucursals.id_usuario')
-                                                        ->where('sucursals.activo',1)
-                                                        ->get();
 
         $eventos = Evento::where('estado',1)
                          ->get();
@@ -64,138 +50,58 @@ class UsuariosController extends Controller
                 'usuarios' => $usuarios,
                 'roles' => $roles,
                 'sucursales' => $sucursales,
-                'sucursales_habilitadas' => $sucursalesHabilitadasUsuario,
                 'eventos' => $eventos,
             ]);
     }
 
-    public function buscar(Request $request)
-    {
-        if ($request->buscar != '') 
-        {
-            $usuarios = User::selectRaw('
-                                        users.id as id_usuario,
-                                        users.name as nombre_usuario,
-                                        users.username as usuario,
-                                        users.email as email_usuario,
-                                        users.estado as estado_usuario,
-                                        users.updated_at as updated_at_usuario,
-                                        usertypes.id as id_tipo_usuario,
-                                        usertypes.`type` as tipo_usuario
-                                       ')
-                        ->join('usertypes', 'usertypes.id', 'users.usertype_id')
-                        ->where('users.name','like', '%'.$request->buscar.'%')
-                        ->orWhere('users.username', 'like','%'.$request->buscar.'%')
-                        ->orWhere('users.created_at', 'like','%'.$request->buscar.'%')
-                        ->orWhere('users.updated_at', 'like','%'.$request->buscar.'%')
-                        ->orWhere('usertypes.type', "like", '%'.$request->buscar.'%')
-                        ->orderBy('users.updated_at','desc')
-                        ->paginate(5);    
-        }else {
-            return redirect()->route('home_usuarios');
-        }
-
-        $roles = Usertype::where('estado',1)
-                         ->get();
-
-        $sucursales = Sucursal::where('activo',1)->get();
-        
-        $sucursalesHabilitadasUsuario = UserSucursal::selectRaw('
-                                                                    user_sucursals.id as id_user_sucursals,
-                                                                    user_sucursals.estado as estado_user_sucursals,
-                                                                    user_sucursals.updated_at as updated_at_user_sucursals,
-                                                                    sucursals.id as id_sucursal,
-                                                                    sucursals.razon_social as razon_social_sucursal,
-                                                                    sucursals.ciudad as ciudad_sucursal,
-                                                                    sucursals.activo as estado_sucursal,
-                                                                    sucursals.direccion as direccion_sucursal,
-                                                                    users.id as id_usuario,
-                                                                    users.name as nombre_usuario,
-                                                                    users.username as usuario,
-                                                                    users.estado as estado_usuario
-                                                                    ')
-                                                        ->join('sucursals', 'sucursals.id', 'user_sucursals.id_sucursal')
-                                                        ->join('users', 'users.id', 'user_sucursals.id_usuario')
-                                                        ->where('sucursals.activo',1)
-                                                        ->get();
-
-        $eventos = Evento::where('estado',1)
-                         ->get();
-
-        return view('usuario.UserOpcSuc',
-        [
-            'usuarios' => $usuarios,
-            'roles' => $roles,
-            'sucursales' => $sucursales,
-            'eventos' => $eventos,
-            'sucursales_habilitadas' => $sucursalesHabilitadasUsuario,
-        ]);
-    }
-
     public function create(Request $request)
     {
-        // dd($request);   
-
         $validatedData = $request->validate([
             'nombre_usuario' => 'required|string|max:255',
             'usuario' => 'required|string|max:100',
             'contrasenia' => 'required|string|min:8',
             'confirmar_contrasenia' => 'required|string|min:8|same:contrasenia',
             'correo' => 'required|email|max:255|unique:users,email',
-            'tipo_usuario' => 'required|numeric|gt:0',
+            'tipo_usuario' => 'required|string|exists:roles,name',
             'sucursales_seleccionadas' => 'required|array|min:1',
         ]);
         
-        $newUsuario = User::create([
-            'name' => ucwords($request['nombre_usuario']),
-            'username' => strtolower($request['usuario']),
-            'email' => strtolower($request['correo']),
-            'usertype_id' => $request['tipo_usuario'],
-            'password' => Hash::make($request['contrasenia']),
-        ]);
-
-        if ($request->tipo_usuario == 1) {
-
-            $allSucursales = Sucursal::where('activo',1)->get();
-            foreach ($allSucursales as $key => $sucursal) 
-            {
-                UserSucursal::create([
-                    'id_usuario' => $newUsuario->id,
-                    'id_sucursal' => $sucursal->id,
+        try {
+                $nuevoUsuario = User::create([
+                    'name' => ucwords($request['nombre_usuario']),
+                    'username' => strtolower($request['usuario']),
+                    'email' => strtolower($request['correo']),
+                    'password' => Hash::make($request['contrasenia']),
                 ]);
-            }  
-
-            $allEventos = Evento::where('estado',1)->get();
-
-            foreach ($allEventos as $key => $evento) 
-            {
-                UserSucursal::create([
-                    'id_usuario' => $newUsuario->id,
-                    'id_evento' => $evento->id,
-                ]);
-            }  
-
-        }else{
-            foreach ($request->sucursales_seleccionadas as $key => $sucursal) 
-            {
-                UserSucursal::create([
-                    'id_usuario' => $newUsuario->id,
-                    'id_sucursal' => $sucursal,
-                ]);
-            }
-
-            if (isset($request->eventos_seleccionados)) {
-                foreach ($request->eventos_seleccionados as $key => $evento) 
-                {
-                    UserSucursal::create([
-                        'id_usuario' => $newUsuario->id,
-                        'id_sucursal' => $evento,
-                    ]);
+        
+                // Asignar rol al nuevo usuario
+                $nuevoUsuario->assignRole($request->tipo_usuario);
+        
+                // Asignar sucursales al nuevo usuario
+                if( count($request->sucursales_seleccionadas) > 0 ){
+                    foreach ($request->sucursales_seleccionadas as $sucursal) {
+                        UserSucursal::create([
+                            'id_usuario' => $nuevoUsuario->id,
+                            'id_sucursal' => $sucursal,
+                            'estado' => 1
+                        ]);
+                    }
                 }
-            }
+                // Asignar eventos al nuevo usuario 
+                if( isset($request->eventos_seleccionados) && count($request->eventos_seleccionados) > 0 ){
+                    foreach ($request->eventos_seleccionados as $evento) {
+                        UsuarioEvento::create([
+                            'id_usuario' => $nuevoUsuario->id,
+                            'id_evento' => $evento,
+                            'estado' => 1
+                        ]);
+                    }
+                }
+        } catch (\Throwable $th) {
+            return redirect()->route('home_usuarios')->with('usuarioNoCreado', $th->getMessage() . $th->getLine());
         }
 
-        return redirect()->route('home_usuarios');
+        return redirect()->route('home_usuarios')->with('usuarioCreado', 'Usuario creado correctamente');
     }
 
 
@@ -233,15 +139,13 @@ class UsuariosController extends Controller
                                     users.email as email_usario,
                                     users.estado as estado_usuario,
                                     users.created_at as created_at_usuario,
-                                    users.updated_at as updated_at_usuario,
-                                    usertypes.id as id_tipo_usuario,
-                                    usertypes.`type` as tipo_usuario
+                                    users.updated_at as updated_at_usuario
                                 ')
-                            ->join('usertypes', 'usertypes.id', 'users.usertype_id')
+                            //->join('usertypes', 'usertypes.id', 'users.usertype_id')
                             ->where('users.id',$request->id_usuario)
                             ->get();
-            $roles = Usertype::where('estado',1)
-                                    ->get();
+
+            $roles = Role::all();
             
             $sucursales = Sucursal::where('activo',1)->get();
 
@@ -257,6 +161,7 @@ class UsuariosController extends Controller
             return view('usuario.edit',[
                 'usuario' => $usuario,
                 'roles' => $roles,
+                'rolUsuario' => count(User::getUsersRoles($request->id_usuario)) > 0 ? User::getUsersRoles($request->id_usuario)[0] : '',
                 'sucursales' => $sucursales,
                 'sucursalXUsuario' => $sucursalesXUsuario,
                 'eventos' => $eventos, 
@@ -270,82 +175,58 @@ class UsuariosController extends Controller
 
     public function update(Request $request)
     {
-        // dd($request);
-
         $validated = $request->validate([
             'nombre_usuario' => 'required|string',
             'correo' => 'required',
-            'tipo_usuario' => 'required',
+            'tipo_usuario' => 'required|string|exists:roles,name',
+            'contrasenia' => 'nullable|string|min:8',
+            'confirmar_contrasenia' => 'nullable|string|min:8|same:contrasenia',
             'sucursales_seleccionadas' => 'required|array|min:1',
         ]);
-
-        $usuarioBD = User::where('id',$request->id_usuario)->first();
-
-        if (isset($request->contrasenia) || isset($request->confirmar_contrasenia) ) 
-        {
-            if ($request->contrasenia ==  $request->confirmar_contrasenia) 
-            {
+        
+        try {
+                $usuarioBD = User::findOrFail($request->id_usuario);
                 $usuarioBD->name = $request->nombre_usuario;
-                $usuarioBD->email = $request->correo ;
-                $usuarioBD->password = Hash::make($request->contrasenia);
-                $usuarioBD->usertype_id = $request->tipo_usuario;
+                $usuarioBD->email = $request->correo;
+                $usuarioBD->syncRoles([$request->tipo_usuario]);
+                
+                if (!is_null($request->contrasenia) && !is_null($request->confirmar_contrasenia)) 
+                {
+                    $usuarioBD->password = Hash::make($request->contrasenia);   
+                }
 
-            } else {
-                return Redirect::back()->withErrors(['mensaje_confirm_pwd'=>'Las contrasenias no son iguales']);
-            }    
-        }else{
-            $usuarioBD->name = $request->nombre_usuario;
-            $usuarioBD->email = $request->correo ;
-            $usuarioBD->usertype_id = $request->tipo_usuario;
-        }
+                $usuarioBD->save();
 
-        $usuarioBD->save();
+                //Sucursales
+                UserSucursal::where('id_usuario',$request->id_usuario)
+                            ->delete();
+                if( count($request->sucursales_seleccionadas) > 0 ){
+                    foreach ($request->sucursales_seleccionadas as $sucursal) {
+                        UserSucursal::updateOrInsert(
+                            ['id_usuario' => $request->id_usuario, 'id_sucursal' => $sucursal],
+                            ['estado' => 1]
+                        );
+                    }
+                }
 
-        if( $request->tipo_usuario == 1 )
-        {   
-            $sucursalHabilitadaUsuario = UserSucursal::where('id_usuario',$request->id_usuario)
-                                                    ->delete();
-            $sucursales = Sucursal::where('activo',1)
-                                  ->get();            
-            foreach ($sucursales as $key => $value) 
-            {
-                $nuevasSucursalesHabilitadasUsuario = new UserSucursal();
-                $nuevasSucursalesHabilitadasUsuario->id_usuario = $request->id_usuario;
-                $nuevasSucursalesHabilitadasUsuario->id_sucursal = $value["id"];
-                $nuevasSucursalesHabilitadasUsuario->save();
-            }
+                //Eventos
+                UsuarioEvento::where('id_usuario',$request->id_usuario)
+                            ->delete();
+                if( isset($request->eventos_seleccionados) && count($request->eventos_seleccionados) > 0 ){
+                    foreach ($request->eventos_seleccionados as $evento) {
+                        UsuarioEvento::updateOrInsert(
+                            ['id_usuario' => $request->id_usuario, 'id_evento' => $evento],
+                            ['estado' => 1]
+                        );
+                    }
+                }
 
-        }else{
-            $sucursalHabilitadaUsuario = UserSucursal::where('id_usuario',$request->id_usuario)
-                                                    ->delete();            
-            foreach ($request->sucursales_seleccionadas as $key => $value) 
-            {
-                $nuevasSucursalesHabilitadasUsuario = new UserSucursal();
-                $nuevasSucursalesHabilitadasUsuario->id_usuario = $request->id_usuario;
-                $nuevasSucursalesHabilitadasUsuario->id_sucursal = $value;
-                $nuevasSucursalesHabilitadasUsuario->save();
-            }
-        }
-
-        if ( isset($request->eventos_seleccionados) && count($request->eventos_seleccionados) > 0) 
-        {
-            $eventosHabilitados = UsuarioEvento::where('id_usuario',$request->id_usuario)
-                                               ->delete();
-            foreach ($request->eventos_seleccionados as $key => $evento) 
-            {
-            $nuevoEventoSeleccionado = new UsuarioEvento();
-            $nuevoEventoSeleccionado->id_usuario = $request->id_usuario;
-            $nuevoEventoSeleccionado->id_evento = $evento;
-            $nuevoEventoSeleccionado->save();
-            }
-        }else{
-            $eventosHabilitados = UsuarioEvento::where('id_usuario',$request->id_usuario)
-                                               ->delete();
+        } catch (\Throwable $th) {
+            
+            return redirect()->route('home_usuarios')->with('usuarioNoEncontrado', $th->getMessage() . $th->getLine());
         }
         
-
-        return redirect()->route('home_usuarios');
-    
+        return redirect()->route('home_usuarios')->with('usuarioEditado', 'Usuario editado correctamente'); ;
     }
 
     public function update_estado(Request $request)

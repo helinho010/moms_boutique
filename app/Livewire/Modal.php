@@ -12,7 +12,7 @@ class Modal extends Component
     public String $nombreUsuario;
     public String $usuario;
     public String $correoUsuario;
-    public String $rolUsuario;
+    public $rolUsuario;
     public Array $datos = [];
 
     public function mount()
@@ -20,9 +20,9 @@ class Modal extends Component
         $usuarioLogin = User::selectRaw('
                                         users.name as nombre,
                                         users.username as nombre_usuario,
-                                        users.email as correo_usuario,
-                                        usertypes.`type` as rol_usuario')
-                            ->join('usertypes', 'usertypes.id', 'users.usertype_id')
+                                        users.email as correo_usuario
+                                        ')
+                            // ->join('usertypes', 'usertypes.id', 'users.usertype_id')
                             ->where('users.id', auth()->user()->id)
                             ->get();
 
@@ -32,7 +32,9 @@ class Modal extends Component
         $this->nombreUsuario = $usuarioLogin[0]->nombre;
         $this->usuario = $usuarioLogin[0]->nombre_usuario;
         $this->correoUsuario = $usuarioLogin[0]->correo_usuario;
-        $this->rolUsuario = $usuarioLogin[0]->rol_usuario;
+
+        $rolUsuario = User::find(auth()->user()->id);
+        $this->rolUsuario = $rolUsuario->getRoleNames();
     }
 
 

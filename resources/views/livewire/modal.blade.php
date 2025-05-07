@@ -36,7 +36,23 @@
                         <div class="row">
                             <div class="col-md-3 text-end">Rol: </div>
                             <div class="col-md-8 info desborde">
-                                <div class="dato"> {{ $rolUsuario}} </div>
+                                <div class="dato">
+                                    @foreach ($rolUsuario as $rol)
+                                        @if ( $loop->count > 1 )
+                                            @if ($loop->first)
+                                                {{ $rol }} |
+                                            @else
+                                                @if ($loop->last)
+                                                    {{ $rol }}
+                                                @else
+                                                    {{ $rol }} |
+                                                @endif
+                                            @endif
+                                        @else
+                                            {{ $rol }}
+                                        @endif
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>

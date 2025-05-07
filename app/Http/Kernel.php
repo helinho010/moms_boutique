@@ -73,4 +73,12 @@ class Kernel extends HttpKernel
         'control.rutas' => \App\Http\Middleware\ControlRutas::class,
         // "cors" => \App\Http\Middleware\Cors::class,
     ];
+
+    protected $middlewareAliases = [
+        // ...
+        'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+    ];
+
 }

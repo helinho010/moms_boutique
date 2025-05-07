@@ -1,4 +1,4 @@
-@php
+{{-- @php
     use App\Models\UsertypeOpc;
 
     $opcionesHabilitadas = UsertypeOpc::selectRaw('
@@ -21,7 +21,7 @@
                                           ->get();
 
       //home_traspaso_producto  
-@endphp
+@endphp --}}
 
 
 <nav id="sidebar" class="sidebar js-sidebar">
@@ -54,7 +54,7 @@
             </li> --}}
             
 
-            @foreach ($opcionesHabilitadas as $opcion)
+            {{-- @foreach ($opcionesHabilitadas as $opcion)
                 @switch($opcion->orden_opciones_sistemas)
                     @case(10)
                         <li class="sidebar-item" id="{{ strtolower($opcion->opcion_opciones_sistemas) }}">
@@ -75,9 +75,9 @@
                                 <i class="{{$opcion->icono_opciones_sistemas}}"></i>
                                 <span class="align-middle">{{ $opcion->opcion_opciones_sistemas }}</span>
                             </a>
-                            <ul id="{{ strtolower($opcion->opcion_opciones_sistemas) }}-a" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                            <ul id="{{ strtolower($opcion->opcion_opciones_sistemas) }}-a" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar"> --}}
                                 {{-- <li class="sidebar-item"><a class="sidebar-link" href="#">Apertura Caja</a></li> --}}
-                                <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_caja') }}">Cierre Caja</a></li>
+                                {{-- <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_caja') }}">Cierre Caja</a></li>
                             </ul>
                         </li>
                     @break
@@ -88,7 +88,7 @@
                                 <span class="align-middle">{{$opcion->opcion_opciones_sistemas}}</span>
                             </a>
                         </li>
-                @endswitch
+                @endswitch --}}
 
                 {{-- @if ($opcion->id_opciones_sistemas == 10)
                     <li class="sidebar-item" id="{{ strtolower($opcion->opcion_opciones_sistemas) }}">
@@ -110,9 +110,11 @@
                         </a>
                     </li>    
                 @endif --}}
-            @endforeach
+            {{-- @endforeach --}}
 
-            {{-- <li class="sidebar-item">
+            
+            
+            <li class="sidebar-item">
                 <a class="sidebar-link" href="{{ route('home_proveedor') }}">
                     <i class="far fa-building"></i>
                     <span class="align-middle">Proveedores</span>
@@ -130,6 +132,13 @@
                 <a class="sidebar-link" href="{{ route('home_tipo_ingreso_salida') }}">
                     <i class="fas fa-people-carry"></i>
                     <span class="align-middle">Tipo Ingreo Salida</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('home_tipo_pago') }}">
+                    <i class="far fa-money-bill-alt"></i>
+                    <span class="align-middle">Tipo Pago</span>
                 </a>
             </li>
 
@@ -183,14 +192,19 @@
                 <ul id="ui" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                     <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_venta') }}">Realizar Venta</a></li>
                     <li class="sidebar-item"><a class="sidebar-link" href="{{ route('detalle_ventas_rango_fechas') }}">Detalle Ventas</a></li>
+                    <li class="sidebar-item"><a class="sidebar-link" href="{{ route('reporte_venta') }}">Reporte Ventas</a></li>
                 </ul>
             </li>
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_tipo_pago') }}">
-                    <i class="far fa-money-bill-alt"></i>
-                    <span class="align-middle">Tipo Pago</span>
+            <li class="sidebar-item" id="caja">
+                <a data-bs-target="#caja-a" data-bs-toggle="collapse" class="sidebar-link collapsed" aria-expanded="false">
+                    <i class="fab fa-contao"></i>
+                    <span class="align-middle">Caja</span>
                 </a>
+                <ul id="caja-a" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                    {{-- <li class="sidebar-item"><a class="sidebar-link" href="#">Apertura Caja</a></li> --}}
+                    <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_caja') }}">Cierre Caja</a></li>
+                </ul>
             </li>
 
             <li class="sidebar-item">
@@ -205,7 +219,7 @@
                     <i class="fas fa-briefcase"></i>
                     <span class="align-middle">Roles de Usuarios</span>
                 </a>
-            </li> --}}
+            </li>
             
 
             {{-- <li class="sidebar-header">
