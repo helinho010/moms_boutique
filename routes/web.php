@@ -171,6 +171,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/update_rol', [UsertypeOpcController::class,'update'])->name('update_rol');
     Route::post('/consultar_rol', [UsertypeOpcController::class,'consultaRol'])->name('consultar_rol');
     Route::post('/actualizar_estado_rol', [UsertypeOpcController::class,'actualizarEstadoRol'])->name('actualizar_estado_rol');
+    Route::post('/crear_rol',[UsertypeOpcController::class,'CrearRol'])->name('crear_rol')->middleware('permission:crear rol');
 
     
     // Graficos

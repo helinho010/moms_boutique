@@ -20,12 +20,25 @@ class RestrictIP
         '192.168.88.30',
     ];
 
+    // Hostnames permitidos
+    private $hostnamesPermitidos = [
+        'PC_OFICINA_SU',
+        'LAPTOP_MIRAFLORES',
+        'X555LAB-5c914e7f',
+    ];
+
     public function handle(Request $request, Closure $next):Response
     {
-        if (!in_array($request->ip(), $this->ipsValidas)) {
-            return response(view('errors.accesoRestringido'), 403);
+        if (in_array($request->ip(), $this->ipsValidas)) {
+            return $next($request);    
         }
 
-        return $next($request);
+        $hostname = gethostbyaddr($request->ip());
+        if (in_array($hostname, $this->hostnamesPermitidos)) {
+            return $next($request);
+        }
+
+        return response(view('errors.accesoRestringido'), 403);
+        
     }
 }

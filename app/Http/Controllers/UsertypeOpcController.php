@@ -7,6 +7,7 @@ use App\Models\Usertype;
 use App\Models\UsertypeOpc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class UsertypeOpcController extends Controller
 {
@@ -209,5 +210,19 @@ class UsertypeOpcController extends Controller
         return ['mensaje'=>$mensaje, 'respuesta'=>$respuesta];
     }
 
+    public function CrearRol(Request $request)
+    {
+        $validar = $request->validate([
+            'rol' => 'required|string|max:50',
+        ]);
 
+        try {
+              
+              $nuevoRol = Role::create(['name' => strtolower($request->rol)]);
+              return ['mensaje'=> 'Rol creado correctamente', 'estado'=> 0];
+              
+        } catch (\Throwable $th) {
+            return ['mensaje'=> "El rol: $request->rol ya existe en la base de datos", 'estado'=> 1];       
+        }
+    }
 }

@@ -193,7 +193,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                     <h5 class="modal-title" id="crearUsuarioModalLabel">Nuevo Usuario</h5>
-                    <button type="button" class="btn-close cerrarModal" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close cerrarModal btnCerrarModalNuevoUsuario" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form method="POST" action="{{ route('nuevo_usuario') }}" id="nuevo_usuario">
@@ -241,14 +241,19 @@
                                         <label for="ciudad_proveedor" class="form-label">Tipo de Usuario:</label>
                                         <div class="row">
                                             <div class="col-10">
-                                                <select class="form-select" aria-label="Default select example" name="tipo_usuario" id="tipo_usuario">
+                                                {{-- <select class="form-select" aria-label="Default select example" name="tipo_usuario" id="tipo_usuario">
                                                     <option value="0" selected disabled>Seleccione una opcion...</option>
                                                     @foreach ($roles as $rol)
                                                         <option value="{{ $rol->name }}">{{ $rol->name}}</option>    
                                                     @endforeach
-                                                </select>
+                                                </select> --}}
+                                                @livewire('formulario.select', ['id_select' => 'tipo_usuario', 'name_select'=>'tipo_usuario'])
                                             </div>
-                                            <div class="col-2"><i class="fa fa-square-plus" style="font-size: 2vw;" onclick="agregarRol()"></i></div>
+                                            <div class="col-2">
+                                                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#crearRol">
+                                                    <i class="fa fa-square-plus" style="font-size: 2vw;"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -301,7 +306,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger cerrarModal" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-danger cerrarModal btnCerrarModalNuevoUsuario" data-bs-dismiss="modal">Cerrar</button>
                         <button type="button" class="btn btn-success" id="btnGuardarActualizar" onclick="guardarActualizarUsuario()">Guardar</button>
                     </div>
                 </div>
@@ -309,6 +314,30 @@
             </div>
         @endcan
         <!-- Fin Modal -->
+
+        @can('crear rol')
+              <div class="modal fade" id="crearRol" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Nuevo Rol</h5>
+                      <button type="button" class="btn-close btnCerrarModalNuevoRol" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <x-formulario.label for="rol">Nombre Rol:</x-formulario.label>
+                        <x-formulario.input id="rol" name="rol" 
+                                            tipo="text" placeholder="Introduzca el nombre del rol" 
+                                            required>
+                        </x-formulario.input>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger btnCerrarModalNuevoRol" data-bs-dismiss="modal">Cerrar</button>
+                      <button type="button" class="btn btn-success" id="btnModalNuevoRol">Crear Rol</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        @endcan
 @endsection
 
 
@@ -324,7 +353,12 @@
         }
     });
 
-    function limpiarInputs(){
+    var myModalEl = document.getElementById('crearRol')
+    myModalEl.addEventListener('hidden.bs.modal', function () {
+        $('#crearUsuarioModal').modal('show');
+    });
+
+    function limpiarInputsCrearNuevoUsuario(){
         $("#nombre_usuario").val('');
         $("#usuario").val('');
         $("#contrasenia").val('');
@@ -333,6 +367,10 @@
         $("#tipo_usuario").val(0);
         $('#sucursalesHabilitadas1').remove();
         $('#sucursalesHabilitadas0').append('<div id="sucursalesHabilitadas1"></div>');
+    }
+
+    function limpiarInputsCrearNuevoRol(){
+        $("#rol").val('');
     }
     
     $('button').on('click',function() 
@@ -346,11 +384,40 @@
             $("#contrasenia").val('');
             $("#confirmar_contrasenia").val('');
             $("#exampleModal").show();
-        }else if ($(this).attr('data-bs-dismiss') == 'modal') {
-            limpiarInputs();
-        }else{
-
-        } 
+        }else if ($(this).hasClass('btnCerrarModalNuevoUsuario') ) {
+           limpiarInputsCrearNuevoUsuario();
+        }else if ($(this).hasClass('btnCerrarModalNuevoRol')) {
+            limpiarInputsCrearNuevoRol();
+        }else if ($(this).attr('id') == 'btnModalNuevoRol') {
+            Swal.fire({
+                title: "Esta seguro de crear el rol?",
+                showDenyButton: true,
+                confirmButtonText: "Si",
+                denyButtonText: `No`
+                }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) 
+                {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('crear_rol') }}",
+                        data: {"rol":$("#rol").val()},
+                        success: function (response) {
+                            if (response.estado == 0) {
+                                Swal.fire("Rol Creado exitosamente!", "", "success");
+                                $("#crearRol").modal('hide');
+                                $("#crearUsuarioModal").modal('show');
+                                limpiarInputsCrearNuevoRol();
+                            } else{
+                                Swal.fire(response.mensaje, "", "warning");
+                            }
+                        }
+                    });
+                } else if (result.isDenied) {
+                    // Swal.fire("Changes are not saved", "", "info");
+                }
+            });
+        }
     });
 
     function editar(usuario){
