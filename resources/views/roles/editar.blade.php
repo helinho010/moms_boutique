@@ -11,37 +11,25 @@
     </style>
 @endsection
 
-@section('h-title')
-    @php
-        if (isset($_GET['exito'])) 
-        {
-            if ($_GET['exito'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El Rol se registro correctamente</div>';
-            }else{
-                echo '<div class="alert alert-danger" role="alert">Error al registrar al Rol</div>';
-            }
-        }
-
-        if (isset($_GET['actualizado'])) 
-        {
-            if ($_GET['actualizado'] == 1) {
-                echo '<div class="alert alert-success" role="alert">El Rol fue actualizado correctamente</div>';
-            }else{
-                echo '<div class="alert alert-danger" role="alert">Error al actualizar el Rol</div>';
-            }
-        }
-
-        if ($errors->first('nombre') != '' ||
-            $errors->first('telefono') != '' ||
-            $errors->first('ciudad') != '' ) 
-        {
-            echo '<div class="alert alert-danger" role="alert">'.
-                $errors->first('nombre')."<br>".
-                $errors->first('telefono')."<br>".
-                $errors->first('ciudad')."<br>".
-                '</div>';
-        }   
-    @endphp
+@section('mensaje-errores')
+    @if ($errors->any())
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="col-md-4">
+                            @foreach ($errors->all() as $error)
+                                {{ $error }} <br>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </h5>   
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
 @endsection
 
 @section('card-title')
@@ -54,8 +42,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-6">
+        <div class="col-md-12">
             <form method="POST" action="{{ route('update_rol') }}" id="update_rol">
                 @csrf
                 @method('POST')
@@ -65,7 +52,6 @@
                 <a class="btn btn-warning" href="{{ route('home_rol_usuarios'); }}" style="color: black">Volver</a>
             </form>
         </div>
-        <div class="col-md-3"></div>
     </div>
     <br>
     <div class="row"></div>
@@ -105,7 +91,25 @@
 
     function guardarActualizar()
     {
-       $('#update_rol').submit(); 
+       SweetAlert.fire({
+            title: '¿Está seguro de actualizar el Rol?',
+            text: "¡No podrá revertir esta acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, guardar cambios'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // let nombreRol = $("#nombre_rol").val();
+                // if (validarNombreRol(nombreRol)) {
+                    $('#update_rol').submit();
+                // }else{
+                //     alert('El nombre del rol ya existe');
+                // }
+            }
+        }); 
+        
     }
 
     $(document).ready(function(){        

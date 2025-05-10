@@ -467,7 +467,7 @@
         Swal.fire({
                 title: mensaje,
                 showDenyButton: true,
-                showCancelButton: true,
+                // showCancelButton: true,
                 confirmButtonText: "Si",
                 denyButtonText: `No`
                 }).then((result) => {

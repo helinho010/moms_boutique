@@ -7,37 +7,36 @@ use App\Models\Usertype;
 use App\Models\UsertypeOpc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Svg\Tag\Rect;
 
 class UsertypeOpcController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $roles = Usertype::orderBy("updated_at","desc")
-                         ->paginate(10);
-        
-        $opciones = OpcionesSistema::where('estado',1)
-                                    ->get();
+        $validar = $request->validate([
+            'buscar' => 'string|nullable',
+        ]);
 
-        $opcionesHabilitadas = UsertypeOpc::selectRaw('
-                                                        usertype_opcs.id as id_usertype_opcs,
-                                                        usertype_opcs.estado as estado_usertype_opcs,
-                                                        usertypes.id as id_usertypes,
-                                                        usertypes.`type` as tipo_usertypes,
-                                                        usertypes.estado as estado_usertypes,
-                                                        opciones_sistemas.id as id_opciones_sistemas,
-                                                        opciones_sistemas.opcion as opcion_opciones_sistemas,
-                                                        opciones_sistemas.icono as icono_opciones_sistemas,
-                                                        opciones_sistemas.estado as estado_opciones_sistemas
-                                                    ')
-                                           ->join('usertypes', 'usertypes.id', 'usertype_opcs.id_tipo_usuario')
-                                           ->join('opciones_sistemas', 'opciones_sistemas.id', 'usertype_opcs.id_opcion_sistema')
-                                           ->get();
+        if (isset($request->buscar)) {
+            $roles = Role::where('name', 'like', '%' . $request->buscar . '%')
+                         ->orderBy("updated_at", "asc")
+                         ->paginate(5)->withQueryString();
+        }else{
+            $roles = Role::select(['id', 'name', 'updated_at'])
+                         ->orderBy("updated_at", "asc")                
+                         ->paginate(5);
+
+        }
+        
+        $permisos = Permission::select(['id', 'name'])
+                        ->orderBy("updated_at", "asc")
+                        ->get();
                                   
         return view('roles.UsertypeOpc',[
             "roles" => $roles,
-            "opciones" => $opciones,
-            "opciones_habilitadas" => $opcionesHabilitadas,
+            "permisos" => $permisos,
         ]);
     }
 
@@ -111,74 +110,59 @@ class UsertypeOpcController extends Controller
 
     public function store(Request $request)
     {
-        $nuevoRol = new Usertype();
-        $nuevoRol->type = $request->nuevo_rol;
-        $nuevoRol->save();
+        $validar = $request->validate([
+            'nuevo_rol' => 'required|string|max:50',
+            'permisos_rol' => 'required|array',
+        ]);
 
-        foreach ($request->opciones_seleccionadas as $key => $value) {
-            $nuevaAsigancionRolOpcionesSis = new UsertypeOpc();
-            $nuevaAsigancionRolOpcionesSis->id_tipo_usuario = $nuevoRol->id;    
-            $nuevaAsigancionRolOpcionesSis->id_opcion_sistema = $value;
-            $nuevaAsigancionRolOpcionesSis->save();
-        }
-        
-        return redirect()->route('home_rol_usuarios');
+        try {
+             $nuevoRol = Role::create(['name' => strtolower($request->nuevo_rol)]);
+             $nuevoRol->syncPermissions($request->permisos_rol);
+             return redirect()->route('home_rol_usuarios')->with('nuevoRolCreado', 'Rol creado correctamente');
+        } catch (\Throwable $th) {
+            return redirect()->route('home_rol_usuarios')->with('errorNuevoRolCreado', 'Error al crear el rol');
+        }        
     }
 
-    public function editar(Request $request)
+    public function editar($id_rol)
     {
-        $rol = Usertype::where('id',$request->id)->get();
-        
-        $opciones = OpcionesSistema::where('estado',1)
-                                    ->get();
+        if (gettype(intval($id_rol)) == 'integer' && $id_rol == 1){
+            
+            return redirect()->route('home_rol_usuarios')->with('errorEditarRolSuperAdministrador', 'No se puede editar el rol de Super Administrador');
+        }
 
-        $opcionesHabilitadas = UsertypeOpc::selectRaw('
-                                                        usertype_opcs.id as id_usertype_opcs,
-                                                        usertype_opcs.estado as estado_usertype_opcs,
-                                                        usertypes.id as id_usertypes,
-                                                        usertypes.`type` as tipo_usertypes,
-                                                        usertypes.estado as estado_usertypes,
-                                                        opciones_sistemas.id as id_opciones_sistemas,
-                                                        opciones_sistemas.opcion as opcion_opciones_sistemas,
-                                                        opciones_sistemas.icono as icono_opciones_sistemas,
-                                                        opciones_sistemas.estado as estado_opciones_sistemas
-                                                    ')
-                                           ->join('usertypes', 'usertypes.id', 'usertype_opcs.id_tipo_usuario')
-                                           ->join('opciones_sistemas', 'opciones_sistemas.id', 'usertype_opcs.id_opcion_sistema')
-                                           ->where('usertypes.id',$request->id)
-                                           ->get();
-
+        if ( gettype(intval($id_rol)) == 'integer'){
+            $rol = Role::where('id',$id_rol)->first();
+            $permisos = Permission::select(['id', 'name'])
+                            ->orderBy("updated_at", "asc")
+                            ->get();
+        }else{
+            return redirect()->route('home_rol_usuarios')->with('errorParametroEnviadoEditarRol', 'Error al enviar los parametros para editar el rol');
+        }
 
         return view('roles.editar',[
-            'rol'=>$rol,
-            'opciones' => $opciones,
-            'opciones_habilitadas' => $opcionesHabilitadas,
+            'rol' => $rol,
+            'permisos' => $permisos, 
         ]);
     }
 
     public function update(Request $request)
     {
-        // dd($request->opciones_seleccionadas);
+        $validar = $request->validate([
+            'nombre_rol' => 'required|string|max:50|exists:roles,name',
+            'permisos_rol' => 'required|array',
+            'permisos_rol.*' => 'exists:permissions,name'
+        ]);
+
         try 
         {
-            $rol = Usertype::find($request->id_rol);
-            $rol->type = $request->nombre_rol;
-            $rol->save();
-
-            $opcionesHabilitadas = UsertypeOpc::where('id_tipo_usuario',$request->id_rol);
-            $opcionesHabilitadas->delete();
-
-            foreach ($request->opciones_seleccionadas as $key => $value) {
-               $newUserTypeOpcion = new UsertypeOpc();
-               $newUserTypeOpcion->id_tipo_usuario = $request->id_rol;
-               $newUserTypeOpcion->id_opcion_sistema = $value;
-               $newUserTypeOpcion->save();
-            }
-
+            $rol = Role::where('name',$request->nombre_rol)->first();
+            $rol->syncPermissions($request->permisos_rol);
+            return redirect()->route('home_rol_usuarios')->with('rolEditado', 'Rol editado correctamente');
+            
         } catch (\Throwable $th) {
-            //throw $th;
-        }
-        return redirect()->route('home_rol_usuarios');
+            return redirect()->route('home_rol_usuarios')->with('errorRolEditado', 'Error al editar el rol');
+        } 
     }
 
 
@@ -210,6 +194,26 @@ class UsertypeOpcController extends Controller
         return ['mensaje'=>$mensaje, 'respuesta'=>$respuesta];
     }
 
+    public function eliminarRol(Request $request){
+        
+        $validar = $request->validate([
+            'nombre_rol' => 'required|string|exists:roles,name',
+        ]);
+
+        try {
+                if(strtolower($request->nombre_rol) == 'super administrador')
+                {
+                    return redirect()->route('home_rol_usuarios')->with('errorEliminarRolSuperAdministrador', 'No se puede eliminar el rol de Super Administrador');
+                }
+                $rol = Role::where('name',$request->nombre_rol)->first();
+                $rol->delete();
+                return redirect()->route('home_rol_usuarios')->with('rolEliminado', 'Rol eliminado correctamente');
+        } catch (\Throwable $th) {
+            return redirect()->route('home_rol_usuarios')->with('errorRolEliminado', 'Error al eliminar el rol');
+        }
+
+    }
+
     public function CrearRol(Request $request)
     {
         $validar = $request->validate([
@@ -223,6 +227,21 @@ class UsertypeOpcController extends Controller
               
         } catch (\Throwable $th) {
             return ['mensaje'=> "El rol: $request->rol ya existe en la base de datos", 'estado'=> 1];       
+        }
+    }
+
+    public function crearPermiso(Request $request)
+    {
+        $validar = $request->validate([
+            'nombre_permiso' => 'required|string|max:50',
+        ]);
+
+        try {
+              $nuevoPermiso = Permission::create(['name' => strtolower($request->nombre_permiso)]);
+              return redirect()->route('home_rol_usuarios')->with('nuevoPermisoCreado', 'Permiso creado correctamente');
+              
+        } catch (\Throwable $th) {
+            return redirect()->route('home_rol_usuarios')->with('errorNuevoPermisoCreado', "El permiso: $request->nombre_permiso ya existe en nuestos registros");
         }
     }
 }

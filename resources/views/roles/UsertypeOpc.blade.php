@@ -11,8 +11,71 @@
     </style>
 @endsection
 
-@section('h-title')
-   
+@section('mensaje-errores')
+    @if (session('errorNuevoRolCreado'))
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5><i class="fas fa-exclamation-triangle"></i>{{ session('errorNuevoRolCreado') }}</h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    @if (session('nuevoRolCreado'))
+        <x-formulario.mensaje-error-validacion-inputs color="success">
+            <h5><i class="fas fa-thumbs-up"></i> {{session('nuevoRolCreado')}} </h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    @if (session('errorEditarRolSuperAdministrador'))
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5><i class="fas fa-exclamation-triangle"></i>{{ session('errorEditarRolSuperAdministrador') }}</h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    @if (session('rolEditado'))
+        <x-formulario.mensaje-error-validacion-inputs color="success">
+            <h5><i class="fas fa-thumbs-up"></i> {{session('rolEditado')}} </h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    @if (session('nuevoPermisoCreado'))
+        <x-formulario.mensaje-error-validacion-inputs color="success">
+            <h5><i class="fas fa-thumbs-up"></i> {{session('nuevoPermisoCreado')}} </h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    @if (session('errorNuevoPermisoCreado'))
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5><i class="fas fa-exclamation-triangle"></i>{{ session('errorNuevoPermisoCreado') }}</h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    @if (session('errorRolEliminado'))
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5><i class="fas fa-exclamation-triangle"></i>{{ session('errorRolEliminado') }}</h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    @if (session('rolEliminado'))
+        <x-formulario.mensaje-error-validacion-inputs color="success">
+            <h5><i class="fas fa-thumbs-up"></i> {{session('rolEliminado')}} </h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    @if (session('errorEliminarRolSuperAdministrador'))
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5><i class="fas fa-exclamation-triangle"></i>{{ session('errorEliminarRolSuperAdministrador') }}</h5>
+        </x-formulario.mensaje-error-validacion-inputs>
+    @endif
+    @if ($errors->any())
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="col-md-6">
+                            @foreach ($errors->all() as $error)
+                                {{ $error }} <br>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </h5>   
+        </x-formulario.mensaje-error-validacion-inputs>    
+    @endif
+    
 @endsection
 
 @section('card-title')
@@ -20,11 +83,20 @@
         <div class="col">
             <h4>Roles</h4>
         </div>
-        <div class="col text-end">
-            <button type="button" class="btn btn-success" id="modalRol" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <i class="fas fa-plus"></i> Agregar Rol 
-            </button>
-        </div>
+        @can('crear rol')
+            <div class="col text-end">
+                <button type="button" class="btn btn-success" id="modalRol" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <i class="fas fa-plus"></i> Agregar Rol 
+                </button>
+                @can('crear permiso')
+                    <button type="button" class="btn btn-success" id="modalRol" data-bs-toggle="modal"
+                        data-bs-target="#crearPermisoModal">
+                        <i class="fas fa-plus"></i> Agregar Permiso
+                    </button>
+                @endcan
+            </div>
+        @endcan
+        
     </div>
 @endsection
 
@@ -32,12 +104,10 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <form action="{{ route('buscar_roles') }}" method="POST" id="buscarformulario">
-                @method('POST')
-                @csrf
+            <form action="{{ route('home_rol_usuarios') }}" method="GET" id="buscarformulario">
                 <div class="input-group flex-nowrap">
                     <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
-                    <button class="input-group-text" id="inputBuscar"><i class="fas fa-search"></i></button>
+                    <button type="submit" class="input-group-text"><i class="fas fa-search"></i></button>
                 </div>
             </form>
         </div>
@@ -50,49 +120,56 @@
                 <tr class="text-center align-middle">
                   <th scope="col">Opciones</th>
                   <th scope="col">Rol</th>
-                  <th scope="col">Opciones Habilitadas</th>
-                  <th scope="col">Fecha de Creacion/Modificacion</th>
-                  <th scope="col">Estado</th>
+                  <th scope="col">Permisos</th>
+                  <th scope="col">Fecha</th>
                 </tr>
               </thead>
               <tbody>
                 @foreach ($roles as $rol)
                   <tr class="text-center">
                     <th scope="row">
-                        @if ($rol->id != 1)
-                            <a href="{{ route('editar_rol',['id'=>$rol->id]) }}"><i class="fas fa-edit fa-xl i" style="color:#6BA9FA"></i></a>
-                            @php
-                                $dataRol = json_encode(["id" => $rol->id, "nombre_rol" => $rol->type, "estado" => $rol->estado, ]);
-
-                                if ($rol->estado == 1) 
-                                {
-                                    echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$dataRol.')\'></i>'; 
-                                }else{
-                                    echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$dataRol.')\'></i>';
-                                }
-                            @endphp
+                        @if (strtolower($rol->name) != "super administrador")
+                            @can('editar rol')
+                                <a href="{{ route('editar_rol',['id_rol'=>$rol->id]) }}">
+                                    <i class="fas fa-edit fa-xl i" style="color:#6BA9FA"></i>
+                                </a>
+                            @endcan
+                            @can('eliminar rol')
+                                <form action="{{ route('eliminar_rol') }}" method="post" id="formEliminarRol{{ $rol->id }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <input type="hidden" name="nombre_rol" id="nombre_rol" value="{{ $rol->name }}">
+                                    <button class="btn btn-outline-light" type="button" 
+                                            onclick="eliminarRol('formEliminarRol{{$rol->id}}')">
+                                        <i class="fas fa-trash-alt fa-xl" style="color:#FA746B"></i>
+                                    </button>
+                                </form>
+                            @endcan
                         @endif
                     </th>
-                    <td>{{ $rol->type }}</td>
+                    <td>{{ $rol->name }}</td>
                     <td>
-                        @foreach ($opciones_habilitadas as $opcion)
-                            @if ($opcion->id_usertypes == $rol->id)
-                             <div class="row">
-                                <div class="col-md-3"></div>
-                                <div class="col-md-2 text-end">  <i class="{{ $opcion->icono_opciones_sistemas}}" style="color:#6BA9FA"></i> </div>
-                                <div class="col-md-7" style="text-align: left">{{ $opcion->opcion_opciones_sistemas }}</div>
-                             </div>
+                        @if( trim(strtolower($rol->name)) == "super administrador")
+                            <span class="badge bg-primary">{{ "Todos los permisos" }}</span>
+                        @endif
+                        @foreach (App\Models\UsertypeOpc::permisosRol($rol->name) as $permiso)
+                            {{-- <span class="badge bg-primary">{{ $permiso }}</span> --}}                            
+                            @if ( $loop->count > 1)
+                                @if ($loop->first)
+                                    {{ $permiso }} |
+                                @else
+                                    @if ($loop->last)
+                                        {{ $permiso }}
+                                    @else
+                                        {{ $permiso }} |
+                                    @endif
+                                @endif
+                            @else   
+                                {{ $permiso }}
                             @endif
                         @endforeach
                     </td>
                     <td>{{ $rol->updated_at }}</td>
-                    <td> 
-                        @if ( $rol->estado == 1 )
-                            <span class="badge bg-success">Activo</span>    
-                        @else
-                            <span class="badge bg-warning">Inactivo</span>    
-                        @endif
-                    </td>
                   </tr>    
                 @endforeach
               </tbody>
@@ -100,7 +177,8 @@
         {{ $roles->links() }}
     </div>
 
-        <!-- Modal -->
+    <!-- Modal -->
+     @can('crear rol')
         <div class="modal fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -115,40 +193,41 @@
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="mb-3">
-                                    <label for="nuevo_rol" class="form-label">Nuevo Rol:</label>
+                                    <label for="nuevo_rol" class="form-label">Nombre del Rol:</label>
                                     <input type="text" class="form-control" name="nuevo_rol" id="nuevo_rol" placeholder="Introduzca el nuevo Rol">
                                     <span id="mensaje_rol_span" style="display: none; color:red">*Error de Rol </span> 
-                                  </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <hr><br>
+                            <br>
                             <div class="row">
                                 <div class="col-md text-center">
-                                    <h5>Seleccione las Opciones a Habilitar</h5>
+                                    <h5>Seleccione los permisos para el rol</h5>
+                                    <hr>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-1"></div>
-                                <div class="col-md-10">
-                                    <div id="sucursalesHabilitadas0"></div>
-                                    <div id="sucursalesHabilitadas">
-                                        @foreach ($opciones as $opcion)
-                                            <div class="form-check">
-                                                <input class="form-check-input soloLectura" type="checkbox" value="{{ $opcion->id}}" id="flexCheckChecked{{$opcion->id}}" name=opciones_seleccionadas[]>
-                                                <label class="form-check-label" for="flexCheckChecked{{$opcion->id}}">
-                                                    {{ $opcion->opcion}} <i class="{{ $opcion->icono }}" style="color:#6BA9FA"></i>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <div id="sucursalesHabilitadas1"></div>
+                                <div class="col-md-4">
+                                @foreach ($permisos as $permiso)
+                                    @if ($loop->iteration % 21 == 0)
+                                        </div>
+                                        <div class="col-md-4">
+                                    @else
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                value="{{ $permiso->name }}" name="permisos_rol[]" id="permisoRol{{$permiso->id}}">
+                                            <label class="form-check-label" for="permisoRol{{$permiso->id}}">
+                                                {{ $permiso->name }}
+                                            </label>
+                                        </div> 
+                                    @endif
+                                @endforeach
                                 </div>
-                                <div class="col-md-1"></div>
                             </div>                              
                         </div>
-                      </form>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger cerrarModal" data-bs-dismiss="modal">Cerrar</button>
@@ -157,7 +236,24 @@
             </div>
             </div>
         </div>
-        <!-- Fin Modal -->
+     @endcan 
+     
+     @can('crear permiso')
+         <x-modal id="crearPermisoModal" title="Crear Permiso" class="btnCerrarModalCrearPermiso"
+                  idformulario="frmCrearPermisoModal" nombreBtn="Guardar">
+            <form action="{{ route('crear_permiso') }}" method="post" id="frmCrearPermisoModal">
+                @method('post')
+                @csrf
+                <x-formulario.label for="nombre-permiso">Nombre Permiso:</x-formulario.label>
+                <x-formulario.input tipo="text" name="nombre_permiso" 
+                                    id="nombre_permiso" placeholder="Nombre del Permiso" 
+                                    value="" >
+                ></x-formulario.input>
+            </form>
+         </x-modal>
+     @endcan
+    <!-- Fin Modal -->
+
 @endsection
 
 
@@ -228,42 +324,20 @@
         $("#exampleModal").modal("show");
     }
 
-    function habilitarDesabilitar(rol)
+    function eliminarRol(nombreformulario)
     {
-        let mensaje = '';
-        if(rol.estado == 1){
-            mensaje = 'Esta seguro de deshabilitar el Rol?';
-        }else{
-            mensaje = 'Esta seguro de habilitar el Rol?';
-        }
-
+        console.log(nombreformulario);
         Swal.fire({
-                title: mensaje,
+                title: "Estas seguro de eliminar el Rol?",
                 showDenyButton: true,
-                showCancelButton: true,
+                // showCancelButton: true,
                 confirmButtonText: "Si",
                 denyButtonText: `No`
                 }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) 
                 {
-                    $.ajax({
-                        type: "POST",
-                        url: "{{ route('actualizar_estado_rol') }}",
-                        data: {"id":rol.id, "estado":rol.estado},
-                        success: function (response) {
-                          if (response.respuesta) {
-                            Swal.fire("Cambio Guardado!", "", "success");    
-                            location.reload();
-                          } else {
-                            Swal.fire({
-                            icon: "error",
-                            title: "hubo un error" ,
-                            text: response.mensaje,
-                            });  
-                          }
-                        }
-                    });
+                    $("#"+nombreformulario).submit();
                 } else if (result.isDenied) {
                     // Swal.fire("Changes are not saved", "", "info");
                 }

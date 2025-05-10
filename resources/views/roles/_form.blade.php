@@ -1,11 +1,11 @@
 <div class="row">
-    <input type="text" name="id_rol" value="{{$rol[0]->id}}" hidden>
-</div>
-<div class="row">
-    <div class="col-md">
+    <div class="col-md-5">
         <div class="mb-3">
             <label for="nombre_rol" class="form-label">Rol:</label>
-            <input type="text" class="form-control" name="nombre_rol" id="nombre_rol" placeholder="Introduzca el nombre del Rol" value="{{ $rol[0]->type }}" readonly> 
+            <input type="text" class="form-control" 
+                   name="nombre_rol" id="nombre_rol" 
+                   placeholder="Introduzca el nombre del Rol" 
+                   value="{{ strtolower($rol->name) }}" readonly> 
           </div>
     </div>
 </div>
@@ -13,40 +13,43 @@
 <div class="row">
     <div class="row">
         <div class="col-md text-center">
-            <h5>Seleccione Sucursales a Habilitar</h5>
+            <h5>Seleccione Permisos para el Rol</h5>
+            <hr>  
         </div>
     </div>
     <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            @foreach ($opciones as $opcion)
-                @php
-                    $controlImpresion = false;
-                @endphp
-                    @foreach ($opciones_habilitadas as $opc_hab)
-                        @if ($opc_hab->id_opciones_sistemas == $opcion->id) 
-                            <div class="form-check">
-                                <input class="form-check-input soloLectura" type="checkbox" value="{{ $opcion->id }}" id="flexCheckChecked{{ $opcion->id }}" name=opciones_seleccionadas[] checked >
-                                <label class="form-check-label" for="flexCheckChecked{{$opcion->id}}">
-                                    <i class="{{ $opcion->icono }}" style="color:#6BA9FA"></i> {{ $opcion->opcion }} 
-                                </label>
-                            </div>
-                            @php
-                                $controlImpresion =  true;  
-                            @endphp
-                            @break
-                        @endif
-                    @endforeach
-                    @if (!$controlImpresion)
+        <div class="col-md-3">
+            @foreach ($permisos as $permiso)
+                @if ($loop->iteration % 15 == 0)
                         <div class="form-check">
-                            <input class="form-check-input soloLectura" type="checkbox" value="{{ $opcion->id }}" id="flexCheckChecked{{ $opcion->id }}" name=opciones_seleccionadas[]>
-                            <label class="form-check-label" for="flexCheckChecked{{$opcion->id}}">
-                                <i class="{{ $opcion->icono }}" style="color:#6BA9FA"></i> {{ $opcion->opcion }} 
+                            <input class="form-check-input" type="checkbox" 
+                                value="{{ $permiso->name }}" name="permisos_rol[]" 
+                                id="permisoRol{{$permiso->id}}" 
+                                @if ( $rol->hasPermissionTo($permiso->name) )
+                                    checked
+                                @endif
+                            >
+                            <label class="form-check-label" for="permisoRol{{$permiso->id}}">
+                                {{ $permiso->name }}
                             </label>
-                        </div> 
-                    @endif
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                @else
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" 
+                            value="{{ $permiso->name }}" name="permisos_rol[]" 
+                            id="permisoRol" 
+                            @if ( $rol->hasPermissionTo($permiso->name) )
+                                checked
+                            @endif
+                        >
+                        <label class="form-check-label" for="permisoRol">
+                            {{ $permiso->name }}
+                        </label>
+                    </div> 
+                @endif
             @endforeach
-        </div>
-        <div class="col-md-1"></div>
+            </div>
     </div>                              
 </div>

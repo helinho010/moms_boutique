@@ -162,16 +162,19 @@ Route::middleware(['auth'])->group(function () {
     // Roles 
     Route::get('/rol_usuarios', [UsertypeOpcController::class,'index'])
         ->name('home_rol_usuarios')
-        ->middleware('control.rutas');
+        // ->middleware('control.rutas')
+        ;
     Route::post('/buscar_roles', [UsertypeOpcController::class,'buscar'])->name('buscar_roles');
     Route::post('/nuevo_rol', [UsertypeOpcController::class,'store'])->name('nuevo_rol');
-    Route::get('/editar_rol', [UsertypeOpcController::class,'editar'])
+    Route::get('/editar_rol/{id_rol}', [UsertypeOpcController::class,'editar'])
         ->name('editar_rol')
-        ->middleware('control.rutas');
+        // ->middleware('control.rutas')
+        ;
     Route::post('/update_rol', [UsertypeOpcController::class,'update'])->name('update_rol');
     Route::post('/consultar_rol', [UsertypeOpcController::class,'consultaRol'])->name('consultar_rol');
-    Route::post('/actualizar_estado_rol', [UsertypeOpcController::class,'actualizarEstadoRol'])->name('actualizar_estado_rol');
-    Route::post('/crear_rol',[UsertypeOpcController::class,'CrearRol'])->name('crear_rol')->middleware('permission:crear rol');
+    Route::delete('/eliminar_rol', [UsertypeOpcController::class,'eliminarRol'])->name('eliminar_rol')->middleware('permission:eliminar rol');
+    Route::post('/crear_rol', [UsertypeOpcController::class,'CrearRol'])->name('crear_rol')->middleware('permission:crear rol');
+    Route::post('crear_periso', [UsertypeOpcController::class,'crearPermiso'])->name('crear_permiso')->middleware('permission:crear permiso');
 
     
     // Graficos
