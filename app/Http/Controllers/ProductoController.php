@@ -10,16 +10,9 @@ class ProductoController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->session()->has('buscar_producto')) 
+        if (isset($request->buscar))
         {
-            $productos = Producto::where("codigo_producto", "like", '%'.session('buscar_producto').'%')
-                                ->orwhere('nombre','like','%'.session('buscar_producto').'%')
-                                ->orwhere('costo','like','%'.session('buscar_producto').'%')
-                                ->orwhere('precio','like','%'.session('buscar_producto').'%')
-                                ->orwhere('talla','like','%'.session('buscar_producto').'%')
-                                ->orwhere('descripcion','like','%'.session('buscar_producto').'%')
-                                ->orderBy('updated_at','desc')
-                                ->paginate(10);
+            $productos = Producto::buscar($request->buscar)->withQueryString();
         }else {
             $productos = Producto::selectRaw('productos.id,
                                         productos.codigo_producto,
@@ -144,7 +137,12 @@ class ProductoController extends Controller
 
     public function buscarProductoId(Request $request)
     {
+        $validate = $request->validate([
+            'id' => 'required|numeric',
+        ]);
+
         $productoEncontrado = Producto::where('id',$request->id)->get();
+        
         return $productoEncontrado;
     }
 }

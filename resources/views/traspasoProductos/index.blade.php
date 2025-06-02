@@ -22,6 +22,19 @@
         </ul>
     </x-formulario.mensaje-error-validacion-inputs>
   @endif
+
+  @if (session("error"))
+    <x-formulario.mensaje-error-validacion-inputs color="danger">
+        <h5>{{ session('error') }}</h5>
+    </x-formulario.mensaje-error-validacion-inputs>
+  @endif
+
+  @if (session("exito"))
+    <x-formulario.mensaje-error-validacion-inputs color="success">
+        <h5>{{ session('exito') }}</h5>
+    </x-formulario.mensaje-error-validacion-inputs>    
+  @endif
+
 @endsection
 
 @section('card-title')
@@ -41,9 +54,7 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <form action="{{ route('buscar_categoria') }}" method="POST" id="buscarformulario">
-                @method('POST')
-                @csrf
+            <form action="{{ route('home_traspaso_productos') }}" method="GET" id="buscarformulario">
                 <div class="input-group flex-nowrap">
                     <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
                     <button class="input-group-text" id="inputBuscar"><i class="fas fa-search"></i></button>
@@ -75,29 +86,32 @@
                 @foreach ($traspasos as $traspaso)
                   <tr>
                     <td>
-                        @foreach ($sucursales as $sucursal)
-                            @if ($traspaso->id_sucursal_origen == $sucursal->id_sucursal)
-                                {{ $sucursal->razon_social_sucursal }} - {{ substr($sucursal->direccion_sucursal,0,35)."..." }}
+                        @foreach ($sucursalesDestino as $sucursal)
+                            @if ($traspaso->id_sucursal_origen == $sucursal->id)
+                                {{ $sucursal->ciudad }} - {{ substr($sucursal->direccion,0,35)."..." }}
                             @endif        
                         @endforeach
                     </td>
                     <td>
-                        @foreach ($sucursales as $sucursal)
-                            @if ($traspaso->id_sucursal_destino == $sucursal->id_sucursal)
-                                {{ $sucursal->razon_social_sucursal }} - {{ substr($sucursal->direccion_sucursal,0,35)."..." }}
+                        @foreach ($sucursalesDestino as $sucursal)
+                            @if ($traspaso->id_sucursal_destino == $sucursal->id)
+                                {{ $sucursal->ciudad }} - {{ substr($sucursal->direccion,0,35)."..." }}
                             @endif        
                         @endforeach
                     </td>
                     <td>
-                        {{ $traspaso->nombre_productos }} <br>
-                        Talla: <span class="badge bg-primary">{{ $traspaso->talla_productos!=""?$traspaso->talla_productos:"ST(Sin Talla)" }}</span> 
-                        Precio: <span class="badge bg-info text-dark">{{ $traspaso->descripcion_productos!=""?$traspaso->descripcion_productos:"0" }} Bs.</span>
+                        {{ $traspaso->nombre_producto }} <br>
+                        Talla: <span class="badge bg-primary">{{ $traspaso->talla_producto!=""?$traspaso->talla_producto:"ST(Sin Talla)" }}</span> <br>
+                        Precio Venta: <span class="badge bg-info text-dark">{{ $traspaso->precio_venta_producto!=""?$traspaso->precio_venta_producto:"0" }} Bs.</span>
+                        @can('costo producto')
+                            Costo Producto: <span class="badge bg-secondary">{{ $traspaso->costo_producto!=""?$traspaso->costo_producto:"0" }} Bs.</span>
+                        @endcan
                     </td>
                     <td>{{ $traspaso->cantidad_trasporte_productos }}</td>
-                    <td>{{ $traspaso->nombre_tipo_ingreso_salidas }}</td>
+                    <td>{{ $traspaso->tipo_ingreso_salida }}</td>
                     <td>{{ $traspaso->updated_at_trasporte_productos }}</td>
                     <td>{{ $traspaso->observaciones_trasporte_productos }}</td>
-                    <td>{{ $traspaso->name_usuario }}</td>
+                    <td>{{ $traspaso->nombre_usuario }}</td>
                     <td> 
                         @if ( $traspaso->estado_trasporte_productos == 1 )
                             <span class="badge bg-success">Activo</span>    
@@ -154,12 +168,8 @@
                             <div class="col-md-8">
                                 <select class="form-select" aria-describedby="" name="id_sucursal_destino" id="modalSelectSucursalDestino">
                                     <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
-                                        @foreach ($sucursales as $item)
-                                           @if ($item->estado_sucursal)
-                                              <option value="{{ $item->id_sucursal }}">{{ $item->razon_social_sucursal }} - {{ substr($item->direccion_sucursal,0,35)." ..." }}</option>
-                                            @else
-                                              <option value="{{ $item->id_sucursal }}" disabled>{{ "$item->nombre - $item->fecha_evento (deshabilitado)" }}</option>
-                                           @endif
+                                        @foreach ($sucursalesDestino as $sucursal)
+                                              <option value="{{ $sucursal->id }}">{{ $sucursal->ciudad }} - {{ substr($sucursal->direccion,0,45)." ..." }}</option>
                                         @endforeach
                                 </select>
                             </div>
@@ -287,7 +297,7 @@
         @php
             $fechahoy = date('Y-m-d');
         @endphp
-        <x-modal id="modalComponentstaticBackdrop" title="Formulario de Traspaso de Productos" 
+        <x-modal id="modalComponentstaticBackdrop" title="Reporte de Traspaso de Productos PDF" 
                  idformulario="tra_prod_form_pdf" nombre-btn="Exportar">
             <form action="{{route('traspaso_productos_formulario_pdf')}}" method="post" id="tra_prod_form_pdf">
                 @method('post')
@@ -298,7 +308,7 @@
                 <x-formulario.select id="origen_sucursal_traspaso_productos" name="origen_sucursal_traspaso_productos">
                     <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
                     @foreach ($sucursales as $sucursal)
-                      <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->razon_social_sucursal }} - {{ substr($sucursal->direccion_sucursal,0,35)."..." }}</option>
+                      <option value="{{ $sucursal->id }}">{{ $sucursal->ciudad }} - {{ substr($sucursal->direccion,0,35)."..." }}</option>
                     @endforeach
                 </x-formulario.select>
                 <x-formulario.label for="destino_sucursal_traspaso_productos">
@@ -307,7 +317,7 @@
                 <x-formulario.select id="destino_sucursal_traspaso_productos" name="destino_sucursal_traspaso_productos">
                     <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
                     @foreach ($sucursales as $sucursal)
-                      <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->razon_social_sucursal }} - {{ substr($sucursal->direccion_sucursal,0,35)."..." }}</option>
+                      <option value="{{ $sucursal->id }}">{{ $sucursal->ciudad }} - {{ substr($sucursal->direccion,0,35)."..." }}</option>
                     @endforeach
                 </x-formulario.select>
                 <x-formulario.label for="input_fecha_traspaso_productos">

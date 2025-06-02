@@ -10,10 +10,6 @@
     </style>
 @endsection
 
-@section('h-title')
-    
-@endsection
-
 @section('card-title')
     <div class="row">
         <div class="col">

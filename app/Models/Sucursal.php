@@ -15,4 +15,9 @@ class Sucursal extends Model
     {
         return self::where('almacen_central',1)->first();
     }
+
+    public static function obtenerSucursal($idSucursal)
+    {
+        return self::where('id',$idSucursal)->first();
+    }
 }

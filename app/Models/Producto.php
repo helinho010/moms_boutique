@@ -23,4 +23,17 @@ class Producto extends Model
     {
         return 'uuid';
     }
+
+    public static function buscar($buscar, $paginate=10)
+    {
+        $productos = self::where("codigo_producto", "like", '%'.$buscar.'%')
+                        ->orwhere('nombre','like','%'.$buscar.'%')
+                        ->orwhere('costo','like','%'.$buscar.'%')
+                        ->orwhere('precio','like','%'.$buscar.'%')
+                        ->orwhere('talla','like','%'.$buscar.'%')
+                        ->orwhere('descripcion','like','%'.$buscar.'%')
+                        ->orderBy('updated_at','desc')
+                        ->paginate($paginate);
+        return $productos;
+    }
 }

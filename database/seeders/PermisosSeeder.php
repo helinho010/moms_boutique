@@ -50,10 +50,12 @@ class PermisosSeeder extends Seeder
             ['name' => 'crear inventario externo'],
             ['name' => 'editar inventario externo'],
             ['name' => 'eliminar inventario externo'],
+            ['name' => 'devolver productos inventario externo'],
 
             ['name' => 'crear traspaso productos'],
             ['name' => 'editar traspaso productos'],
             ['name' => 'eliminar traspaso productos'],
+            ['name' => 'ver todos los traspasos'],
 
             ['name' => 'realizar venta'],
             ['name' => 'editar venta'],
@@ -80,6 +82,22 @@ class PermisosSeeder extends Seeder
             ['name' => 'crear permiso'],
             ['name' => 'editar permiso'],
             ['name' => 'eliminar permiso'],
+
+            // Permisos de opciones del sistema
+            ['name' => 'opc proveedores'],
+            ['name' => 'opc categoria'],
+            ['name' => 'opc tipo ingreso salida'],
+            ['name' => 'opc tipo pago'],
+            ['name' => 'opc eventos'],
+            ['name' => 'opc productos'],
+            ['name' => 'opc sucursales'],
+            ['name' => 'opc inventario interno'],
+            ['name' => 'opc inventario externo'],
+            ['name' => 'opc traspaso productos'],
+            ['name' => 'opc ventas'],
+            ['name' => 'opc cierre caja'],
+            ['name' => 'opc usuarios'],
+            ['name' => 'opc roles'],
         ];
 
         $permisosAdministrador = [];
@@ -89,24 +107,9 @@ class PermisosSeeder extends Seeder
             array_push($permisosAdministrador, $permiso);
         }
 
-        // Asignar permisos a los roles
+        // Asignar permisos al rol administrador
         $administrador = Role::findByName('administrador');
-        $ventas = Role::findByName('ventas');
 
-        $administrador->syncPermissions($permisosAdministrador);
-        $ventas->syncPermissions([
-            'exportar pdf',
-            'crear inventario interno',
-            'editar inventario interno',
-            'eliminar inventario interno',
-            'realizar venta',
-            'editar venta', 
-            'eliminar venta',
-            'crear cierre caja',
-            'editar cierre caja',
-            'eliminar cierre caja',
-        ]);
-        
-        
+        $administrador->syncPermissions($permisosAdministrador);        
     }
 }

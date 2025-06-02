@@ -67,9 +67,7 @@
     <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <form action="{{ route('buscar_producto') }}" method="POST" id="buscarformulario">
-                @method('POST')
-                @csrf
+            <form action="{{ route('home_producto') }}" method="GET" id="buscarformulario">
                 <div class="input-group flex-nowrap">
                     <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
                     <button class="input-group-text" id="inputBuscar"><i class="fas fa-search"></i></button>
@@ -84,7 +82,7 @@
             <thead>
                 <tr class="align-middle">
                   <th scope="col">Opciones</th>
-                  <th scope="col">Codigo_producto</th>
+                  {{-- <th scope="col">Codigo_producto</th> --}}
                   <th scope="col">Nombre del Producto</th>
                   <th scope="col">Costo [Bs]</th>
                   <th scope="col">Precio [Bs]</th>
@@ -131,7 +129,7 @@
                       @endphp
 
                     </th>
-                    <th>{{$aux->codigo_producto}}</th>
+                    {{-- <th>{{$aux->codigo_producto}}</th> --}}
                     <th>{{$aux->nombre}}</th>
                     <th>{{$aux->costo}}</th>
                     <th>{{$aux->precio}}</th>
@@ -189,13 +187,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="costo_producto" class="form-label">Costo:</label>
+                                    <label for="costo_producto" class="form-label">Costo del Producto:</label>
                                     <input type="number" class="form-control" name="costo" id="costo_producto" placeholder="Costo del Producto"> 
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="precio_producto" class="form-label">Precio:</label>
+                                    <label for="precio_producto" class="form-label">Precio de Venta Producto:</label>
                                     <input type="number" class="form-control" name="precio" id="precio_producto" placeholder="Precio del Producto"> 
                                 </div>
                             </div>
@@ -218,6 +216,7 @@
             </div>
             </div>
         </div>
+        <!--Fin modal agregar producto-->
 @endsection
 
 

@@ -113,78 +113,98 @@
             {{-- @endforeach --}}
 
             
+            @can('opc proveedores')
+                <li class="sidebar-item" id="proveedor">
+                    <a class="sidebar-link" href="{{ route('home_proveedor') }}">
+                        <i class="far fa-building"></i>
+                        <span class="align-middle">Proveedores</span>
+                    </a>
+                </li>   
+            @endcan
             
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_proveedor') }}">
-                    <i class="far fa-building"></i>
-                    <span class="align-middle">Proveedores</span>
-                </a>
-            </li>
+            @can('opc categoria')
+                <li class="sidebar-item" id="categoria">
+                    <a class="sidebar-link" href="{{ route('home_categoria') }}">
+                        <i class="far fa-copyright"></i>
+                        <span class="align-middle">Categoria</span>
+                    </a>
+                </li> 
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_categoria') }}">
-                    <i class="far fa-copyright"></i>
-                    <span class="align-middle">Categoria</span>
-                </a>
-            </li>
+            @can('opc tipo ingreso salida')
+                <li class="sidebar-item" id="tipo ingreso salida">
+                    <a class="sidebar-link" href="{{ route('home_tipo_ingreso_salida') }}">
+                        <i class="fas fa-people-carry"></i>
+                        <span class="align-middle">Tipo Ingreo Salida</span>
+                    </a>
+                </li>
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_tipo_ingreso_salida') }}">
-                    <i class="fas fa-people-carry"></i>
-                    <span class="align-middle">Tipo Ingreo Salida</span>
-                </a>
-            </li>
+            @can('opc tipo pago')
+                <li class="sidebar-item" id="tipo pago">
+                    <a class="sidebar-link" href="{{ route('home_tipo_pago') }}">
+                        <i class="far fa-money-bill-alt"></i>
+                        <span class="align-middle">Tipo Pago</span>
+                    </a>
+                </li>  
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_tipo_pago') }}">
-                    <i class="far fa-money-bill-alt"></i>
-                    <span class="align-middle">Tipo Pago</span>
-                </a>
-            </li>
+            @can('opc eventos')
+                <li class="sidebar-item" id="evento">
+                    <a class="sidebar-link" href="{{ route('home_evento') }}">
+                        <i class="far fa-calendar-alt"></i>
+                        <span class="align-middle">Evento</span>
+                    </a>
+                </li>  
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_evento') }}">
-                    <i class="far fa-calendar-alt"></i>
-                    <span class="align-middle">Evento</span>
-                </a>
-            </li>
+            @can('opc productos')
+                <li class="sidebar-item" id="producto">
+                    <a class="sidebar-link" href="{{ route('home_producto') }}">
+                        <i class="fab fa-product-hunt"></i>
+                        <span class="align-middle">Producto</span>
+                    </a>
+                </li> 
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_producto') }}">
-                    <i class="fab fa-product-hunt"></i>
-                    <span class="align-middle">Producto</span>
-                </a>
-            </li>
+            @can('opc sucursales')
+                <li class="sidebar-item" id="sucursal">
+                    <a class="sidebar-link" href="{{ route('home_sucursal') }}">
+                        <i class="fas fa-building"></i>
+                        <span class="align-middle">Sucurusal</span>
+                    </a>
+                </li>  
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_sucursal') }}">
-                    <i class="fas fa-building"></i>
-                    <span class="align-middle">Sucurusal</span>
-                </a>
-            </li>
+            @can('opc inventario interno')
+                <li class="sidebar-item" id="inventario interno">
+                    <a class="sidebar-link" href="{{ route('home_inventario_interno') }}">
+                        <i class="fas fa-boxes"></i>
+                        <span class="align-middle">Inventario Interno</span>
+                    </a>
+                </li>
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_inventario_interno') }}">
-                    <i class="fas fa-boxes"></i>
-                    <span class="align-middle">Inventario Interno</span>
-                </a>
-            </li>
+            @can('opc inventario externo')
+                <li class="sidebar-item" id="inventario externo">
+                    <a class="sidebar-link" href="{{ route('home_inventario_externo') }}">
+                        <i class="fas fa-dolly-flatbed"></i>
+                        <span class="align-middle">Inventario Externo</span>
+                    </a>
+                </li> 
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_inventario_externo') }}">
-                    <i class="fas fa-dolly-flatbed"></i>
-                    <span class="align-middle">Inventario Externo</span>
-                </a>
-            </li>
+            @can('opc traspaso productos')
+                <li class="sidebar-item" id="traspaso productos">
+                    <a class="sidebar-link" href="{{ route('home_traspaso_productos') }}">
+                        <i class="fas fa-shipping-fast"></i>
+                        <span class="align-middle">Traspaso Productos</span>
+                    </a>
+                </li>  
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_inventario_externo') }}">
-                    <i class="fas fa-shipping-fast"></i>
-                    <span class="align-middle">Traspaso Productos</span>
-                </a>
-            </li>
-
-            <li class="sidebar-item active">
+           @can('opc ventas')
+            <li class="sidebar-item" id="venta">
                 <a data-bs-target="#ui" data-bs-toggle="collapse" class="sidebar-link collapsed" aria-expanded="false">
                     <i class="fas fa-cart-arrow-down"></i>
                     <span class="align-middle">Venta</span>
@@ -195,32 +215,38 @@
                     <li class="sidebar-item"><a class="sidebar-link" href="{{ route('reporte_venta') }}">Reporte Ventas</a></li>
                 </ul>
             </li>
+           @endcan
 
-            <li class="sidebar-item" id="caja">
-                <a data-bs-target="#caja-a" data-bs-toggle="collapse" class="sidebar-link collapsed" aria-expanded="false">
-                    <i class="fab fa-contao"></i>
-                    <span class="align-middle">Caja</span>
-                </a>
-                <ul id="caja-a" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                    {{-- <li class="sidebar-item"><a class="sidebar-link" href="#">Apertura Caja</a></li> --}}
-                    <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_caja') }}">Cierre Caja</a></li>
-                </ul>
-            </li>
+            @can('opc cierre caja')
+                <li class="sidebar-item" id="caja">
+                    <a data-bs-target="#caja-a" data-bs-toggle="collapse" class="sidebar-link collapsed" aria-expanded="false">
+                        <i class="fab fa-contao"></i>
+                        <span class="align-middle">Caja</span>
+                    </a>
+                    <ul id="caja-a" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        {{-- <li class="sidebar-item"><a class="sidebar-link" href="#">Apertura Caja</a></li> --}}
+                        <li class="sidebar-item"><a class="sidebar-link" href="{{ route('home_caja') }}">Cierre Caja</a></li>
+                    </ul>
+                </li>
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_usuarios') }}">
-                    <i class="fas fa-user"></i>
-                    <span class="align-middle">Usuarios</span>
-                </a>
-            </li>
+            @can('opc usuarios')
+                <li class="sidebar-item" id="usuarios">
+                    <a class="sidebar-link" href="{{ route('home_usuarios') }}">
+                        <i class="fas fa-user"></i>
+                        <span class="align-middle">Usuarios</span>
+                    </a>
+                </li>
+            @endcan
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('home_rol_usuarios') }}">
-                    <i class="fas fa-briefcase"></i>
-                    <span class="align-middle">Roles de Usuarios</span>
-                </a>
-            </li>
-            
+            @can('opc roles')
+                <li class="sidebar-item" id="rol usuarios">
+                    <a class="sidebar-link" href="{{ route('home_rol_usuarios') }}">
+                        <i class="fas fa-briefcase"></i>
+                        <span class="align-middle">Roles de Usuarios</span>
+                    </a>
+                </li>
+            @endcan
 
             {{-- <li class="sidebar-header">
                 Components

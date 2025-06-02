@@ -45,6 +45,7 @@
   <script>
     $(document).ready(function(){
         $("#home").addClass('active');
+        // $("#venta").removeClass('active');
     }); 
     
     $.ajaxSetup({

@@ -1,261 +1,4 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use App\Models\Sucursal;
-use App\Models\UserSucursal;
-use Dompdf\Dompdf;
-use App\Models\InventarioInterno;
-use App\Models\DetalleVenta;
-use App\Models\Cliente;
-use App\Models\TipoPago;
-use App\Models\Venta;
-use Luecano\NumeroALetras\NumeroALetras;
-
-use App\Exports\VentaReporteExcelExport;
-use App\Models\Evento;
-use App\Models\UsuarioEvento;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
-
-class VentaController extends Controller
-{
-    private $nombre_archivo = "";
-
-    public function index()
-    {
-        
-        // if (auth()->user()->usertype_id == 1) {
-        //     $sucursales = Sucursal::selectRaw(' sucursals.id as id_sucursal,
-        //                                         sucursals.id as id_sucursal_user_sucursal,
-        //                                         sucursals.razon_social as razon_social_sucursal,
-        //                                         sucursals.direccion as direccion_sucursal,
-        //                                         sucursals.ciudad as ciudad_sucursal,
-        //                                         sucursals.activo as estado_sucursal')
-        //                             ->where('sucursals.activo',1)
-        //                             ->get();
-        //     $eventos = Evento::selectRaw('
-        //                                   eventos.id as id_eventos,
-        //                                   eventos.nombre as nombre_eventos,
-        //                                   eventos.fecha_evento as fecha_eventos,
-        //                                   eventos.estado as estado_eventos')
-        //                             ->where('eventos.estado',1)
-        //                             ->get();
-                             
-        // } else {
-        //     $sucursales = UserSucursal::selectRaw('user_sucursals.id as id_user_sucursal,
-        //                                         user_sucursals.id_usuario as id_usuario_user_sucursal,
-        //                                         user_sucursals.id_sucursal as id_sucursal_user_sucursal,
-        //                                         user_sucursals.estado as estado_user_sucursal,
-        //                                         sucursals.id as id_sucursal,
-        //                                         sucursals.razon_social as razon_social_sucursal,
-        //                                         sucursals.direccion as direccion_sucursal,
-        //                                         sucursals.ciudad as ciudad_sucursal,
-        //                                         sucursals.activo as estado_sucursal,
-        //                                         users.name as nombre_usuario,
-        //                                         users.usertype_id as tipo_usuario')
-        //                                ->join('sucursals','sucursals.id','user_sucursals.id_sucursal')
-        //                                ->join('users', 'users.id','user_sucursals.id_usuario')
-        //                                ->where('user_sucursals.id_usuario',auth()->user()->id)
-        //                                ->where('sucursals.activo',1)
-        //                                ->get();
-
-        //     $eventos = UsuarioEvento::selectRaw('
-        //                                         user_evento.id as id_user_evento,
-        //                                         user_evento.estado as estado_user_evento,
-        //                                         user_evento.created_at as created_at_user_evento,
-        //                                         user_evento.updated_at as updated_at_user_evento,
-        //                                         eventos.id as id_eventos,
-        //                                         eventos.nombre as nombre_eventos,
-        //                                         eventos.fecha_evento as fecha_eventos,
-        //                                         eventos.estado as estado_eventos
-        //                                         ')
-        //                             ->join('eventos', 'eventos.id', 'user_evento.id_evento')
-        //                             ->where('user_evento.id_usuario', auth()->user()->id)
-        //                             ->where('user_evento.estado',1)
-        //                             ->get();
-        // }
-
-        $sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id);
-
-        $eventos = UsuarioEvento::eventosHabilitadosUsuario(auth()->user()->id);
-
-        return view('Venta.homeVenta',[
-            'sucursales'=>$sucursales,
-            'eventos' => $eventos,
-        ]);
-    }
-
-    public function seleccionSucursalVenta(Request $request)
-    {
-        $sucursal = Sucursal::where('id',$request->id_sucursal)->get();
-        $tipoPagos = TipoPago::where('estado',1)->get();
-        $productosSucursal = InventarioInterno::selectRaw(' inventario_internos.id as id_inventario_interno,
-                                                            inventario_internos.stock,
-                                                            inventario_internos.estado as estado_inventario_interno,
-                                                            inventario_internos.created_at as created_at_inventario_interno, 
-                                                            inventario_internos.updated_at as updated_at_inventario_interno, 
-                                                            productos.id as id_producto,
-                                                            productos.codigo_producto,
-                                                            productos.nombre as nombre_producto,
-                                                            productos.precio,
-                                                            productos.talla,
-                                                            productos.estado as estado_producto,
-                                                            sucursals.id as id_sucursal,
-                                                            sucursals.razon_social as razon_social_sucursal,
-                                                            sucursals.ciudad as ciudad_sucursal,
-                                                            sucursals.activo as estado_sucursal,
-                                                            users.name as nombre_usuario,
-                                                            users.id as id_usuario,
-                                                            tipo_ingreso_salidas.id as id_tipo_ingreso_salida,
-                                                            tipo_ingreso_salidas.tipo as nombre_tipo_ingreso_salida,
-                                                            tipo_ingreso_salidas.estado as estado_tipo_ingreso_salida')
-                                               ->join('productos','productos.id','inventario_internos.id_producto')
-                                               ->join('sucursals','sucursals.id','inventario_internos.id_sucursal')
-                                               ->join('users','users.id','inventario_internos.id_usuario')
-                                               ->join('tipo_ingreso_salidas','tipo_ingreso_salidas.id','inventario_internos.id_tipo_ingreso_salida')
-                                               ->where('sucursals.id',$request->id_sucursal)
-                                               ->where('sucursals.activo',1)
-                                               ->orderBy('productos.nombre', 'asc') 
-                                               ->get();
-
-        session(['sucursalSeleccionadoParaVenta' => $request->id_sucursal]);
-
-        return view('Venta.venta',[
-            'sucursal'=>$sucursal,
-            'productos' => $productosSucursal,
-            'tipoPagos' => $tipoPagos,
-        ]);
-    }
-
-
-    public function numeroALetras(Request $request)
-    {
-        $formatter = new NumeroALetras();
-        if (isset($request->efectivo)) 
-        {
-            return $formatter->toMoney(floatval($request->efectivo), 2, 'BOLIVIANOS', 'CENTAVOS');  
-        }else{
-            return $formatter->toMoney(0.00, 2, 'BOLIVIANOS', 'CENTAVOS');  
-        } 
-    }
-
-    public function realizarVenta(Request $request)
-    {
-        // $validacion = $request->validate([
-        //     "productos" => "required",
-        //     "idTipoPago" => "required",
-        //     "nit_cliente" => "required",
-        //     "nombre_cliente" => "required",
-        //     "totalVenta" => "required",
-        //     "efectivo_recibido" => "required",
-        //     "descuento_venta" => "required",
-        //     "cambio_venta" => "required",
-        //     "factura" => "required",
-        //     "envio" => "required",
-        //     "referencia" => "required",
-        //     "observacion" => "required",
-        // ]);
-
-        try {
-                $this->nombre_archivo = "Sucursal_".date('Ymd_His').".pdf";
-                
-                $nuevoCliente = new Cliente();
-                $nuevoCliente->nit_ci = $request->nit_cliente != "" ? $request->nit_cliente : 0 ;
-                $nuevoCliente->razon_social = $request->nombre_cliente != "" ? $request->nombre_cliente : "S/N";
-                $nuevoCliente->save();
-                
-                $newVenta = new Venta();
-                $newVenta->id_sucursal = session('sucursalSeleccionadoParaVenta');
-                $newVenta->id_tipo_pago = $request->idTipoPago;
-                $newVenta->id_usuario = auth()->user()->id;
-                $newVenta->id_cliente = $nuevoCliente->id;
-                $newVenta->descuento = $request->descuento_venta / collect($request->productos)->count();
-                $newVenta->total_venta = $request->totalVenta;
-                $newVenta->efectivo_recibido = $request->efectivo_recibido;
-                $newVenta->cambio = $request->cambio_venta;
-                $newVenta->numero_factura = $request->factura;
-                $newVenta->envio = $request->envio;
-                $newVenta->referencia = $request->referencia;
-                $newVenta->observacion = $request->observacion;
-                $newVenta->nombre_pdf = $this->nombre_archivo;
-                // dd($newVenta);
-                $newVenta->save();
-
-                foreach ($request->productos as $key => $value) 
-                {
-                    $reducirInventario = InventarioInterno::where('id_producto',$value["id_producto"])
-                                                        ->where('id_sucursal',session('sucursalSeleccionadoParaVenta'))
-                                                        ->where('estado',1)
-                                                        ->first();
-                    if ($value['cantidad'] <= $reducirInventario->stock) 
-                    {
-                        $reducirInventario->stock = $reducirInventario->stock - $value['cantidad'];
-                        $reducirInventario->save();
-                    }else{
-                        return ['estado'=>false, 'mensaje'=>'Error al disminuir la cantidad en el inventario interno de la sucursal'];
-                    }
-        
-                    $newDetalleVenta = new DetalleVenta();
-                    $newDetalleVenta->id_venta = $newVenta->id;
-                    $newDetalleVenta->id_producto = $value['id_producto'];
-                    $newDetalleVenta->cantidad = $value['cantidad'];
-                    $newDetalleVenta->descripcion = $value['nombre_producto'].' - Talla: '.($value['talla_producto'] != "" ? $value['talla_producto'] : "ST(Sin Talla)");
-                    $newDetalleVenta->precio_unitario = $value['precio_producto'];
-                    $newDetalleVenta->subtotal = floatval($value['cantidad'])*floatval($value['precio_producto']);
-                    $newDetalleVenta->save();
-                }
-
-                $this->exportVentaPdf(
-                                      $request->descuento_venta,  
-                                      $request->totalVenta,
-                                      $request->productos, 
-                                      $request->nit_cliente, 
-                                      $request->nombre_cliente, 
-                                      $request->efectivo_recibido, 
-                                      session('sucursalSeleccionadoParaVenta'));
-
-                // Aqui se debe borrar la variable de session "session('sucursalSeleccionadoParaVenta')" ya que no se utilizara mas
-                // session()->forget('sucursalSeleccionadoParaVenta');
-                //Fin
-                return ['estado'=>true, 'nombreArchivo'=>$this->nombre_archivo];
-        } 
-        
-        catch (\Throwable $th) 
-        {
-            report($th);
-            return ['estado'=>$th->getMessage()];
-        }
-    }
-
-    public function exportVentaPdf($descuentoVenta=0, $TotalVenta=0, $productos=[], $nit='0', $senores='S/N', $efectivoRecibido=0, $idSucursal)
-    {
-        // Instaciamos el objeto Request para enviar a la funcion numeroALetras
-        $requestObj = new Request(array('efectivo' => $TotalVenta));
-        $literal = $this->numeroALetras($requestObj);
-
-        // Datos de la sucursal
-        $sucursal = Sucursal::find($idSucursal);
-        
-        // Datos del cliente
-        $nit = $nit == '' ? 0 : $nit;
-        $senores = $senores == '' ? 'S/N' : $senores;
-        $htmlProductos = '';
-
-        foreach ($productos as $key => $producto) {
-            $htmlProductos = $htmlProductos.'<tr>
-            <td>'.$producto["cantidad"].'</td>
-            <td>'.$producto["nombre_producto"]." - Talla: ".($producto["talla_producto"] != "" ? $producto["talla_producto"] : "ST(Sin Talla)").'</td>
-            <td>'.$producto["precio_producto"].'</td>
-            <!--td>0</td-->
-            <td>'.((float) $producto["cantidad"] * (float) $producto["precio_producto"]).'</td>
-          </tr>';
-        }
-
-        $dompdf = new Dompdf();
-        //$contenidoVistaVentaBlade = file_get_contents('../resources/views/Venta/exportFileVenta.html');
-        $contenidoVistaVentaBlade = '<!DOCTYPE html>
+<!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
@@ -283,18 +26,22 @@ class VentaController extends Controller
                     width: 150px;
                 }
                 .notaVenta{
-                    font-size: 26px;
+                    font-size: 17px;
                     color: black;
                     display: block;
                     width: 100%;
                     text-align: center;
                     font-weight: bold;
-                    margin-bottom: 10px;
+                    margin-bottom: 5px;
                 }
                 table{
                     font-size: 12px;
                     width: 100%;
                     text-align: center;
+                }
+
+                table tbody tr {
+                    border: solid 1px black;
                 }
                 .detalleVenta{
                     border: solid 1px black;
@@ -361,7 +108,25 @@ class VentaController extends Controller
                     border-right:1px solid black;
                     border-radius: 5px;
                 }
-        
+
+                /*Css2.0 table*/
+                /* Estilo para la tabla con márgenes */
+                .tabla-simple {
+                    border: 1px solid #000; /* Borde exterior de la tabla */
+                    border-collapse: collapse; /* Bordes unidos entre celdas */
+                }
+                
+                .tabla-simple td, .tabla-simple th {
+                    border: 1px solid #000; /* Borde para celdas */
+                    padding: 5px; /* Espacio mínimo interno para el texto */
+                }
+                /* Estilo para la tabla con márgenes */
+
+                .texto-sm{
+                    font-size: 10px;
+                    color: darkslategray;
+                }
+
                 footer {
                     font-size: 12px;
                     text-align: center;
@@ -4427,293 +4192,59 @@ class VentaController extends Controller
                 </div>
                 <div style="margin: auto; height: 100px">
                     <span>
-                        <b>Nombre Empsa:</b> '.$sucursal->razon_social.'
+                        <b>Nombre Evento:</b> {{ $evento->nombre }}
                     </span>
                     <span>
-                        <b>Ubicacion: </b> '.$sucursal->direccion.'
-                    </span>
-                    <span>
-                        <b>Nit: </b> '.$sucursal->nit.'
-                    </span>
-                    <span>
-                        <b>Telefono: </b> '.$sucursal->telefonos.'
-                    </span>
-                    <span>
-                        <b>Ciudad: </b> La Paz - Bolivia
+                        <b>Fecha: </b> {{ $evento->fecha_evento }}
                     </span>
                 </div>
-            </div>
-            <div class="datosCliente">
-                <div class="datos">Datos del Cliente</div>
-                <div class="fechaNit"> 
-                    <div> Fecha: <div class="lineaPunteada"> '.date('d/m/Y H:i').'</div> </div>
-                    <div> Nit: <div class="lineaPunteada"> '.$nit.'</div></div> 
-                </div>
-                <div class="razonSocial">
-                    <div> Señores: <div class="lineaPunteada">'.$senores.'</div></div>
-                </div>        
             </div>
             <br>
             <div class="notaVenta">
-                Nota de Venta
+                {{ $tituloPdf }} <br>
+                <span class="texto-sm">(Fecha corte: {{$fechaCorte}})</span>
             </div>
             <br>
-            <div>
-                <table class="detalleVenta">
-                    <tr class="detalleVentaTr">
-                      <th style="width: 10%;">Cantidad</th>
-                      <th style="width: 45%;">Descripcion</th>
-                      <th style="width: 15%;">Precio Unitario [Bs]</th>
-                      <!--th style="width: 15%;">Descuento [Bs]</th-->
-                      <th style="width: 15%;">Subtotal [Bs]</th>
-                    </tr>
-                    '.$htmlProductos.'
-                </table>
-                <table class="totales">
+            <div>            
+                  <table class="tabla-simple">
                     <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="rotulo">Descuento [%]</td>
-                      <td class="cantidades">'.$descuentoVenta.'</td>
+                        <th>Nro</th>
+                        <th>Sucursal</th>
+                        <th>Producto</th>
+                        <th>Tipo de Ingreso Salida</th>
+                        <th>Stock</th>
+                        <th>Usuario</th>
+                        <th>Estado</th>
                     </tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="rotulo">Total [Bs]</td>
-                      <td class="cantidades">'.$TotalVenta.'</td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="rotulo">Monto Recibido [Bs]</td>
-                      <td class="cantidades">'.$efectivoRecibido.'</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td class="rotulo">Cambio [Bs]</td>
-                        <td class="cantidades">'.(float) $efectivoRecibido - (float)$TotalVenta.'</td>
-                    </tr>
-                </table>
-                <table class="literalCanitdadTotal">
-                    <tr>
-                        <td class="">Son: '.$literal.'</td>
-                    </tr>
+                    @foreach ($inventario as $item)
+                        <tr>
+                            <th>{{ $loop->iteration }}</th>
+                            <th>{{ $item->direccion_sucursal}}</th>
+                            <td>
+                                Producto: {{  $item->nombre_producto ." - "}}
+                                Talla: {{ ($item->talla_producto != '' ? $item->talla_producto : "ST(Sin Talla)") . " - "}}
+                                Precio Venta: {{ ($item->precio_producto != '' ?  $item->precio_producto : 0) . " - "}} Bs.
+                                @can('costo producto')
+                                    Costo Compra: {{ $item->costo_producto != '' ?  $item->costo_producto:0 }} Bs.
+                                @endcan
+                            </td>
+                            <td>{{ $item->tipo_ingreso_salida }}</td>
+                            <td>{{ $item->cantidad_inventario_externo }}</td>
+                            <td>{{ $item->nombre_del_usuario }}</td>
+                            <td>
+                                @if ($item->estado_inventario_externo == 1)
+                                    Activo
+                                @else
+                                    Deshabilitado
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
                 </table>
             </div>
+
             <footer>
                 Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit est sint nesciunt, repellat magnam asperiores. Quo dolore in odit eum tempore cumque sed quia! Deserunt optio similique molestiae corrupti eligendi!
             </footer>
         </body>
-        </html>';
-
-        $dompdf->loadHtml($contenidoVistaVentaBlade);
-        // Render the HTML as PDF
-        $dompdf->render();
-        
-        // $this->nombre_archivo = date('Ymd-His').".pdf";
-        // file_put_contents($this->nombre_archivo, $dompdf->output());
-        Storage::disk('sucursales')->put($this->nombre_archivo, $dompdf->output());
-        // Output the generated PDF to Browser
-        // $dompdf->stream(date('Ymd-His').".pdf");
-    }
-
-    public function detalleVentasRangoFechas(Request $request)
-    {
-        if (auth()->user()->usertype_id == 1) {
-            $sucursalesModal = Sucursal::selectRaw(' sucursals.id as id_sucursal,
-                                                sucursals.id as id_sucursal_user_sucursal,
-                                                sucursals.razon_social as razon_social_sucursal,
-                                                sucursals.direccion as direccion_sucursal,
-                                                sucursals.ciudad as ciudad_sucursal,
-                                                sucursals.activo as estado_sucursal')
-                                    ->where('sucursals.activo',1)
-                                    ->get();
-        } else {
-            $sucursalesModal = UserSucursal::selectRaw('user_sucursals.id as id_user_sucursal,
-                                                user_sucursals.id_usuario as id_usuario_user_sucursal,
-                                                user_sucursals.id_sucursal as id_sucursal_user_sucursal,
-                                                user_sucursals.estado as estado_user_sucursal,
-                                                sucursals.id as id_sucursal,
-                                                sucursals.razon_social as razon_social_sucursal,
-                                                sucursals.direccion as direccion_sucursal,
-                                                sucursals.ciudad as ciudad_sucursal,
-                                                sucursals.activo as estado_sucursal,
-                                                users.name as nombre_usuario,
-                                                users.usertype_id as tipo_usuario')
-                                       ->join('sucursals','sucursals.id','user_sucursals.id_sucursal')
-                                       ->join('users', 'users.id','user_sucursals.id_usuario')
-                                       ->where('user_sucursals.id_usuario',auth()->user()->id)
-                                       ->where('sucursals.activo',1)
-                                       ->get();
-        }
-
-        // if (isset($request->id_sucursal)) 
-        // {
-        //     $ventas = Venta::where("id_sucursal", $request->id_sucursal)
-        //                //->where("estado",1)
-        //                ->paginate(10);
-        // }else{
-        //     $ventas = Venta::where("created_at","0000-00-00 00:00")
-        //                //->where("estado",1)
-        //                ->paginate(10);
-        // }
-        
-        if (isset($request->id_sucursal)) 
-        {
-            return view('Venta.detalleVenta',[
-                "id_sucursal_seleccionado"=>$request->id_sucursal,
-                "sucursalesModal"=>$sucursalesModal,
-                // "ventas"=>$ventas,
-            ]);
-        }else{
-            return view('Venta.detalleVenta',[
-                "sucursalesModal"=>$sucursalesModal,
-                // "ventas"=>$ventas,
-            ]);
-        }        
-    }
-
-    public function update_estado(Request $request)
-    {
-        $venta = Venta::where("id",$request->id)->first();
-        $detalleVenta = DetalleVenta::where('id_venta',$request->id)->get();
-        $respuesta=array();
-        $controlActualizacion = 0;
-
-        switch ($request->estado) 
-        {
-            case 0:
-                foreach ($detalleVenta as $key => $value) 
-                {
-                    $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
-                                                            ->where('id_producto',$value->id_producto)
-                                                            ->first();
-                    if ($inventarioSucursal->stock - $value->cantidad >= 0) 
-                    {      
-                        $controlActualizacion++;
-                    } 
-                }
-                
-                if ($controlActualizacion == $detalleVenta->count()) 
-                {
-                    foreach ($detalleVenta as $key => $value) 
-                    {
-                        $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
-                                                                ->where('id_producto',$value->id_producto)
-                                                                ->first();
-                        $inventarioSucursal->stock = $inventarioSucursal->stock - $value->cantidad;
-                        $inventarioSucursal->save();
-                    }
-                    $venta->estado = 1;
-                    $venta->save();
-                    $respuesta = ['estado'=>1, 'mensaje'=>'Habilitado Exitosamente'];
-                }else{
-                    $respuesta = ['estado'=>0, 'mensaje'=>'Hubo un error al momento de modificar el stock del Inventario'];
-                }
-                
-            break;
-
-            case 1:
-                foreach ($detalleVenta as $key => $value) 
-                {
-                    $inventarioSucursal = InventarioInterno::where('id_sucursal',$venta->id_sucursal)
-                                                            ->where('id_producto',$value->id_producto)
-                                                            ->first();
-                    $inventarioSucursal->cantidad_ingreso = $value->cantidad; 
-                    $inventarioSucursal->stock = $inventarioSucursal->stock + $value->cantidad;
-                    $inventarioSucursal->save();
-                }
-                $venta->estado = 0;
-                $venta->save();
-                $respuesta = ['estado'=>1, 'mensaje'=>'Inhabilitado Exitosamente'];
-            break;
-            
-            default:
-                
-            break;
-        }
-        return $respuesta;
-    }
-
-    public function reImprimirPdf(Request $request)
-    {
-        $venta = Venta::where('id',$request->id)
-                      ->get();
-        return $venta;
-    }
-
-    public function reporteVenta()
-    {
-        if(auth()->user()->id == 1)
-        {
-            $sucursalesHabilitadasUsuario = Sucursal::selectRaw('
-                                                                        sucursals.id as id_sucursal,
-                                                                        sucursals.razon_social as razon_social_sucursal,
-                                                                        sucursals.direccion as direccion_sucursal,
-                                                                        sucursals.ciudad as ciudad_sucursal,
-                                                                        sucursals.activo as estado_sucursal
-                                                                    ')
-                                                        ->where('sucursals.activo',1)
-                                                        ->get();
-        }else {
-            $sucursalesHabilitadasUsuario = UserSucursal::selectRaw('
-                                                                        user_sucursals.id as id_user_sucursals,
-                                                                        user_sucursals.estado as estado_user_sucursals,
-                                                                        user_sucursals.created_at as created_at_user_sucursals,
-                                                                        user_sucursals.updated_at as updated_at_user_sucursals,
-                                                                        users.id as id_usuario,
-                                                                        users.name as nombre_usuario,
-                                                                        users.username as  nombre_login_usuario,
-                                                                        users.estado as estado_usuario,
-                                                                        sucursals.id as id_sucursal,
-                                                                        sucursals.razon_social as razon_social_sucursal,
-                                                                        sucursals.direccion as direccion_sucursal,
-                                                                        sucursals.ciudad as ciudad_sucursal,
-                                                                        sucursals.activo as estado_sucursal
-                                                                    ')
-                                                        ->join('users', 'users.id', 'user_sucursals.id_usuario')
-                                                        ->join('sucursals', 'sucursals.id', 'user_sucursals.id_sucursal')
-                                                        ->where('users.id',auth()->user()->id)
-                                                        ->get();
-        }
-
-
-        return view('Venta.ReporteVenta.reporteVenta', [
-            'sucursales' => $sucursalesHabilitadasUsuario,
-        ]);
-    }
-
-    public function reporteVentaExcel(Request $request)
-    {
-        // return Excel::download( 
-        //     new VentaReporteExcelExport
-        //     (
-        //         $request->id_sucursal, 
-        //         $request->fecha_inicial." 00:00:00", 
-        //         $request->fecha_final." 23:59:59"
-        //     ), 
-        //         'detalleventa.xlsx');
-    }
-
-
-    public function editarVenta(Request $request)
-    {
-        
-        // $sucursal = Sucursal::where('id',$request->id_sucursal)->get();
-        
-        // return view('Venta.editarVenta.editar',[
-        //     "sucursal" => $sucursal,
-        // ]);
-    }
-
-    public function editarVentaUpdate(Request $request)
-    {
-        // return view('Venta.homeVenta.php');
-    }
-
-}
+        </html>
