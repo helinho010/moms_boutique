@@ -18,6 +18,7 @@ use App\Models\Evento;
 use App\Models\UsuarioEvento;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
 
 class VentaController extends Controller
 {
@@ -25,57 +26,6 @@ class VentaController extends Controller
 
     public function index()
     {
-        
-        // if (auth()->user()->usertype_id == 1) {
-        //     $sucursales = Sucursal::selectRaw(' sucursals.id as id_sucursal,
-        //                                         sucursals.id as id_sucursal_user_sucursal,
-        //                                         sucursals.razon_social as razon_social_sucursal,
-        //                                         sucursals.direccion as direccion_sucursal,
-        //                                         sucursals.ciudad as ciudad_sucursal,
-        //                                         sucursals.activo as estado_sucursal')
-        //                             ->where('sucursals.activo',1)
-        //                             ->get();
-        //     $eventos = Evento::selectRaw('
-        //                                   eventos.id as id_eventos,
-        //                                   eventos.nombre as nombre_eventos,
-        //                                   eventos.fecha_evento as fecha_eventos,
-        //                                   eventos.estado as estado_eventos')
-        //                             ->where('eventos.estado',1)
-        //                             ->get();
-                             
-        // } else {
-        //     $sucursales = UserSucursal::selectRaw('user_sucursals.id as id_user_sucursal,
-        //                                         user_sucursals.id_usuario as id_usuario_user_sucursal,
-        //                                         user_sucursals.id_sucursal as id_sucursal_user_sucursal,
-        //                                         user_sucursals.estado as estado_user_sucursal,
-        //                                         sucursals.id as id_sucursal,
-        //                                         sucursals.razon_social as razon_social_sucursal,
-        //                                         sucursals.direccion as direccion_sucursal,
-        //                                         sucursals.ciudad as ciudad_sucursal,
-        //                                         sucursals.activo as estado_sucursal,
-        //                                         users.name as nombre_usuario,
-        //                                         users.usertype_id as tipo_usuario')
-        //                                ->join('sucursals','sucursals.id','user_sucursals.id_sucursal')
-        //                                ->join('users', 'users.id','user_sucursals.id_usuario')
-        //                                ->where('user_sucursals.id_usuario',auth()->user()->id)
-        //                                ->where('sucursals.activo',1)
-        //                                ->get();
-
-        //     $eventos = UsuarioEvento::selectRaw('
-        //                                         user_evento.id as id_user_evento,
-        //                                         user_evento.estado as estado_user_evento,
-        //                                         user_evento.created_at as created_at_user_evento,
-        //                                         user_evento.updated_at as updated_at_user_evento,
-        //                                         eventos.id as id_eventos,
-        //                                         eventos.nombre as nombre_eventos,
-        //                                         eventos.fecha_evento as fecha_eventos,
-        //                                         eventos.estado as estado_eventos
-        //                                         ')
-        //                             ->join('eventos', 'eventos.id', 'user_evento.id_evento')
-        //                             ->where('user_evento.id_usuario', auth()->user()->id)
-        //                             ->where('user_evento.estado',1)
-        //                             ->get();
-        // }
 
         $sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id);
 
@@ -89,36 +39,16 @@ class VentaController extends Controller
 
     public function seleccionSucursalVenta(Request $request)
     {
-        $sucursal = Sucursal::where('id',$request->id_sucursal)->get();
+
+        $validacion = $request->validate([
+            "id_sucursal" => "required|integer|exists:sucursals,id",
+        ]);
+
+        $sucursal = Sucursal::findOrFail($request->id_sucursal);
+
         $tipoPagos = TipoPago::where('estado',1)->get();
-        $productosSucursal = InventarioInterno::selectRaw(' inventario_internos.id as id_inventario_interno,
-                                                            inventario_internos.stock,
-                                                            inventario_internos.estado as estado_inventario_interno,
-                                                            inventario_internos.created_at as created_at_inventario_interno, 
-                                                            inventario_internos.updated_at as updated_at_inventario_interno, 
-                                                            productos.id as id_producto,
-                                                            productos.codigo_producto,
-                                                            productos.nombre as nombre_producto,
-                                                            productos.precio,
-                                                            productos.talla,
-                                                            productos.estado as estado_producto,
-                                                            sucursals.id as id_sucursal,
-                                                            sucursals.razon_social as razon_social_sucursal,
-                                                            sucursals.ciudad as ciudad_sucursal,
-                                                            sucursals.activo as estado_sucursal,
-                                                            users.name as nombre_usuario,
-                                                            users.id as id_usuario,
-                                                            tipo_ingreso_salidas.id as id_tipo_ingreso_salida,
-                                                            tipo_ingreso_salidas.tipo as nombre_tipo_ingreso_salida,
-                                                            tipo_ingreso_salidas.estado as estado_tipo_ingreso_salida')
-                                               ->join('productos','productos.id','inventario_internos.id_producto')
-                                               ->join('sucursals','sucursals.id','inventario_internos.id_sucursal')
-                                               ->join('users','users.id','inventario_internos.id_usuario')
-                                               ->join('tipo_ingreso_salidas','tipo_ingreso_salidas.id','inventario_internos.id_tipo_ingreso_salida')
-                                               ->where('sucursals.id',$request->id_sucursal)
-                                               ->where('sucursals.activo',1)
-                                               ->orderBy('productos.nombre', 'asc') 
-                                               ->get();
+
+        $productosSucursal = InventarioInterno::inventarioXSucurusal($request->id_sucursal)->get();
 
         session(['sucursalSeleccionadoParaVenta' => $request->id_sucursal]);
 
@@ -133,6 +63,7 @@ class VentaController extends Controller
     public function numeroALetras(Request $request)
     {
         $formatter = new NumeroALetras();
+        
         if (isset($request->efectivo)) 
         {
             return $formatter->toMoney(floatval($request->efectivo), 2, 'BOLIVIANOS', 'CENTAVOS');  
@@ -219,12 +150,22 @@ class VentaController extends Controller
                 // Aqui se debe borrar la variable de session "session('sucursalSeleccionadoParaVenta')" ya que no se utilizara mas
                 // session()->forget('sucursalSeleccionadoParaVenta');
                 //Fin
+                
+                // Log::info('Venta realizada con exito por el usuario: ' . auth()->user()->name . 
+                //           ' en la sucursal: ' . session('sucursalSeleccionadoParaVenta') . 
+                //           ' con el id de venta: ' . $newVenta->id);
+
                 return ['estado'=>true, 'nombreArchivo'=>$this->nombre_archivo];
         } 
         
         catch (\Throwable $th) 
         {
+            Log::error('Error al realizar la venta: '.$th->getMessage() . 
+                      ' en la linea: ' . $th->getLine() . 
+                      ' en el archivo: ' . $th->getFile());
+            
             report($th);
+
             return ['estado'=>$th->getMessage()];
         }
     }
@@ -4535,33 +4476,22 @@ class VentaController extends Controller
                                     ->get();
         } else {
             $sucursalesModal = UserSucursal::selectRaw('user_sucursals.id as id_user_sucursal,
-                                                user_sucursals.id_usuario as id_usuario_user_sucursal,
-                                                user_sucursals.id_sucursal as id_sucursal_user_sucursal,
-                                                user_sucursals.estado as estado_user_sucursal,
-                                                sucursals.id as id_sucursal,
-                                                sucursals.razon_social as razon_social_sucursal,
-                                                sucursals.direccion as direccion_sucursal,
-                                                sucursals.ciudad as ciudad_sucursal,
-                                                sucursals.activo as estado_sucursal,
-                                                users.name as nombre_usuario,
-                                                users.usertype_id as tipo_usuario')
+                                                    user_sucursals.id_usuario as id_usuario_user_sucursal,
+                                                    user_sucursals.id_sucursal as id_sucursal_user_sucursal,
+                                                    user_sucursals.estado as estado_user_sucursal,
+                                                    sucursals.id as id_sucursal,
+                                                    sucursals.razon_social as razon_social_sucursal,
+                                                    sucursals.direccion as direccion_sucursal,
+                                                    sucursals.ciudad as ciudad_sucursal,
+                                                    sucursals.activo as estado_sucursal,
+                                                    users.name as nombre_usuario
+                                                ')//users.usertype_id as tipo_usuario
                                        ->join('sucursals','sucursals.id','user_sucursals.id_sucursal')
                                        ->join('users', 'users.id','user_sucursals.id_usuario')
                                        ->where('user_sucursals.id_usuario',auth()->user()->id)
                                        ->where('sucursals.activo',1)
                                        ->get();
         }
-
-        // if (isset($request->id_sucursal)) 
-        // {
-        //     $ventas = Venta::where("id_sucursal", $request->id_sucursal)
-        //                //->where("estado",1)
-        //                ->paginate(10);
-        // }else{
-        //     $ventas = Venta::where("created_at","0000-00-00 00:00")
-        //                //->where("estado",1)
-        //                ->paginate(10);
-        // }
         
         if (isset($request->id_sucursal)) 
         {

@@ -2,6 +2,58 @@
 
 @section('title', "Cierre Caja")
 
+@section('css')
+    <style>
+        .estado{
+            font-size: 12px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+@endsection
+
 @section('mensaje-errores')
   @if (session("error"))
     <x-formulario.mensaje-error-validacion-inputs color="danger">
@@ -42,23 +94,67 @@
 
 @section('content')
 <div class="row">
-    <div class="col-md-3"></div>
     <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-2">
+                <label for="inputPassword6" class="col-form-label">Sucursal:</label>
+            </div>
+            <div class="col-md-10">
+                <form action="{{ route('home_caja') }}" id="formularioCaja">
+                    <div class="input-group">
+                        <select class="form-select" aria-describedby="" name="id_sucursal">
+                            <option value="seleccionado" 
+                                @if ( !isset($id_sucursal) ) selected @endif 
+                                disabled>Seleccione una opcion...
+                            </option>
+
+                            @can('todas las sucursales')
+                                <option value="999" 
+                                    @if (isset($id_sucursal) && $id_sucursal==999 ) 
+                                        selected 
+                                    @endif>
+                                    Todas las Sucursales
+                                </option>
+                            @endcan
+
+                            @foreach ($sucursales as $sucursal)
+                                <option value="{{ $sucursal->id }}" 
+                                    @if (isset($id_sucursal) && $sucursal->id == $id_sucursal )
+                                        selected
+                                    @endif>
+                                    {{ "$sucursal->ciudad - ".substr($sucursal->direccion,0,40)."..." }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="input-group-text" id="btnFormDataInventario">
+                            <i class="fas fa-search"></i>
+                        </button>
+                </form>
+    
+                @can('exportar pdf')
+                <button type="button" class="btn btn-danger" id="id-export-pdf-cierre-caja" data-bs-toggle="modal"
+                    data-bs-target="#modalExportarPdfCierreCaja">
+                    <i class="far fa-file-pdf" style="font-size: 20px;"></i>
+                </button>
+                @endcan
+    
+                @can('exportar excel')
+                <button type="button" class="btn btn-success" id="id-export-excel-cierre-caja" data-bs-toggle="modal"
+                    data-bs-target="#modalExportarExcelCierreCaja">
+                    <i class="far fa-file-excel" style="font-size: 22px;"></i>
+                </button>
+                @endif
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
         <form action="{{ route('home_caja') }}" method="GET" id="buscarformulario">
             <div class="input-group flex-nowrap">
                 <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="Username" aria-describedby="addon-wrapping">
                 <button type="submit" class="input-group-text" id="input-buscar-cierre-caja">
                     <i class="fas fa-search"></i>
-                </button>
-                <button type="button" class="input-group-text" 
-                        id="id-export-pdf-cierre-caja" style="color:red;"
-                        data-bs-toggle="modal" data-bs-target="#modalExportarPdfCierreCaja">
-                        <i class="far fa-file-pdf fa-xl"></i>
-                </button>
-                <button type="button" class="input-group-text" 
-                        id="id-export-excel-cierre-caja" style="color:green;"
-                        data-bs-toggle="modal" data-bs-target="#modalExportarExcelCierreCaja"
-                ><i class="far fa-file-excel fa-xl"></i>
                 </button>
             </div>
         </form>
@@ -90,27 +186,24 @@
                   @if ( $cierre->verificado_caja == 1)
                     <i class="fas fa-check-double fa-xl" style="color: #22ac1d"></i>
                   @else
-                    @if (auth()->user()->usertype_id != 1)
-                        <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-edit fa-xl" style="color:#6BA9FA"></i>
-                        </a>
-                    @endif
-                    
-                    @if (auth()->user()->usertype_id == 1)
-                        
+
+                    @can('editar cierre caja')
                         @if ( auth()->user()->id == $cierre->id_usuario_caja )
                             <a href="{{ route("editar_cierre",["id_cierre" => $cierre->id_cierre_caja]) }}" class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-edit" style="color:#6BA9FA"></i>
                             </a>
                         @endif
+                    @endcan
 
+                    @can('eliminar cierre caja')
                         <button type="button" class="btn btn-outline-primary btn-sm" id="btn-editarCierreCaja" 
                                 data-bs-toggle="modal" data-bs-target="#editarCierreCaja" 
                                 onclick="verificarDatos({{ json_encode($cierre) }})"
                         >
                             <i class="fas fa-registered" style="color:#6BA9FA"></i>
                         </button>
-                    @endif
+                    @endcan
+                    
                   @endif  
                 </th>
                 <td>{{ $cierre->direccion_sucursal }}</td>
@@ -361,22 +454,34 @@
                 </form>
             </div>
         </div>
-        
     </x-modal>
 
     {{-- Modal para reporte Pdf --}}
-    <x-modal id="modalExportarPdfCierreCaja" title="Exportar Cierre a Pdf" 
-             idformulario="formExportCierreierreCaja" nombre-btn="Exportar pdf">
+    <x-modal id="modalExportarPdfCierreCaja" title="Exportar Cierre a Pdf" idformulario="formExportCierreierreCaja" nombre-btn="Exportar pdf">
         
         @php $fechahoy = date('Y-m-d')  @endphp
 
-        <form action="{{ route('exportar_cierre_pdf') }}" method="post" id="formExportCierreierreCaja">
-            @csrf
-            @method('POST')
+        <form action="{{ route('exportar_cierre_pdf') }}" method="get" id="formExportCierreierreCaja">
+            
             <div class="alert alert-warning" role="alert">
                 <i class="fa-solid fa-triangle-exclamation"></i> Precaucion, la fecha final debe ser mayor a la fecha inicial.
             </div>
-            <div class="row">
+            
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <x-formulario.label for="id_sucursal">Sucursal: </x-formulario.label>
+                    <x-formulario.select id="idSucursalSelect" name="id_sucursal">
+                        <option value="seleccion..." selected disabled>Seleccione una opcion...</option>
+                        @foreach ($sucursales as $sucursal)
+                            <option value="{{ $sucursal->id }}"> 
+                                {{ $sucursal->ciudad }} - {{ $sucursal->direccion }} 
+                            </option>
+                        @endforeach
+                    </x-formulario>
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <div class="col-md-6">
                     <x-formulario.label for="fechaInicial">fecha Inicio: </x-formulario.label>
                     <x-formulario.input tipo="date" name="fecha_inicio" 
@@ -410,6 +515,21 @@
             <div class="alert alert-warning" role="alert">
                 <i class="fa-solid fa-triangle-exclamation"></i> Precaucion, la fecha final debe ser mayor a la fecha inicial.
             </div>
+
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <x-formulario.label for="id_sucursal">Sucursal: </x-formulario.label>
+                    <x-formulario.select id="idSucursalSelect" name="id_sucursal">
+                        <option value="seleccion..." selected disabled>Seleccione una opcion...</option>
+                        @foreach ($sucursales as $sucursal)
+                            <option value="{{ $sucursal->id }}"> 
+                                {{ $sucursal->ciudad }} - {{ $sucursal->direccion }} 
+                            </option>
+                        @endforeach
+                    </x-formulario>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-6">
                     <x-formulario.label for="fechaInicial">fecha Inicio: </x-formulario.label>
@@ -436,9 +556,11 @@
 
 @push('scripts')
     <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>   
-    
+        let ultimaSucursalSeleccionada = 0;
+
         $(document).ready(function(){
             $("#caja").addClass('active');
                 $.ajaxSetup({
@@ -551,17 +673,38 @@
             $("#verif_observacion").text(data.observacion_caja);
         }
 
-        $(document).on("change", "#sucursal", function(){
-            obtenerVentaSucursal($(this).val(), $("#fecha").val());
+        function actualizarVentas() {
+            const fecha = $("#fecha").val();
+            obtenerVentaSucursal(ultimaSucursalSeleccionada, fecha);
             sumarValores();
-        });
-        
+        }
 
-        $("input").change(function(){
-            if ($(this).attr('id') == "fecha") {
-                obtenerVentaSucursal($("#sucursal").val(), $(this).val());
-                console.log($("#sucursal").val());
-            }             
+        function confirmarEnviar(idFormualrioEnviar)
+        {
+            swal.fire({
+                title: '¿Estas seguro de guardar el Cierre de caja?',
+                text: "Se guardaran los datos del cierre de caja",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, guardar!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(idFormualrioEnviar).submit();
+                }
+            });
+        }
+
+
+        $(document).on("change", "#sucursal", function(){
+            ultimaSucursalSeleccionada = $(this).val();
+            actualizarVentas();
+        });
+
+        $(document).on("change", "#fecha", actualizarVentas);
+
+        $(document).on("keyup", "#efectivo, #tarjeta, #transferencia, #qr", function(){
             sumarValores();
         });
 

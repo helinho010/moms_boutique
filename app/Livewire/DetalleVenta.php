@@ -18,6 +18,7 @@ use App\Http\Controllers\VentaController;
 use App\Models\Cliente;
 use App\Models\InventarioExterno;
 use App\Models\InventarioInterno;
+use App\Models\User;
 use Dompdf\Dompdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -45,59 +46,64 @@ class DetalleVenta extends Component
 
     public function sucursalesEventosUsuario($tipoUsuario = 1, $idUsuario = 1)
     {
-        if ( $tipoUsuario == 1 ) 
-        {
-            $this->sucursales = Sucursal::selectRaw(' 
-                                                    sucursals.id as id,
-                                                    sucursals.id as id_sucursal_user_sucursal,
-                                                    sucursals.razon_social as nombre,
-                                                    sucursals.direccion as direccion,
-                                                    sucursals.ciudad as ciudad,
-                                                    sucursals.activo as estado')
-                                    ->where('sucursals.activo',1)
-                                    ->get();
+        // if ( $tipoUsuario == 1 ) 
+        // {
+        //     $this->sucursales = Sucursal::selectRaw(' 
+        //                                             sucursals.id as id,
+        //                                             sucursals.id as id_sucursal_user_sucursal,
+        //                                             sucursals.razon_social as nombre,
+        //                                             sucursals.direccion as direccion,
+        //                                             sucursals.ciudad as ciudad,
+        //                                             sucursals.activo as estado')
+        //                             ->where('sucursals.activo',1)
+        //                             ->get();
 
-            $this->eventos = Evento::selectRaw('
-                                                        eventos.id as id,
-                                                        eventos.nombre as nombre,
-                                                        eventos.fecha_evento as fecha,
-                                                        eventos.estado as estado
-                                                    ')
-                                    ->where('eventos.estado',1)
-                                    ->get();
-        }else{
-            $this->sucursales = UserSucursal::selectRaw('
-                                                        user_sucursals.id as id_user_sucursal,
-                                                        user_sucursals.id_usuario as id_usuario_user_sucursal,
-                                                        user_sucursals.id_sucursal as id_sucursal_user_sucursal,
-                                                        user_sucursals.estado as estado_user_sucursal,
-                                                        sucursals.id as id,
-                                                        sucursals.razon_social as nombre,
-                                                        sucursals.direccion as direccion,
-                                                        sucursals.ciudad as ciudad,
-                                                        sucursals.activo as estado,
-                                                        users.name as nombre_usuario,
-                                                        users.usertype_id as tipo_usuario')
-                                       ->join('sucursals','sucursals.id','user_sucursals.id_sucursal')
-                                       ->join('users', 'users.id','user_sucursals.id_usuario')
-                                       ->where('user_sucursals.id_usuario',intval($idUsuario))
-                                       ->where('sucursals.activo',1)
-                                       ->get();
+        //     $this->eventos = Evento::selectRaw('
+        //                                                 eventos.id as id,
+        //                                                 eventos.nombre as nombre,
+        //                                                 eventos.fecha_evento as fecha,
+        //                                                 eventos.estado as estado
+        //                                             ')
+        //                             ->where('eventos.estado',1)
+        //                             ->get();
+        // }else{
+        //     $this->sucursales = UserSucursal::selectRaw('
+        //                                                 user_sucursals.id as id_user_sucursal,
+        //                                                 user_sucursals.id_usuario as id_usuario_user_sucursal,
+        //                                                 user_sucursals.id_sucursal as id_sucursal_user_sucursal,
+        //                                                 user_sucursals.estado as estado_user_sucursal,
+        //                                                 sucursals.id as id,
+        //                                                 sucursals.razon_social as nombre,
+        //                                                 sucursals.direccion as direccion,
+        //                                                 sucursals.ciudad as ciudad,
+        //                                                 sucursals.activo as estado,
+        //                                                 users.name as nombre_usuario
+                                                        
+        //                                                 ') //users.usertype_id as tipo_usuario
+        //                                ->join('sucursals','sucursals.id','user_sucursals.id_sucursal')
+        //                                ->join('users', 'users.id','user_sucursals.id_usuario')
+        //                                ->where('user_sucursals.id_usuario',intval($idUsuario))
+        //                                ->where('sucursals.activo',1)
+        //                                ->get();
 
-            $this->eventos = UsuarioEvento::selectRaw('
-                                                        user_evento.id as id_user_evento,
-                                                        user_evento.estado as estado_user_evento,
-                                                        user_evento.created_at as created_at_user_evento,
-                                                        user_evento.updated_at as updated_at_user_evento,
-                                                        eventos.id as id,
-                                                        eventos.nombre as nombre,
-                                                        eventos.fecha_evento as fecha,
-                                                        eventos.estado as estado')
-                                    ->join('eventos', 'eventos.id', 'user_evento.id_evento')
-                                    ->where('user_evento.id_usuario', intval($idUsuario))
-                                    ->where('user_evento.estado',1)
-                                    ->get();
-        }
+        //     $this->eventos = UsuarioEvento::selectRaw('
+        //                                                 user_evento.id as id_user_evento,
+        //                                                 user_evento.estado as estado_user_evento,
+        //                                                 user_evento.created_at as created_at_user_evento,
+        //                                                 user_evento.updated_at as updated_at_user_evento,
+        //                                                 eventos.id as id,
+        //                                                 eventos.nombre as nombre,
+        //                                                 eventos.fecha_evento as fecha,
+        //                                                 eventos.estado as estado')
+        //                             ->join('eventos', 'eventos.id', 'user_evento.id_evento')
+        //                             ->where('user_evento.id_usuario', intval($idUsuario))
+        //                             ->where('user_evento.estado',1)
+        //                             ->get();
+        // }
+
+        $this->sucursales = UserSucursal::sucursalesHabilitadasUsuario($idUsuario);
+
+        $this->eventos = UsuarioEvento::eventosHabilitadosUsuario($idUsuario);
     }
 
     public function x($id, $buscar="")
@@ -122,7 +128,7 @@ class DetalleVenta extends Component
         users.id as id_users,
         users.name as nombre_users,
         users.estado as estado_users,
-        users.usertype_id as id_tipo_users,';
+        '; //users.usertype_id as id_tipo_users,
 
         if (strtolower($this->titleLabel)  == strtolower('Sucursal')) 
         {

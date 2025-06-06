@@ -24,10 +24,7 @@ class Caja extends Model
         'verificado',
     ];
 
-    public static function registrosCajaXUsuario(int $tipo_usuario, int $id_usuario, int $paginate = 10){
-        
-        $registros = Caja::selectRaw('
-                                        cajas.id as id_cierre_caja,
+    static private $columnasVer = 'cajas.id as id_cierre_caja,
                                         cajas.fecha_cierre as fecha_cierre_caja,
                                         cajas.efectivo as efectivo_caja,
                                         cajas.tarjeta as tarjeta_caja,
@@ -43,54 +40,32 @@ class Caja extends Model
                                         sucursals.direccion as direccion_sucursal,
                                         users.name as name_usuario,
                                         users.username as nombre_usuario,
-                                        users.id as id_usuario,
-                                        users.usertype_id as id_tipo_usuario
-                                    ')
+                                        users.id as id_usuario';
+
+    public static function cierresCajaXSucursal(int $id_sucursal)
+    {  
+        $usuario = User::find(auth()->user()->id);
+
+        $cierresCaja = Caja::selectRaw( self::$columnasVer )
                           ->join("users", "users.id", "cajas.id_usuario")
                           ->join("sucursals", "sucursals.id", "cajas.id_sucursal");
 
-        if ( $tipo_usuario != 1 ) {
-            $registros = $registros->where('users.id', $id_usuario);
+        if ( !($id_sucursal == 999 && $usuario->hasPermissionTo('todas las sucursales')) ){
+            $cierresCaja = $cierresCaja->where('cajas.id_sucursal', $id_sucursal);
         }
 
-        $registros = $registros->orderBy("cajas.updated_at","desc")
-                               ->paginate($paginate);
+        $cierresCaja = $cierresCaja->orderBy("cajas.updated_at","desc");
         
-        return $registros;
+        return $cierresCaja;
     }
     
-    public static function buscar(string $cadenaBusqueda, int $tipo_usuario, int $id_usuario, int $paginate = 10){ 
-        
-        $registros = Self::selectRaw('cajas.id as id_cierre_caja,
-                                        cajas.fecha_cierre as fecha_cierre_caja,
-                                        cajas.efectivo as efectivo_caja,
-                                        cajas.tarjeta as tarjeta_caja,
-                                        cajas.transferencia as transferencia_caja, 
-                                        cajas.qr as qr_caja, 
-                                        cajas.venta_sistema as venta_sistema_caja,
-	                                    cajas.total_declarado as total_declarado_caja,
-                                        cajas.observacion as observacion_caja,
-                                        cajas.verificado as verificado_caja,
-                                        cajas.id_usuario as id_usuario_caja,
-                                        sucursals.id as id_sucursal,
-                                        sucursals.razon_social as razon_social_sucursal,
-                                        sucursals.direccion as direccion_sucursal,
-                                        users.name as name_usuario,
-                                        users.username as nombre_usuario,
-                                        users.id as id_usuario,
-                                        users.usertype_id as id_tipo_usuario')
+    public static function buscar(string $cadenaBusqueda, int $id_sucursal)
+    {    
+        $usuario = User::find(auth()->user()->id);
+         
+        $cierresCaja = Self::selectRaw(self::$columnasVer)
             ->join('users', 'cajas.id_usuario', '=', 'users.id')
             ->join('sucursals', 'cajas.id_sucursal', '=', 'sucursals.id')
-            // ->where('fecha_cierre', 'like', '%' . $cadenaBusqueda . '%')
-            // ->orWhere('efectivo', 'like', '%' . $cadenaBusqueda . '%')
-            // ->orWhere('transferencia', 'like', '%' . $cadenaBusqueda . '%')
-            // ->orWhere('qr', 'like', '%' . $cadenaBusqueda . '%')
-            // ->orWhere('observacion', 'like', '%' . $cadenaBusqueda . '%')
-            // ->orWhere('users.name', 'like', '%' . $cadenaBusqueda . '%')
-            // ->orWhere('sucursals.direccion', 'like', '%' . $cadenaBusqueda . '%')
-            // ->orWhere('venta_sistema', 'like', '%' . $cadenaBusqueda . '%')
-            // ->orWhere('total_declarado', 'like', '%' . $cadenaBusqueda . '%')
-            // ->orWhere('verificado', 'like', '%' . $cadenaBusqueda . '%');
             ->where(function($query) use ($cadenaBusqueda) {
                 $query->where('fecha_cierre', 'like', '%' . $cadenaBusqueda . '%')
                       ->orWhere('efectivo', 'like', '%' . $cadenaBusqueda . '%')
@@ -105,13 +80,13 @@ class Caja extends Model
                       ->orWhere('verificado', 'like', '%' . $cadenaBusqueda . '%');
             });
 
-            if ( $tipo_usuario != 1 ) {
-                $registros = $registros->where('users.id', $id_usuario);
+            if ( !($id_sucursal == 999 && $usuario->hasPermissionTo('todas las sucursales')) ) 
+            {
+                $cierresCaja = $cierresCaja->where('cajas.id_sucursal', $id_sucursal);
             }
 
-            $registros = $registros->orderBy("cajas.updated_at","desc")
-                                   ->paginate($paginate);
+            $cierresCaja = $cierresCaja->orderBy("cajas.updated_at","desc");
 
-        return $registros;
+        return $cierresCaja;
     }
 }

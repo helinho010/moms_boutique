@@ -11,7 +11,13 @@
             <ul class="list-group">
                 @foreach ($items as $item)
                 <li class="list-group-item item-seleccionado" wire:click="itemSeleccionado">
-                    {{ $item->nombre }} - {{ $item->talla != "" ? $item->talla:"ST(Sin Tall)"}}
+                    {{ $loop->iteration }} | 
+                    Producto: {{ $item->nombre_productos }} - 
+                    Talla: {{ $item->talla_productos != "" ? $item->talla_productos:"ST(Sin Tall)"}} - 
+                    Precio Venta: {{ $item->precio_productos }}
+                    @can('costo producto')
+                         - Costo Producto: {{ $item->costo_productos }}
+                    @endcan
                 </li>
                 @endforeach
             </ul>
@@ -31,7 +37,7 @@
         }
 
         .div-select-items{
-            height: 10em;
+            height: 15em;
             font-size: 0.9em;
             z-index: 999;
             overflow-y: scroll;

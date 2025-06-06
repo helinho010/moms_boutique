@@ -11,20 +11,13 @@
                         <select class="form-select form-control" aria-describedby="" name="id_producto" id="select_producto" wire:model='idProductoSeleccionado'>
                             <option value="seleccionado" disabled>Seleccione una opcion...</option>
                             @foreach ($productosEvento as $producto)
-                              @if ( $producto->estado_inventario_externos == 1 && $producto->cantidad_inventario_externos > 0)
-                                <option value="{{ $producto->id_productos }}"> 
-                                    {{$producto->nombre_productos}} - 
-                                    Talla: {{ $producto->talla_productos != '' ? $producto->talla_productos : "ST(Sin Talla)"}} -
-                                    Precio:  {{ $producto->precio_productos != '' ? $producto->precio_productos : "0"}} Bs -
-                                    (Stock: {{ $producto->cantidad_inventario_externos }})  
+                              @if ( $producto->estado_inventario_externo == 1 && $producto->cantidad_inventario_externo > 0)
+                                <option value="{{ $producto->id_producto }}"> 
+                                    {{$producto->nombre_producto}} - 
+                                    Talla: {{ $producto->talla_producto != '' ? $producto->talla_producto : "ST(Sin Talla)"}} -
+                                    Precio:  {{ $producto->precio_producto != '' ? $producto->precio_producto : "0"}} Bs -
+                                    (Stock: {{ $producto->cantidad_inventario_externo }})  
                                 </option>      
-                              @else
-                                <option value="{{ $producto->id_productos }}" disabled> 
-                                    {{$producto->nombre_productos}} - 
-                                    Talla: {{ $producto->talla_productos != '' ? $producto->talla_productos : "ST(Sin Talla)"}} -
-                                    Precio:  {{ $producto->costo_productos != '' ? $producto->costo_productos : "0"}} Bs -
-                                    (Stock: {{ $producto->cantidad_inventario_externos }})  
-                                </option>
                               @endif
                             @endforeach    
                          </select>

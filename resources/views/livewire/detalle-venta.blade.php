@@ -11,19 +11,15 @@
                             <select class="form-select" aria-describedby="" id="selectorDetalleVenta" wire:model='idSelector'>
                                 <option value="seleccionado" disabled>Seleccione una opcion...</option>
                                     @foreach ($eventosOSucursales as $item)
-                                       @if ($item->estado == 1)
+                                       @if ( $titleLabel == "Sucursal" )
                                           <option value="{{ $item->id }}">
-                                            {{ $item->nombre}} 
-                                            {{ $item->ciudad != "" ?  "-".$item->ciudad : "" }}
-                                            {{ $item->direccion != "" ? "-".substr($item->direccion,0,30)."..." : "" }}
-                                            {{ $item->fecha != "" ? "-".$item->fecha : "" }}
+                                            {{ $item->ciudad }} - 
+                                            {{ substr($item->direccion,0,30)."..." }}
                                           </option>
                                         @else
-                                          <option value="{{ $item->id_sucursal }}" disabled>
-                                            {{ $item->nombre}} 
-                                            {{ $item->ciudad != "" ?  "-".$item->ciudad : "" }}
-                                            {{ $item->direccion != "" ? "-".substr($item->direccion,0,30)."..." : "" }}
-                                            {{ $item->fecha != "" ? "-".$item->fecha : "" }}
+                                          <option value="{{ $item->id_evento }}">
+                                            {{ $item->nombre_evento }} - 
+                                            {{ $item->fecha_evento != "" ? $item->fecha_evento : "" }}
                                           </option>
                                        @endif
                                     @endforeach

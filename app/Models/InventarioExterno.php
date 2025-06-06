@@ -69,7 +69,8 @@ class InventarioExterno extends Model
         return $inventario;
     }
 
-    public static function inventarioXEvento($id_evento){
+    public static function inventarioXEvento($id_evento)
+    {
         $inventario = self::selectRaw('
                                     inventario_externos.id as id_inventario_externo, 
                                     inventario_externos.cantidad as cantidad_inventario_externo,

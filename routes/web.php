@@ -162,7 +162,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/editar_cierre/{id_cierre}', [CajaController::class, 'editarCierre'])->name('editar_cierre')->middleware(['permission:editar cierre caja']);
     Route::patch('/editar_cierre/guardar/{id}', [CajaController::class, 'guardarEditadoCierre'])->name('actualizar_cierre');
     Route::patch('/editar_cierre/verificado', [CajaController::class, 'verificarCierre'])->name('verificar_cierre');
-    Route::post('/cierre_caja/exportar_pdf', [CajaController::class, 'exportarCierrePdf'])->name('exportar_cierre_pdf');
+    Route::get('/cierre_caja/exportar_pdf', [CajaController::class, 'exportarCierrePdf'])
+         ->name('exportar_cierre_pdf')
+         ->middleware(['permission:exportar pdf']);
     Route::post('/cierre_caja/exportar_excel', [CajaController::class, 'exportarCierreExcel'])->name('exportar_cierre_excel');
 });
 

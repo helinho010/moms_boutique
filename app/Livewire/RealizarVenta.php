@@ -55,42 +55,11 @@ class RealizarVenta extends Component
         $this->evento = Evento::where('id',session('eventoSeleccionadoParaVenta'))->get();
 
         $this->tipoPagos = TipoPago::where('estado',1)->get();
-
-        $this->productosEvento = InventarioExterno::selectRaw(' inventario_externos.id as id_inventario_externos,
-                                                            inventario_externos.cantidad as cantidad_inventario_externos,
-                                                            inventario_externos.activo as estado_inventario_externos,
-                                                            inventario_externos.created_at as created_at_inventario_externos,
-                                                            inventario_externos.updated_at as updated_at_inventario_externos,
-                                                            productos.id as id_productos,
-                                                            productos.nombre as nombre_productos,
-                                                            productos.costo as costo_productos,
-                                                            productos.precio as precio_productos,
-                                                            productos.talla as talla_productos,
-                                                            productos.estado as estado_productos,
-                                                            sucursals.id as id_sucursals,
-                                                            sucursals.razon_social as razon_social_sucursals,
-                                                            sucursals.direccion as direccion_sucursals,
-                                                            sucursals.ciudad as ciudad_sucursals,
-                                                            sucursals.activo as estado_sucursals,
-                                                            users.id as id_users,
-                                                            users.name as name_users,
-                                                            users.estado as estado_users,
-                                                            eventos.id as id_eventos,
-                                                            eventos.nombre as nombre_eventos,
-                                                            eventos.estado as estado_eventos,
-                                                            tipo_ingreso_salidas.id as id_tipo_ingreso_salidas,
-                                                            tipo_ingreso_salidas.tipo as tipo_tipo_ingreso_salidas,
-                                                            tipo_ingreso_salidas.estado as estado_tipo_ingreso_salidas')
-                                                ->join('productos', 'productos.id','inventario_externos.id_producto')
-                                                ->join('sucursals', 'sucursals.id', 'inventario_externos.id_sucursal')
-                                                ->join('users', 'users.id', 'inventario_externos.id_usuario')
-                                                ->join('eventos', 'eventos.id', 'inventario_externos.id_evento')
-                                                ->join('tipo_ingreso_salidas', 'tipo_ingreso_salidas.id', 'inventario_externos.id_tipo_ingreso_salida')
-                                                ->where('eventos.id', session('eventoSeleccionadoParaVenta'))
-                                                ->orderBy('productos.nombre','asc')
-                                                ->get();
-                                                
+        
+        $this->productosEvento = InventarioExterno::inventarioXEvento(session('eventoSeleccionadoParaVenta'))->get();
+        
         $this->idProductoSeleccionado = 'seleccionado';
+        
         $this->cantidadDelProductoSeleccionado = 0;
     }
 
@@ -98,7 +67,9 @@ class RealizarVenta extends Component
     {
         // Literal de monto total
         $litNum = new NumeroALetras();
+
         $litNum->apocope = true;
+        
         if ($this->total >= 0){
             $this->literalMonto = $litNum->toMoney($this->total, 2, 'bolivianos', 'centavos');    
         }else{
@@ -129,6 +100,7 @@ class RealizarVenta extends Component
     {
 
         $this->validate();
+
         $productoBuscadoId = Producto::findOrFail($this->idProductoSeleccionado);
 
         if ( count($this->productosAVender) == 0 ) 
@@ -175,7 +147,8 @@ class RealizarVenta extends Component
         }
 
         $this->idProductoSeleccionado = 'seleccionado';
-        $this->cantidadDelProductoSeleccionado = 0;
+        
+        $this->cantidadDelProductoSeleccionado = 0;        
         
         $this->calcularValoresMonetarios();
     }
@@ -4502,7 +4475,7 @@ class RealizarVenta extends Component
 
     public function almacenarDatos()
     {
-        // dd('Esta entrando por este lado');
+        
         $cliente = new Cliente();
         $cliente->nit_ci = $this->nitCliente != "" ? $this->nitCliente : 0 ;
         $cliente->razon_social = $this->nombreCliente != "" ? $this->nombreCliente : "S/N" ;

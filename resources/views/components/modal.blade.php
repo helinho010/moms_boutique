@@ -11,7 +11,10 @@
         </div>
         <div class="modal-footer">
           <button type="button" {{ $attributes->merge(['class' => 'btn btn-danger']) }} data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-success" onclick="document.getElementById('{{ $idformulario }}').submit()">{{ $nombreBtn }}</button>
+          <button type="button" class="btn btn-success" 
+                  onclick="confirmarEnviar('{{ $idformulario }}')">
+              {{ $nombreBtn }}
+          </button>
         </div>
       </div>
     </div>

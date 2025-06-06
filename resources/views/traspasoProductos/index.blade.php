@@ -403,6 +403,23 @@
     //         window.location.href = pathname+"?id_sucursal="+$("#modalSelectSucursal option:selected").val();
     //     }
     // });
+
+    function confirmarEnviar(idFormualrioEnviar)
+    {
+        swal.fire({
+            title: '¿Estas seguro de obtener el PDF?',
+            text: "Se guardaran los datos del cierre de caja",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, guardar!'
+            }).then((result) => {
+            if (result.isConfirmed) {
+            document.getElementById(idFormualrioEnviar).submit();
+            }
+        });
+    }
     
 
     $(document).ready(function(){

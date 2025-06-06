@@ -426,6 +426,23 @@
         }
     }
 
+    function confirmarEnviar(idFormualrioEnviar)
+    {
+        swal.fire({
+            title: '¿Estas seguro de guardar el Cierre de caja?',
+            text: "Se guardaran los datos del cierre de caja",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, guardar!'
+            }).then((result) => {
+            if (result.isConfirmed) {
+            document.getElementById(idFormualrioEnviar).submit();
+            }
+        });
+    }
+
     $('.cerrarModal').on('click',function(){
         $('#nuevo_rol').val('');
         $('#nuevo_rol').removeAttr('style');

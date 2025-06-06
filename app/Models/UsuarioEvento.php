@@ -34,6 +34,7 @@ class UsuarioEvento extends Model
                         ->join('eventos', 'eventos.id', 'user_evento.id_evento')
                         ->where('user_evento.id_usuario', $id_usuario)
                         ->where('user_evento.estado', 1)
+                        ->where('eventos.estado', 1)
                         ->orderBy('eventos.fecha_evento', 'desc')
                         ->get();
                         

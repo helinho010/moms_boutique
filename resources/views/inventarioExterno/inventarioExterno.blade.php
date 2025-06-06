@@ -77,13 +77,15 @@
                             <select class="form-select" aria-describedby="" name="id_evento" id="select_evento">
                                 <option value="seleccionado" @if (!isset($id_evento)) selected  @endif disabled>Seleccione una opcion...</option>
                                     @foreach ($eventos as $evento)
-                                        <option value="{{ $evento->id_evento }}" 
-                                          @if ( isset($id_evento) && $evento->id_evento == $id_evento ) 
-                                            selected  
-                                          @endif
-                                        >
-                                            {{ "$evento->nombre_evento - $evento->fecha_evento" }}
-                                        </option>
+                                        @if ($evento->estado_evento == 1)
+                                            <option value="{{ $evento->id_evento }}" 
+                                                @if ( isset($id_evento) && $evento->id_evento == $id_evento ) 
+                                                    selected  
+                                                @endif
+                                                >
+                                                {{ "$evento->nombre_evento - $evento->fecha_evento" }}
+                                            </option>
+                                        @endif
                                     @endforeach
                              </select>
                              <button class="input-group-text" type="submit"><i class="fas fa-search"></i></button>

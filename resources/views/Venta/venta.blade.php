@@ -43,13 +43,13 @@
 @section('card-title')
     <div class="row">
         <div class="col">
-            <h4>Realizando venta en la sucursal: 
-                <span class="h4" style="color: #512BFA">
+            <h6>Realizando venta en la sucursal: 
+                <span class="h6" style="color: #512BFA">
                     @isset($sucursal)
-                        {{ $sucursal[0]->razon_social." - ".$sucursal[0]->direccion }}
+                        {{ $sucursal->ciudad." - ".$sucursal->direccion }}
                     @endisset
                 </span>
-        </h4>
+            </h6>
         </div>
     </div>
 @endsection
@@ -67,23 +67,33 @@
                     <select class="form-select form-control" aria-describedby="" name="id_producto" id="select_producto">
                         <option value="seleccionado" @if (!isset($id_evento) || !isset($_GET['id_evento'])) selected  @endif disabled>Seleccione una opcion...</option>
                             @foreach ($productos as $item)
-                               @if ($item->estado_inventario_interno == 1)
-                                  @if ($item->stock > 0)
-                                    <option value="{{ $item->id_producto }}" @if ( isset($id_evento) && $item->id == $id_evento )  selected @endif>
-                                        {{-- {{ "$item->nombre_producto - $item->talla -  $item->precio Bs. (Stock: $item->stock)" }} --}}
-                                        {{ $item->nombre_producto }} - Talla: {{ $item->talla!=''?$item->talla:"ST(Sin Talla)"}} - {{ "$item->precio Bs. (Stock: $item->stock)"}}
+                               @if ($item->estado_inventario_internos == 1)
+                                  @if ($item->stock_inventario_internos > 0)
+                                    <option value="{{ $item->id_productos }}" @if ( isset($id_evento) && $item->id == $id_evento )  selected @endif>
+                                        {{ $item->nombre_productos }} - Talla: {{ $item->talla_productos != '' ? $item->talla_productos : "ST(Sin Talla)"}} - {{ "$item->precio_productos Bs. (Stock: $item->stock_inventario_internos)"}}
                                     </option> 
                                   @else
-                                    <option value="{{ $item->id_producto }}" disabled> {{ "$item->nombre_producto - $item->talla - $item->precio Bs. (Stock: $item->stock)" }}</option> 
+                                    <option value="{{ $item->id_productos }}" disabled> {{ "$item->nombre_productos - $item->talla_productos - $item->precio_productos Bs. (Stock: $item->stock_inventario_internos)" }}</option> 
                                   @endif
-                                @else
-                                  <option value="{{ $item->id_evento_user_sucursal }}" disabled>{{ "$item->nombre_producto - $item->talla - $item->precio ... (deshabilitado)" }}</option>
                                @endif
                             @endforeach
                      </select>
-                     {{-- <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-cart-arrow-down" style="color:green; font-size: 20px;"></i></button> --}}
                 </div>
             </div>
+            {{-- <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Buscar por Categoria: </label>
+                <div>
+                    @livewire('formulario.input-select', [
+                        'nombreInput' => 'selectTipoPago',
+                        'identificadorInput' => 'selectTipoPago',
+                        'placeholder' => 'Seleccione un tipo de pago',
+                        'items' => $tipoPagos,
+                        'oculto' => 'hidden',
+                        'textoValue' => 'Producto',
+                        'modelo' => App\Models\InventarioInterno::class,
+                    ])
+                </div>
+            </div> --}}
         </form>
     </div>
     
@@ -161,7 +171,6 @@
         {{-- id="realizarVenta" --}}
     </div>
 </div>
-
 
 
 <!-- Modal -->
@@ -435,7 +444,6 @@
          * Realizar la Venta BOTON
         */
         $("#realizarVenta").click(function(){
-            
             $("#staticBackdrop").modal('hide');
             Swal.fire({
                 title: "Esta seguro de realizar la venta?",
@@ -485,7 +493,7 @@
                                     } else {
                                         Swal.fire({
                                             title: "Hubo un Error!",
-                                            text: "Contactese con el administrador"+ response.estado,
+                                            text: "Contactese con el administrador 1"+ response.estado,
                                             icon: "error"
                                         }); 
                                     }
@@ -504,11 +512,11 @@
                                             console.log(errors);
                                         });
                                     } else {
-                                        console.log("Error desconocido:", xhr.responseText);
+                                        console.log("Error desconocido 2:", xhr.responseText);
                                     }
                                     Swal.fire({
                                             title: "Hubo un Error!",
-                                            text: "Contactese con el administrador"+ errores,
+                                            text: "Contactese con el administrador 3"+ errores,
                                             icon: "error"
                                         });
                                 }

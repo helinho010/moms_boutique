@@ -39,17 +39,22 @@ class InputSelect extends Component
         if ( Str::of($this->textoValue)->isNotEmpty() ) 
         {
             $this->oculto = '';
-            $this->dispatch('selectText', identificadorInput:$this->identificadorInput);
-        } 
+            // $this->dispatch('selectText', identificadorInput:$this->identificadorInput);
+        } else{
+            $this->js("alert('Debe ingresar un texto para buscar')"); // Assuming js() is a method to execute JavaScript
+        }
+        $this->oculto = '';
+        $this->items = $this->modelo::filterProductos("")->get();
     }
 
     public function render()
     {
-        if( $this->textoValue != "")
+        if( Str::of($this->textoValue)->isNotEmpty() )
         {
-            $this->items = $this->modelo::filterProductos($this->textoValue);         
+            $this->oculto = '';
+            $this->items = $this->modelo::filterProductos($this->textoValue)->get();         
         }else{
-            $this->items = $this->modelo::filterProductos("");
+            $this->items = $this->modelo::filterProductos("")->get();
         }
         return view('livewire.formulario.input-select');
     }
