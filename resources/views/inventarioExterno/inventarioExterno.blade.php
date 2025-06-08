@@ -69,12 +69,12 @@
         <div class="col-md-6">
             <div class="row">
                 <div class="col-md-2">
-                    <label for="select_evento" class="col-form-label">Evento: </label>
+                    <label for="select_evento_principal" class="col-form-label">Evento: </label>
                 </div>
                 <div class="col-md-10">
                     <form action="{{ route('home_inventario_externo') }}" method="GET" id="dataformInventario">
                         <div class="input-group">
-                            <select class="form-select" aria-describedby="" name="id_evento" id="select_evento">
+                            <select class="form-select" aria-describedby="" name="id_evento" id="select_evento_principal">
                                 <option value="seleccionado" @if (!isset($id_evento)) selected  @endif disabled>Seleccione una opcion...</option>
                                     @foreach ($eventos as $evento)
                                         @if ($evento->estado_evento == 1)
@@ -92,7 +92,7 @@
                     </form>
                              @can('exportar pdf')                               
                                 <form action="{{route('inventario_externo_pdf')}}" method="get" id="formExportInventarioExternoPdf">
-                                    <input type="text" name="id_evento" id="id_evento" value="{{ $id_evento }}" hidden>
+                                    <input type="text" name="id_evento" id="idEventoExportarPdf" value="{{ $id_evento }}" hidden>
                                     <button type="button" class="btn btn-danger" id="btnExportInventarioExternoPdf" title="Exportar a PDF">
                                         <i class="far fa-file-pdf" style="font-size: 20px;"></i>
                                     </button>
@@ -101,7 +101,7 @@
                              
                              @can('devolver productos inventario externo')                                
                                 <form action="{{route('inventario_externo_retornar_productos')}}" method="get" id="formInventarioExternoRetornarProductos">
-                                    <input type="text" name="id_evento" id="id_evento" value="{{ $id_evento }}" hidden>
+                                    <input type="text" name="id_evento" id="idEventoExportarExcel" value="{{ $id_evento }}" hidden>
                                     <button type="button" class="btn btn-success" id="btnDevolverProductosInventarioExterno" title="Devolver los productos">
                                         <i class="fas fa-exchange-alt"></i>
                                     </button>
@@ -118,7 +118,7 @@
                 <form action="{{ route('home_inventario_externo') }}" method="GET" id="buscarformulario">
                     <div class="input-group flex-nowrap">
                         <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="" aria-describedby="addon-wrapping">
-                        <input type="text" name="id_evento" id="id_evento" hidden>
+                        <input type="number" value="{{ isset($id_evento) ? intval($id_evento) : "" }}" name="id_evento" id="idEventoBuscar" hidden>
                         <button type="submit" class="input-group-text">
                             <i class="fas fa-search"></i>
                         </button>
@@ -297,7 +297,7 @@
         }
     });
     //btnFormDataRetornarProductos ibtnFormDataRetornarProductos font-size: 19px;
-    $("#select_evento").on('change',function(){
+    $("#select_evento_principal").on('change',function(){
         console.log("Se esta ejecuntando el css");
         $("#btnFormDataExportPdf").prop('disabled', false);
         $('#ibtnFormDataExportPdf').attr('style','');
@@ -309,13 +309,15 @@
 
     $(document).ready(function(){
         // alert($("#select_sucursal option:selected").attr('value'));
-        if ($("#select_evento option:selected").attr('value') > 0) 
+        if ($("#select_evento_principal option:selected").attr('value') > 0) 
         {
             $('#btnModalRegistroActualizacion').prop( "disabled", false );
             $('#reqBtnAgregarItem').remove();     
             $('#inputBuscar').prop( "disabled", false );
             $('#btnBuscarItem').remove();
-            $('#id_evento').val($("#select_evento option:selected").attr('value'));
+            $('#idEventoExportarPdf').val($("#select_evento_principal option:selected").attr('value'));
+            $('#idEventoExportarExcel').val($("#select_evento_principal option:selected").attr('value'));
+            $('#idEventoBuscar').val($("#select_evento_principal option:selected").attr('value'));
             $('#title_nombre_sucursal').text($("#select_sucursal option:selected").text());
             // formularioRegistroActualizacion-selectSucursalRegAct
             $('#selectSucursalRegAct').val($("#select_sucursal option:selected").attr('value'))
@@ -331,13 +333,15 @@
         
     });
 
-    $("#select_evento").on('change',function(){  
+    $("#select_evento_principal").on('change',function(){  
         $('#btnModalRegistroActualizacion').prop( "disabled", false );
         $('#reqBtnAgregarItem').remove();
         $('#inputBuscar').prop( "disabled", false );
         $('#btnBuscarItem').remove();
-        $('#id_evento').val($("#select_evento option:selected").attr('value'));
-        $('#modalSelectEvento').val($("#select_evento option:selected").attr('value'));
+        $('#idEventoExportarPdf').val($("#select_evento_principal option:selected").attr('value'));
+        $('#idEventoExportarExcel').val($("#select_evento_principal option:selected").attr('value'));
+        $('#idEventoBuscar').val($("#select_evento_principal option:selected").attr('value'));
+        $('#modalSelectEvento').val($("#select_evento_principal option:selected").attr('value'));
         $('#title_nombre_sucursal').text($("#select_sucursal option:selected").text());
     });
 
@@ -415,7 +419,7 @@
                     // Swal.fire("Changes are not saved", "", "info");
                 }
             });
-            // devolverProductos($('#select_evento').val());
+            // devolverProductos($('#select_evento_principal').val());
         }
     });
 

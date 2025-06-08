@@ -37,7 +37,9 @@ class InventarioExternoController extends Controller
                                            ->paginate(10)
                                            ->withQueryString();   
         }else{
-            $inventario = inventarioExterno::inventarioXEvento($request->id_evento)->paginate(10);
+            $inventario = inventarioExterno::inventarioXEvento($request->id_evento)
+                                           ->paginate(10)
+                                           ->withQueryString();
         }
         
         $eventos = UsuarioEvento::eventosHabilitadosUsuario(auth()->user()->id);

@@ -204,28 +204,55 @@
                             <br>
                             <div class="row">
                                 <div class="col-md text-center">
-                                    <h5>Seleccione los permisos para el rol</h5>
+                                    <h5>Seleccione los PERMISOS para el rol</h5>
                                     <hr>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
-                                @foreach ($permisos as $permiso)
-                                    @if ($loop->iteration % 21 == 0)
-                                        </div>
-                                        <div class="col-md-4">
-                                    @else
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" 
-                                                value="{{ $permiso->name }}" name="permisos_rol[]" id="permisoRol{{$permiso->id}}">
-                                            <label class="form-check-label" for="permisoRol{{$permiso->id}}">
-                                                {{ $permiso->name }}
-                                            </label>
-                                        </div> 
-                                    @endif
-                                @endforeach
+                                    @foreach ($permisos as $permiso)
+                                        @if ($loop->iteration % 21 == 0)
+                                            </div>
+                                            <div class="col-md-4">
+                                        @else
+                                            @if (strpos(strtolower($permiso->name), "opc ") === false)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                        value="{{ $permiso->name }}" name="permisos_rol[]" id="permisoRol{{$permiso->id}}">
+                                                    <label class="form-check-label" for="permisoRol{{$permiso->id}}">
+                                                        {{ $permiso->name }}
+                                                    </label>
+                                                </div>         
+                                            @endif
+                                        @endif
+                                    @endforeach
                                 </div>
-                            </div>                              
+                            </div> 
+                            <hr>
+                            <div class="row">
+                                <br>
+                                <div class="row">
+                                    <div class="col-md text-center">
+                                        <h5>Seleccione las OPCIONES para el rol</h5>
+                                        <hr>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        @foreach ($permisos as $permiso)
+                                            @if (strpos(strtolower($permiso->name), "opc ") !== false)
+                                                <div class="form-check form-check-inline me-3">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                            value="{{ $permiso->name }}" name="permisos_rol[]" id="permisoRol{{$permiso->id}}">
+                                                    <label class="form-check-label" for="permisoRol{{$permiso->id}}">
+                                                        {{ $permiso->name }}
+                                                    </label>
+                                                </div>         
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>                             
                         </div>
                     </form>
                 </div>

@@ -151,12 +151,11 @@
     <div class="row" style="padding-top: 10px">
         <div class="col"></div>
         <div class="col">
-            <a href="{{ route('home_caja') }}" class="btn btn-danger">Volver</a>
+            <a href="{{ route('home_caja', ["id_sucursal" => $id_sucursal]) }}" class="btn btn-danger">Volver</a>
             <button type="button" class="btn btn-success" onclick="document.getElementById('frm-edit-cierre-caja').submit();">Guardar</button>
         </div>
         <div class="col"></div>
     </div>
-    
 </form>
 @endsection
 

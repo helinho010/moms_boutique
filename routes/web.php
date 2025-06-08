@@ -159,13 +159,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/caja', [CajaController::class, 'index'])->name('home_caja')->middleware(['permission:opc cierre caja']);
     Route::post('/add_cierre_caja', [CajaController::class, 'nuevoCierreCaja'])->name('add_cierre_caja');
     Route::post('/venta_sucursal_dia', [CajaController::class, 'ventaSucursalDia'])->name('calcular_total_venta_dia');
-    Route::get('/editar_cierre/{id_cierre}', [CajaController::class, 'editarCierre'])->name('editar_cierre')->middleware(['permission:editar cierre caja']);
+    Route::get('/editar_cierre/{id_sucursal}/{id_cierre}', [CajaController::class, 'editarCierre'])->name('editar_cierre')->middleware(['permission:editar cierre caja']);
     Route::patch('/editar_cierre/guardar/{id}', [CajaController::class, 'guardarEditadoCierre'])->name('actualizar_cierre');
     Route::patch('/editar_cierre/verificado', [CajaController::class, 'verificarCierre'])->name('verificar_cierre');
     Route::get('/cierre_caja/exportar_pdf', [CajaController::class, 'exportarCierrePdf'])
          ->name('exportar_cierre_pdf')
          ->middleware(['permission:exportar pdf']);
-    Route::post('/cierre_caja/exportar_excel', [CajaController::class, 'exportarCierreExcel'])->name('exportar_cierre_excel');
+    Route::get('/cierre_caja/exportar_excel', [CajaController::class, 'exportarCierreExcel'])->name('exportar_cierre_excel');
 });
 
 

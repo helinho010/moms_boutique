@@ -28,7 +28,7 @@ class CajaController extends Controller
 
         if(isset($request->id_sucursal))
         {
-            if (isset($request->buscar)) {
+            if (isset($request->buscar) && $request->buscar != "") {
                 $cierresCaja = Caja::buscar($request->buscar, $request->id_sucursal)
                                     ->paginate(10)
                                     ->withQueryString();     
@@ -36,6 +36,10 @@ class CajaController extends Controller
                 $cierresCaja = Caja::cierresCajaXSucursal($request->id_sucursal)
                                    ->paginate(10)
                                    ->withQueryString(); 
+            }
+        }else{
+            if(isset($request->buscar)){
+                return redirect()->route('home_caja')->with("error", "Debe seleccionar una sucursal para realizar la busqueda");
             }
         }
 
@@ -112,7 +116,7 @@ class CajaController extends Controller
         return ["venta" => $ventaDia && $ventaDia->total_vendido !== null ? $ventaDia->total_vendido : 0];
     }
 
-    public function editarCierre($id_cierre){
+    public function editarCierre($id_sucursal, $id_cierre){
         
         $cierre = Caja::findOrFail($id_cierre);
 
@@ -125,6 +129,7 @@ class CajaController extends Controller
         return view('caja.edit',[
             "sucursales" => $sucursales,
             "cierre" => $cierre,
+            "id_sucursal" => intval($id_sucursal),
         ]);
     }
 
@@ -154,9 +159,10 @@ class CajaController extends Controller
     }
 
     public function verificarCierre(Request $request){
-        // dd($request->request);
+        
         $validacion = $request->validate([
-            "id_cierre" => "required|integer",
+            "id_cierre" => "required|integer|exists:cajas,id",
+            "id_sucursal" => "integer|exists:sucursals,id",
         ]);
 
         $actualizado = false;
@@ -166,9 +172,9 @@ class CajaController extends Controller
         }
 
         if ($actualizado) {
-            return redirect()->route('home_caja')->with("exito", "¡Verificacion de cierre exitosa!");
+            return redirect()->route('home_caja', ["id_sucursal" => $request->id_sucursal])->with("exito", "¡Verificacion de cierre exitosa!");
         } else {
-            return redirect()->route('home_caja')->with("error", "No se hizo ningun cambio al cierre seleccionado");
+            return redirect()->route('home_caja', ["id_sucursal" => $request->id_sucursal])->with("error", "No se hizo ningun cambio al cierre seleccionado");
         }
     }
 
@@ -203,61 +209,52 @@ class CajaController extends Controller
         }
     }
 
-    public function exportarCierreExcel(Request $request){
-        $cierres = Caja::selectRaw('
-                                    cajas.id as id_caja,
-                                    cajas.fecha_cierre as fecha_cierre_caja,
-                                    cajas.efectivo as efectivo_caja,
-                                    cajas.tarjeta as tarjeta_caja,
-                                    cajas.transferencia as transferencia_caja, 
-                                    cajas.qr as qr_caja,
-                                    cajas.venta_sistema as venta_sistema_caja,
-                                    cajas.total_declarado as total_declarado_caja,
-                                    cajas.observacion as observacion_caja,
-                                    cajas.verificado as verificado_caja,
-                                    sucursals.id as id_sucursal,
-                                    sucursals.razon_social as razon_social_sucursal,
-                                    sucursals.direccion as direccion_sucursal,
-                                    users.name as name_usuario,
-                                    users.username as nombre_usuario,
-                                    users.id as id_usuario
-                                  ')
-                        ->join("users", "users.id", "cajas.id_usuario")
-                        ->join("sucursals", "sucursals.id", "cajas.id_sucursal")
-                        ->orderBy('fecha_cierre','asc')
-                        ->where('fecha_cierre', '>=', $request->fecha_inicio)
-                        ->where('fecha_cierre', '<=', $request->fecha_final);
+    public function exportarCierreExcel(Request $request)
+    {
+        $validacion = $request->validate([
+            "id_sucursal" => "required|integer|exists:sucursals,id",
+            "fecha_inicio" => "required|date",
+            "fecha_final" => "required|date",
+        ]);
+ 
+        if ($request->fecha_inicio <= $request->fecha_final) 
+        {
+            
+            $cierresCaja = Caja::cierresCajaXSucursal($request->id_sucursal)
+                                ->whereBetween('fecha_cierre', [$request->fecha_inicio, $request->fecha_final]) 
+                                ->get();
 
-        if (auth()->user()->usertype_id == 1) {
-            $cierres = $cierres->get();
+            $sucursal = Sucursal::findOrFail($request->id_sucursal);
+
+            $numeroRegistro = 1;
+            $exportData = [];
+
+            foreach ($cierresCaja as $cierre) {
+                $exportData[] = [
+                    'Nro' => $numeroRegistro,
+                    'Sucursal' => $cierre->direccion_sucursal,
+                    'Fecha' => $cierre->fecha_cierre_caja,
+                    'Efectivo' => $cierre->efectivo_caja,
+                    'Tarjeta' => $cierre->tarjeta_caja,
+                    'Transferencia' => $cierre->transferencia_caja,
+                    'QR' => $cierre->qr_caja,
+                    'Venta Sistema' => $cierre->venta_sistema_caja,
+                    'Total Declarado' => $cierre->total_declarado_caja,
+                    'Observacion' => $cierre->observacion_caja,
+                    'Usuario' => $cierre->name_usuario,
+                    'Verificado' => $cierre->verificado_caja ? 'Sí' : 'No',
+                ];
+                $numeroRegistro++;
+            }
+
+            $filename = 'CierreCaja_' . date('Ymd_His') . '.xlsx';
+
+            return Excel::download(new CierreCajaExport(collect($exportData)), $filename);
+
         } else {
-            $cierres = $cierres->where('id_usuario',auth()->user()->id)
-                            ->get();
+            return redirect()->route('home_caja')->with("error", "La fecha de inicio no puede ser mayor a la fecha de final");
         }
         
-        $numeroRegistro = 1;
-        $exportData = [];
-
-        foreach ($cierres as $cierre) {
-            $exportData[] = [
-                'Nro' => $numeroRegistro,
-                'Sucursal' => $cierre->direccion_sucursal,
-                'Fecha' => $cierre->fecha_cierre_caja,
-                'Efectivo' => $cierre->efectivo_caja,
-                'Tarjeta' => $cierre->tarjeta_caja,
-                'Transferencia' => $cierre->transferencia_caja,
-                'QR' => $cierre->qr_caja,
-                'Venta Sistema' => $cierre->venta_sistema_caja,
-                'Total Declarado' => $cierre->total_declarado_caja,
-                'Observacion' => $cierre->observacion_caja,
-                'Usuario' => $cierre->name_usuario,
-                'Verificado' => $cierre->verificado_caja ? 'Sí' : 'No',
-            ];
-            $numeroRegistro++;
-        }
-
-        $filename = 'CierreCaja_' . date('Ymd_His') . '.xlsx';
-        return Excel::download(new CierreCajaExport(collect($exportData)), $filename);
     }
 
 }
