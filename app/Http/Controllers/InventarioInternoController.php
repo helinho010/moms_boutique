@@ -34,7 +34,9 @@ class InventarioInternoController extends Controller
         {
             $inventario = InventarioInterno::buscar($request->id_sucursal, $request->buscar)->withQueryString();
         }else{
-            $inventario = InventarioInterno::inventarioXSucurusal($request->id_sucursal)->paginate(10);
+            $inventario = InventarioInterno::inventarioXSucurusal($request->id_sucursal)
+                                           ->paginate(10)
+                                           ->withQueryString();
         }
     
         $sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->user()->id);
