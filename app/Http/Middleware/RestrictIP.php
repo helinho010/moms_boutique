@@ -14,13 +14,14 @@ class RestrictIP
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
+
+    private $ipsValidas = [];
     
     public function handle(Request $request, Closure $next):Response
     {
         $hostname = gethostbyaddr($request->ip());
-        $ipsValidas = explode(',', env('IPS_VALIDAS', ''));
 
-        if (in_array($request->ip(), $ipsValidas)) {
+        if (in_array($request->ip(), $this->ipsValidas)) {
             Log::warning("Acceso Correcto: ".$request->ip() . " - " .$hostname);
             return $next($request);
         }
