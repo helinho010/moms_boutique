@@ -145,7 +145,10 @@ class VentaController extends Controller
                                       $request->nit_cliente, 
                                       $request->nombre_cliente, 
                                       $request->efectivo_recibido, 
-                                      session('sucursalSeleccionadoParaVenta'));
+                                      session('sucursalSeleccionadoParaVenta'),
+                                      $request->factura,
+                                      $request->observacion,
+                                      );
 
                 // Aqui se debe borrar la variable de session "session('sucursalSeleccionadoParaVenta')" ya que no se utilizara mas
                 // session()->forget('sucursalSeleccionadoParaVenta');
@@ -170,7 +173,7 @@ class VentaController extends Controller
         }
     }
 
-    public function exportVentaPdf($descuentoVenta=0, $TotalVenta=0, $productos=[], $nit='0', $senores='S/N', $efectivoRecibido=0, $idSucursal)
+    public function exportVentaPdf($descuentoVenta=0, $TotalVenta=0, $productos=[], $nit='0', $senores='S/N', $efectivoRecibido=0, $idSucursal, $numeroFactura='', $observaciones='')
     {
         // Instaciamos el objeto Request para enviar a la funcion numeroALetras
         $requestObj = new Request(array('efectivo' => $TotalVenta));
@@ -270,38 +273,48 @@ class VentaController extends Controller
                    border-bottom-style: dotted;
                    width: 80%;
                 }
-                .datosCliente{
-                    font-size: 14px;
-                    border-bottom: 1px solid black;
-                    padding-bottom: 10px;
+                .datosCliente {
+                    width: 100%;
+                    font-family: sans-serif;
+                    font-size: 12px;
+                    margin-bottom: 15px;
                 }
-                .datosCliente .datos{
-                    font-size: 16px;
+
+                .datos {
                     font-weight: bold;
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                    width: 100%;
                     text-align: center;
-                    margin: 10px 0 15px 0;
                 }
-                .datosCliente .fechaNit div {
+
+                .tablaDatos {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+
+                .columna {
+                    width: 50%;
+                    padding: 5px;
+                }
+
+                .lineaPunteada {
                     display: inline-block;
-                    width: 40%;
-                    margin-left: 5%;
-                    margin-top: 2%;
+                    border-bottom: 1px dotted #000;
+                    min-width: 150px;
+                    padding-left: 5px;
                 }
-                .datosCliente .razonSocial{
-                    margin-left: 5%;
-                    margin-top: 2%;
-                    width: 85%;
+                
+                .observacionBox {
+                    border-bottom: 1px dotted #000;
+                    padding: 4px 5px;
+                    width: 100%;
+                    display: block;
+                    white-space: pre-wrap;       /* ✅ respeta saltos de línea */
+                    word-break: break-word;      /* ✅ corta palabras largas */
+                    font-size: 11px;
                 }
-                .datosCliente div div .lineaPunteada{
-                    display: inline-block;
-                    width: 80%;
-                    border-bottom-style: dotted;
-                    text-align: center;
-                    border-left:1px solid black;
-                    border-top:1px solid black;
-                    border-right:1px solid black;
-                    border-radius: 5px;
-                }
+
         
                 footer {
                     font-size: 12px;
@@ -4384,16 +4397,24 @@ class VentaController extends Controller
                     </span>
                 </div>
             </div>
+
             <div class="datosCliente">
-                <div class="datos">Datos del Cliente</div>
-                <div class="fechaNit"> 
-                    <div> Fecha: <div class="lineaPunteada"> '.date('d/m/Y H:i').'</div> </div>
-                    <div> Nit: <div class="lineaPunteada"> '.$nit.'</div></div> 
-                </div>
-                <div class="razonSocial">
-                    <div> Señores: <div class="lineaPunteada">'.$senores.'</div></div>
-                </div>        
+            <div class="datos">Datos del Cliente</div>
+                <table class="tablaDatos">
+                    <tr>
+                        <td class="columna">
+                            <div> Fecha: <div class="lineaPunteada"> '.date('d/m/Y H:i').'</div> </div>
+                            <div> Nit: <div class="lineaPunteada"> '.$nit.'</div></div>
+                            <div> Señores: <div class="lineaPunteada">'.$senores.'</div></div>
+                        </td>
+                        <td class="columna">
+                            <div> Numero Factura: <div class="lineaPunteada"> '.$numeroFactura.'</div> </div>
+                            <div class="observacionBox"> Observaciones: <div class=""> '.$observaciones.'</div></div>
+                        </td>
+                    </tr>
+                </table>
             </div>
+            <hr>
             <br>
             <div class="notaVenta">
                 Nota de Venta
