@@ -94,12 +94,11 @@ class UsertypeOpcController extends Controller
     {
         if(isset($request->rol))
         {
-            $existeRol = Usertype::whereRaw('LOWER(`type`) LIKE ? ',[trim(strtolower($request->rol)).'%'])
-                             ->get();
-            if($existeRol->count() > 0)
-            {
+            $existe = Role::where('name', $request->rol)->exists();
+
+            if ($existe) {
                 return 1;
-            }else{
+            } else {
                 return 0;
             }
 
@@ -114,7 +113,7 @@ class UsertypeOpcController extends Controller
             'nuevo_rol' => 'required|string|max:50',
             'permisos_rol' => 'required|array',
         ]);
-
+        
         try {
              $nuevoRol = Role::create(['name' => strtolower($request->nuevo_rol)]);
              $nuevoRol->syncPermissions($request->permisos_rol);

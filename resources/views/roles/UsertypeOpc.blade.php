@@ -406,6 +406,7 @@
 
     function guardarActualizarUsuario()
     {
+        
         let nuevo_rol = $("#nuevo_rol").val();
         let contadorControl = 0;
         var existeRolBd = 0;
