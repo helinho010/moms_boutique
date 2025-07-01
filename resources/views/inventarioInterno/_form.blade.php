@@ -1,4 +1,5 @@
 <div>
+    <input type="number" name="id_inventario_interno" value="{{ $item->id }}" hidden>
     <div class="form-group mb-3">
         <label for="id_sucursal">Sucursal: </label>
         <select name="id_sucursal" id="id_sucursal" class="form-control">
@@ -27,8 +28,8 @@
     </div>
 
     <div class="form-group mb-3">
-        <label for="tipo_ingreso_salida">Tipo Ingreso Salida: </label>
-        <select name="tipo_ingreso_salida" id="tipo_ingreso_salida" class="form-control">
+        <label for="id_tipo_ingreso_salida">Tipo Ingreso Salida: </label>
+        <select name="id_tipo_ingreso_salida" id="id_tipo_ingreso_salida" class="form-control">
             @foreach ($tipoIngresoSalidas as $tipo)
                 <option value="{{ $tipo->id }}" {{ old('tipo_ingreso_salida', $item->id_tipo_ingreso_salida) == $tipo->id ? 'selected' : '' }}>
                     {{ $tipo->tipo }}
@@ -38,8 +39,8 @@
     </div>
 
     <div class="form-group mb-3">
-        <label for="cantidad">Cantidad: </label>
-        <input type="number" name="cantidad" id="cantidad" class="form-control" value="{{ old('cantidad', $item->cantidad_ingreso) }}" required placeholder="0">
+        <label for="cantidad_ingreso">Cantidad: </label>
+        <input type="number" name="cantidad_ingreso" id="cantidad_ingreso" class="form-control" value="{{ old('cantidad_ingreso', $item->cantidad_ingreso) }}" required placeholder="0">
     </div>
 
     <button type="submit" class="btn btn-success">Guardar</button>

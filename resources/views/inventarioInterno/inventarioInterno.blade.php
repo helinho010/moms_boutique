@@ -88,7 +88,18 @@
             <h5>{{ session('itemActualizado') }}</h5>
         </x-formulario.mensaje-error-validacion-inputs>      
     @endif
-    
+
+    @if (session("correcto"))
+        <x-formulario.mensaje-error-validacion-inputs color="success">
+            <h5>{{ session('correcto') }}</h5>
+        </x-formulario.mensaje-error-validacion-inputs>      
+    @endif
+
+    @if (session("error"))
+        <x-formulario.mensaje-error-validacion-inputs color="danger">
+            <h5>{{ session('error') }}</h5>
+        </x-formulario.mensaje-error-validacion-inputs>      
+    @endif
 @endsection
 
 @section('card-title')

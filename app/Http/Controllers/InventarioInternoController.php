@@ -100,14 +100,14 @@ class InventarioInternoController extends Controller
     {
         
         $request->validate([
-            'id' => 'required',
-            'id_sucursal' => 'required',
-            'id_producto' => 'required',
-            'id_tipo_ingreso_salida' => 'required',
-            'cantidad_ingreso' => 'required',
+            'id_inventario_interno' => 'required|integer|exists:inventario_internos,id',
+            'id_sucursal' => 'required|integer|exists:sucursals,id',
+            'id_producto' => 'required|integer|exists:productos,id',
+            'id_tipo_ingreso_salida' => 'required|integer|exists:tipo_ingreso_salidas,id',
+            'cantidad_ingreso' => 'required|integer|min:0',
         ]);
 
-        $registroInventarioInterno = InventarioInterno::findOrFail($request->id);
+        $registroInventarioInterno = InventarioInterno::findOrFail($request->id_inventario_interno);
         $registroInventarioInterno->id_producto = $request->id_producto;
         $registroInventarioInterno->id_sucursal = $request->id_sucursal;
         $registroInventarioInterno->id_usuario = auth()->user()->id;
@@ -120,7 +120,7 @@ class InventarioInternoController extends Controller
             $estado = 1;
         }
     
-        return redirect()->route('home_inventario_interno',['actualizado'=>$estado]);
+        return redirect()->route('home_inventario_interno',["id_sucursal"=>$request->id_sucursal])->with('correcto', 'El item fue actualizado correctamente!');
     }
 
     public function editar_inventario_interno(int $id_sucursal, int $id_producto)
