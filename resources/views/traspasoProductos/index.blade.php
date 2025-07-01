@@ -316,7 +316,7 @@
                 </x-formulario.label>
                 <x-formulario.select id="destino_sucursal_traspaso_productos" name="destino_sucursal_traspaso_productos">
                     <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
-                    @foreach ($sucursales as $sucursal)
+                    @foreach ($sucursalesDestino as $sucursal)
                       <option value="{{ $sucursal->id }}">{{ $sucursal->ciudad }} - {{ substr($sucursal->direccion,0,35)."..." }}</option>
                     @endforeach
                 </x-formulario.select>
