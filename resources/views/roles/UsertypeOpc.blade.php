@@ -211,7 +211,16 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     @foreach ($permisos as $permiso)
-                                        @if ($loop->iteration % 21 == 0)
+                                        @if ($loop->iteration % 15 == 0)
+                                            @if (strpos(strtolower($permiso->name), "opc ") === false)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                        value="{{ $permiso->name }}" name="permisos_rol[]" id="permisoRol{{$permiso->id}}">
+                                                    <label class="form-check-label" for="permisoRol{{$permiso->id}}">
+                                                        {{ $permiso->name }}
+                                                    </label>
+                                                </div>         
+                                            @endif
                                             </div>
                                             <div class="col-md-4">
                                         @else

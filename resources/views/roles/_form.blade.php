@@ -68,8 +68,11 @@
             @foreach ($permisos as $permiso)
                 @if (strpos(strtolower($permiso->name), "opc ") !== false)
                     <div class="form-check form-check-inline me-3">
-                        <input class="form-check-input" type="checkbox" value="{{ $permiso->name }}" name="permisos_rol[]"
-                            id="permisoRol{{$permiso->id}}">
+                        <input class="form-check-input" type="checkbox" value="{{ $permiso->name }}" name="permisos_rol[]" id="permisoRol{{$permiso->id}}" 
+                        @if ( $rol->hasPermissionTo($permiso->name) )
+                                checked
+                        @endif
+                        >
                         <label class="form-check-label" for="permisoRol{{$permiso->id}}">
                             {{ $permiso->name }}
                         </label>
