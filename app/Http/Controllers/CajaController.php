@@ -92,9 +92,9 @@ class CajaController extends Controller
                 "id_sucursal" => $request->sucursal,
                ]);    
 
-            return redirect()->route('home_caja')->with('exito', "Cierre alamcenado correctamente");
+            return redirect()->route('home_caja', ["id_sucursal" => $request->sucursal])->with('exito', "Cierre alamcenado correctamente");
         } else{
-            return redirect()->route('home_caja')->with("error", "Ya existe un cierre de caja Dia: $existeCierreCajaEnFecha->fecha_cierre_caja , Sucursal: $existeCierreCajaEnFecha->direccion_sucursal y Usuario: $existeCierreCajaEnFecha->nombre_usuario ");
+            return redirect()->route('home_caja', ["id_sucursal" => $request->sucursal])->with("error", "Ya existe un cierre de caja Dia: $existeCierreCajaEnFecha->fecha_cierre_caja , Sucursal: $existeCierreCajaEnFecha->direccion_sucursal y Usuario: $existeCierreCajaEnFecha->nombre_usuario ");
         }        
     }
 
@@ -152,9 +152,9 @@ class CajaController extends Controller
         $actualizado = $cierre->update($request->only(["fecha_cierre","id_sucursal","efectivo","tarjeta","transferencia", "qr", "venta_sistema", "total_declarado", "observacion"]));
         
         if ($actualizado) {
-            return redirect()->route('home_caja')->with("exito", "¡Actualización exitosa!");
+            return redirect()->route('home_caja', ["id_sucursal" => $request->id_sucursal])->with("exito", "¡Actualización exitosa!");
         } else {
-            return redirect()->route('home_caja')->with("error", "Hubo un error al actualizar los datos.");
+            return redirect()->route('home_caja', ["id_sucursal" => $request->id_sucursal])->with("error", "Hubo un error al actualizar los datos.");
         }
     }
 
