@@ -18,6 +18,7 @@ use App\Http\Controllers\TrasporteProductosController;
 use App\Http\Controllers\GraficosController;
 use App\Models\Caja;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CompraProductoController;
 
 require(base_path('routes/route-list/route-auth.php'));
 
@@ -166,7 +167,15 @@ Route::middleware(['auth'])->group(function () {
          ->name('exportar_cierre_pdf')
          ->middleware(['permission:exportar pdf']);
     Route::get('/cierre_caja/exportar_excel', [CajaController::class, 'exportarCierreExcel'])->name('exportar_cierre_excel');
+
+
+    // Rutas de prueba
+    // Route::get('/pruebaSelect2Vite', function () {
+    //     return view('pruebaSelect2Vite');
+    // })->name('pruebaSelect2Vite');
+
 });
+
 
 
 
