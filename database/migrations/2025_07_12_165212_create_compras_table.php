@@ -32,7 +32,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes('deleted_at', precision: 0);
 
-            $table->foreign('id_sucursal')->references('id')->onUpdate('cascade');
+            $table->foreign('id_sucursal')->references('id')->on('sucursals')->onUpdate('cascade');
             $table->foreign('id_usuario_creador')->references('id')->on('users')->onUpdate('cascade');
         });
     }

@@ -15,12 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_compra');
             $table->unsignedBigInteger('id_producto');
-            $table->unsignedBigInteger('id_usuario')->nullable();//aqui nos quedamos
             $table->integer('cantidad');
             $table->float('precio_unitario', 10, 2);
-            $table->float('precio_venta', 10, 2);
+            // $table->float('precio_venta', 10, 2);
             $table->float('sub_total', 10, 2)->default(0.00);
-            $table->text('observacion', 10, 2)->default(0.00);
+            $table->text('observacion_item', 10, 2)->nullable();
             $table->timestamps();
             $table->softDeletes('deleted_at', precision: 0);
 

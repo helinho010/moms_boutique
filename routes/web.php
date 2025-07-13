@@ -169,8 +169,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cierre_caja/exportar_excel', [CajaController::class, 'exportarCierreExcel'])->name('exportar_cierre_excel');
 
     // Compra Producto
-    Route::get('/compras', [ComprasController::class, 'index'])->name('home_compras');
-    //->middleware(['permission:opc compras']);
+    Route::get('/compras', [ComprasController::class, 'index'])->name('home_compras')->middleware(['permission:opc compras']);
+    Route::get('/compras/agregar_compra', [ComprasController::class, 'create'])->name('agregar_compra')->middleware(['permission:crear compra']);
+    Route::post('/compras/guardar_compra', [ComprasController::class, 'store'])->name('guardar_compra');
+
 
     // Rutas de prueba
     // Route::get('/pruebaSelect2Vite', function () {
