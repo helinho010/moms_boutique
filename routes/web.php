@@ -18,7 +18,7 @@ use App\Http\Controllers\TrasporteProductosController;
 use App\Http\Controllers\GraficosController;
 use App\Models\Caja;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CompraProductoController;
+use App\Http\Controllers\ComprasController;
 
 require(base_path('routes/route-list/route-auth.php'));
 
@@ -168,6 +168,9 @@ Route::middleware(['auth'])->group(function () {
          ->middleware(['permission:exportar pdf']);
     Route::get('/cierre_caja/exportar_excel', [CajaController::class, 'exportarCierreExcel'])->name('exportar_cierre_excel');
 
+    // Compra Producto
+    Route::get('/compras', [ComprasController::class, 'index'])->name('home_compras');
+    //->middleware(['permission:opc compras']);
 
     // Rutas de prueba
     // Route::get('/pruebaSelect2Vite', function () {
