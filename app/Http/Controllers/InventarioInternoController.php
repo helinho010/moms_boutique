@@ -104,7 +104,7 @@ class InventarioInternoController extends Controller
             'id_sucursal' => 'required|integer|exists:sucursals,id',
             'id_producto' => 'required|integer|exists:productos,id',
             'id_tipo_ingreso_salida' => 'required|integer|exists:tipo_ingreso_salidas,id',
-            'cantidad_ingreso' => 'required|integer|min:0',
+            'cantidad_ingreso' => 'required|integer',
         ]);
 
         $registroInventarioInterno = InventarioInterno::findOrFail($request->id_inventario_interno);
