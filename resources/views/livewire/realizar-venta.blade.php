@@ -50,11 +50,11 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr class="text-center">
-                          <th style="width: 20%;">Cantidad</th>
+                          <th style="width: 15%;">Cantidad</th>
                           <th style="width: 40%; border-left: solid 2px black;">Descripcion</th>
-                          <th style="width: 20%; border-left: solid 2px black;">Precio Unitario [Bs.]</th>
-                          <!--th style="width: 10%; border-left: solid 2px black;">Descuento [%]</th-->
-                          <th style="width: 20%; border-left: solid 2px black;">Subtotal [Bs.]</th>
+                          <th style="width: 15%; border-left: solid 2px black;">Precio Unitario [Bs.]</th>
+                          <th style="width: 15%; border-left: solid 2px black;">Descuento [Bs.]</th>
+                          <th style="width: 15%; border-left: solid 2px black;">Subtotal [Bs.]</th>
                         </tr>
                       </thead>
                       <tbody id="itemsEliminar">
@@ -62,7 +62,7 @@
                         
                         <tr style="border: 0;" id="contenidoItemsProductos">
                             <th colspan="5">
-                                @foreach ($productosAVender as $productoventa)
+                                @foreach ($productosAVender as $index =>$productoventa)
                                     <tr class="text-center itemProductoVenta" style="border-bottom: solid 1px black;">
                                         <th scope="row"> 
                                             <button class="btn" 
@@ -74,6 +74,13 @@
                                         </th>
                                         <td> {{ $productoventa["descripcion"] }} </td> 
                                         <td> {{ $productoventa["precio_unitario"] }} </td>
+                                        <td> 
+                                              <input class="inputSinEstilos" type="number" 
+                                                    wire:model="productosAVender.{{ $index }}.descuento"
+                                                    placeholder="0 Bs." key($productoventa["id_producto"]) wire:change='calcularValoresMonetarios'
+                                                    wire:keydown.enter='calcularValoresMonetarios'
+                                                    wire:keydown.tab='calcularValoresMonetarios'>
+                                        </td>
                                         <td> {{ $productoventa["subtotal"] }} </td> 
                                     </tr> 
                                 @endforeach
@@ -82,8 +89,8 @@
                         {{-- Suma de Items --}}
                         <tr class="sinMargen">
                             <th colspan="2" ></th>
-                            <td style="font-weight: bold;">Descuento [Bs]: </td> 
-                            <td><input type="text" placeholder="0" id="descuentoVenta" wire:model='descuento' wire:keydown.enter='calcularValoresMonetarios' wire:keydown.tab='calcularValoresMonetarios'></td>
+                            <td style="font-weight: bold;">Total Descuento [Bs]: </td> 
+                            <td><input type="text" placeholder="0" id="descuentoVenta" wire:model='descuentoTotal' wire:keydown.enter='calcularValoresMonetarios' wire:keydown.tab='calcularValoresMonetarios' readonly></td>
                           </tr>
                         <tr class="sinMargen">
                           <th colspan="2" ></th>
@@ -171,7 +178,6 @@
         </div>
     </div>
 </div>
-
 
 @script
 <script>

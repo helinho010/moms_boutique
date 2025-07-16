@@ -28,6 +28,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
         protected $fechaInicial;
         protected $fechaFinal;
         protected $titleLabel;
+        protected $numRegistrosConsulta = 0;
 
         public function __construct( $idSucursalEvento, $titleLabel, $fecIni, $fecFin) {
             $this->idSucursalEvento = $idSucursalEvento;
@@ -42,6 +43,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
             $columnas = 'detalle_ventas.descripcion,
                          detalle_ventas.precio_unitario,
                          detalle_ventas.cantidad,
+                         detalle_ventas.descuento_item,
                          detalle_ventas.subtotal,
                          venta.descuento, 
                          tipo_pagos.tipo,
@@ -83,6 +85,8 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                                 ->where('venta.created_at','<=', "$this->fechaFinal")
                                 ->where('venta.estado',1);
               
+            $this->numRegistrosConsulta = $consulta->count();
+
             return $consulta;
         }
 
@@ -107,14 +111,13 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
 
         public function map($invoice): array
         {
-            // dd($invoice);
             return [
                 $invoice->direccion != "" ? substr($invoice->direccion,0,45)."..." : $invoice->nombre,
                 $invoice->created_at,
                 $invoice->descripcion,
                 $invoice->precio_unitario,
                 $invoice->cantidad,
-                $invoice->descuento != 0 ? $invoice->descuento:"0" ,
+                $invoice->descuento != 0 ? $invoice->descuento_item:"0" ,
                 $invoice->subtotal, 
                 $invoice->tipo,
                 $invoice->nombre_usuario,

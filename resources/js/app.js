@@ -16,7 +16,14 @@ import "./modules/flatpickr";
 import "./modules/vector-maps";
 
 //Fontawesome
-import "@fortawesome/fontawesome-free/js/all";
+// import "@fortawesome/fontawesome-free/js/all";
 
 // select 2
-// import 'select2/dist/js/select2.min.js';
+
+// import $ from 'jquery';
+
+// window.$ = $;
+// window.jQuery = $;
+
+// import 'select2/dist/css/select2.min.css';
+// import 'select2';
