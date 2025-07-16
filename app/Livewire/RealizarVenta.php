@@ -32,7 +32,10 @@ class RealizarVenta extends Component
     #[Validate('required|min:1|numeric')]
     public $cantidadDelProductoSeleccionado;
 
-    public $descuento;
+    // Valores monetarios
+    public $subtotal;
+    public $descuentoItem = [];
+    public $descuentoTotal = 0;
     public $total;
     public $efectivoRecivido;
     public $cambio;
@@ -98,7 +101,6 @@ class RealizarVenta extends Component
 
     public function almaceneArrayProdcutosVenta()
     {
-
         $this->validate();
 
         $productoBuscadoId = Producto::findOrFail($this->idProductoSeleccionado);
@@ -113,6 +115,7 @@ class RealizarVenta extends Component
                     "descripcion" => $productoBuscadoId->nombre." - Talla: ".($productoBuscadoId->talla!=""? $productoBuscadoId->talla:"ST(Sin Talla)"),
                     "precio_unitario" => $productoBuscadoId->precio != "" ? $productoBuscadoId->precio : 0,
                     "subtotal" => floatval(($productoBuscadoId->precio !="" ? $productoBuscadoId->precio : 0)*$this->cantidadDelProductoSeleccionado),
+                    "descuento" => 0,
                 ]
              );
         }else{
@@ -141,6 +144,7 @@ class RealizarVenta extends Component
                         "descripcion" => $productoBuscadoId->nombre." - Talla: ".($productoBuscadoId->talla!=""? $productoBuscadoId->talla:"ST(Sin Talla)"),
                         "precio_unitario" => $productoBuscadoId->precio!=""? $productoBuscadoId->precio:0,
                         "subtotal" => floatval(($productoBuscadoId->precio!="" ? $productoBuscadoId->precio:0)*$this->cantidadDelProductoSeleccionado),
+                        "descuento" => 0,
                     ]
                 );
             }
@@ -151,19 +155,33 @@ class RealizarVenta extends Component
         $this->cantidadDelProductoSeleccionado = 0;        
         
         $this->calcularValoresMonetarios();
+          
     }
 
     public function calcularValoresMonetarios()
     {
         $this->total = 0;
+        $this->descuentoTotal = 0;
 
         foreach ($this->productosAVender as $key => $producto) 
         {
-            $this->total = $this->total + $producto["subtotal"];
+
+            $cantidad = floatval($producto["cantidad"]);
+            $precio = floatval($producto["precio_unitario"]);
+            $descuento = floatval($producto["descuento"] ?? 0);
+
+            $subtotal = ($precio * $cantidad) - $descuento;
+
+            // Actualiza el subtotal en el array
+            $this->productosAVender[$key]["subtotal"] = $subtotal;
+
+            // Suma total y descuento total
+            $this->total += $subtotal;
+            $this->descuentoTotal += $descuento;
         }
 
-        $this->descuento = number_format($this->descuento != "" ? $this->descuento : 0 , 2);
-        $this->total = number_format($this->total - ($this->descuento!="" ? $this->descuento:0), 2);    
+        $this->descuentoTotal = number_format($this->descuentoTotal != "" ? $this->descuentoTotal : 0 , 2);
+        //$this->total = number_format($this->total - ($this->descuentoTotal!="" ? $this->descuentoTotal:0), 2);    
         $this->efectivoRecivido = number_format($this->efectivoRecivido != "" ? floatval($this->efectivoRecivido):0, 2);
         $this->cambio = number_format($this->efectivoRecivido - $this->total,2);
     }
@@ -210,7 +228,7 @@ class RealizarVenta extends Component
             <td>'.$producto->cantidad.'</td>
             <td>'.$producto->nombre_producto." - Talla: ".($producto->talla_producto != "" ? $producto->talla_producto : "ST(Sin Talla)").'</td>
             <td>'.$producto->precio_producto.'</td>
-            <!--td>0</td-->
+            <td>'.$producto->descuento_item.'</td>
             <td>'.((float) $producto->cantidad * (float) $producto->precio_producto).'</td>
           </tr>';
         }
@@ -4486,7 +4504,7 @@ class RealizarVenta extends Component
         $venta->id_evento = session('eventoSeleccionadoParaVenta');
         $venta->id_usuario = auth()->user()->id;
         $venta->id_cliente = $cliente->id;
-        $venta->descuento = $this->descuento;
+        $venta->descuento = $this->descuentoTotal;
         $venta->total_venta = $this->total;
         $venta->efectivo_recibido = $this->efectivoRecivido;
         $venta->cambio = $this->cambio;
@@ -4503,6 +4521,7 @@ class RealizarVenta extends Component
             $detalleVenta->id_venta = $venta->id;
             $detalleVenta->id_producto = $producto["id_producto"];
             $detalleVenta->cantidad = $producto["cantidad"];
+            $detalleVenta->descuento_item = $producto["descuento"];
             $detalleVenta->descripcion = $producto["descripcion"];
             $detalleVenta->precio_unitario = $producto["precio_unitario"];
             $detalleVenta->subtotal = $producto["subtotal"];

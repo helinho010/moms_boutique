@@ -33,6 +33,18 @@
            font-weight: bold;
         }
 
+        .inputSinEstilos{
+            border: 0;
+            outline: none;
+            width: 100%;
+            height: auto;
+        }
+
+        .sinEstilosInput, .sinEstilosInpu:focus{
+            border: 0;
+            outline: none;
+        }
+
     </style>
 @endsection
 
@@ -119,7 +131,7 @@
                       <th style="width: 20%;">Cantidad</th>
                       <th style="width: 40%; border-left: solid 2px black;">Descripcion</th>
                       <th style="width: 20%; border-left: solid 2px black;">Precio Unitario [Bs.]</th>
-                      <!--th style="width: 10%; border-left: solid 2px black;">Descuento [%]</th-->
+                      <th style="width: 10%; border-left: solid 2px black;">Descuento [Bs.]</th>
                       <th style="width: 20%; border-left: solid 2px black;">Subtotal [Bs.]</th>
                     </tr>
                   </thead>
@@ -290,7 +302,7 @@
                                     <th scope="row">'+valueOfElement.cantidad+'</th> \
                                     <td>'+valueOfElement.nombre_producto + ' - Talla: ' + (valueOfElement.talla_producto != "" ? valueOfElement.talla_producto : "ST(Sin Talla)") +'</td> \
                                     <td> ' +valueOfElement.precio_producto+ '</td> \
-                                    <!--td>'+ 0 +'</td--> \
+                                    <td> <input type="text" class="inputSinEstilos" id="descuento_item" placeholder="0 Bs"></td> \
                                     <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto ).toFixed(2) +'</td> \
                                 </tr> \
                             ');
@@ -418,7 +430,7 @@
                         <th scope="row">'+valueOfElement.cantidad+'</th> \
                         <td>'+valueOfElement.nombre_producto + ' - Talla: ' + (valueOfElement.talla_producto != "" ? valueOfElement.talla_producto : "ST(Sin Talla)") +'</td> \
                         <td> ' +valueOfElement.precio_producto+ '</td> \
-                        <!--td>'+ 0 +'</td--> \
+                        <td><input type="text" class="inputSinEstilos" id="descuento_item" placeholder="0 Bs"></td> \
                         <td class="subtotal">'+ (valueOfElement.cantidad * valueOfElement.precio_producto).toFixed(2) +'</td> \
                         </tr> \
                         ');
