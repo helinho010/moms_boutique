@@ -15,7 +15,7 @@ class RestrictIP
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
 
-    private $ipsValidas = [];
+    private $ipsValidas = ["192.168.88.30"];
     
     public function handle(Request $request, Closure $next):Response
     {

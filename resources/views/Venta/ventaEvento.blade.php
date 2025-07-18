@@ -32,6 +32,7 @@
            height: auto;
            font-weight: bold;
         }
+        
     </style>
 @endsection
 
