@@ -86,18 +86,62 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="container-fluid pruebadecss cuerpo">
-        <div class="row">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aut facilis debitis ratione, maiores cum incidunt reprehenderit iste fugit quod sequi veniam perspiciatis, voluptatum neque nobis aliquam, nihil ea? Placeat, unde.
+        <div class="row mt-4 mb-4">
+            <div class="col-md-7 text-center">
+                <div class="input-group mb-3">
+                    <label for="" class="col-sm-3 col-form-label">Producto: </label>
+                    <select name="" id="" class="form-control select2">
+                        <option value="">Seleccione un Producto</option>
+                        @foreach ($productos as $producto)
+                            <option value="{{ $producto->id }}">{{ $producto->nombre }} - {{ $producto->precio }}</option>
+                        @endforeach
+                    </select>
+                </div>                
+            </div>
+            <div class="col-md-4">
+                <div class="input-group mb-3">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control-sm" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        <button class="btn btn-outline-secondary bt-sm" type="button" id="button-addon2">Button</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row cabecera">
+            <div class="col-md-12">
+                <table class="table table-bordered table-sm mt-3">
+                    <thead>
+                        <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Producto</th>
+                        <th scope="col">P. Unitario</th>
+                        <th scope="col">Sub Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <th scope="row">1</th>
+                        <td>2</td>
+                        <td>Conjunto ropa XL - 15</td>
+                        <td>70</td>
+                        <td>140</td>
+                        </tr>
+                        <tr>
+                        <th colspan="3"></th>
+                        <td>Total</td>
+                        <td>1500</td>
+                        </tr>
+                    </tbody>
+                    </table>
+            </div>
         </div>
     </div>
 </div>
 
 @section('css')
     <style>
-        .cabecera > div{
+        .cabecera > div, .cuerpo > div {
             border: 1px solid black;
         }
     </style>
@@ -112,7 +156,7 @@
 <script>
     $(document).ready(function() {
         $('.select2').select2({
-            width: '100%',
+            width: '70%',
         });
     });
 </script>

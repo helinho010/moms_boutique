@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Producto;
 use App\Models\Sucursal;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,11 +21,13 @@ class ComprasController extends Controller
     {
         $sucursales = Sucursal::all();
         $usuarios = User::all();
+        $productos = Producto::all(); // Asegúrate de tener un modelo Producto
         $estadoCompra = ["creado", "revisado", "aprobado"];
 
         return view('compras.create', [
             'sucursales' => $sucursales,
             'usuarios' => $usuarios,
+            'productos' => $productos,
             'codigo_compra' => 'COMP-2025070001',
             'estadoCompra' => $estadoCompra,
             'id_sucursal' => null,
