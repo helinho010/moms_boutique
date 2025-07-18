@@ -84,7 +84,7 @@ class RealizarVenta extends Component
     {
 
         $this->valoresIniciales();
-        $this->descuento = "0.0";
+        // $this->descuento = "0.0";
         $this->total = "0.0";
         $this->efectivoRecivido = "0.0";
         $this->cambio = "0.0";
@@ -190,10 +190,14 @@ class RealizarVenta extends Component
     {
         
         $datosVentaDetallado = DB::table('detalle_ventas')
-                                 ->selectRaw('detalle_ventas.cantidad,
-                                                        productos.nombre as nombre_producto,
-                                                        productos.talla as talla_producto,
-                                                        productos.precio as precio_producto')
+                                 ->selectRaw('
+                                              detalle_ventas.cantidad,
+                                              detalle_ventas.descuento_item,
+                                              detalle_ventas.precio_unitario,
+                                              detalle_ventas.subtotal,
+                                              productos.nombre as nombre_producto,
+                                              productos.talla as talla_producto,
+                                              productos.precio as precio_producto')
                                  ->join('venta', 'venta.id', 'detalle_ventas.id_venta')
                                  ->join('productos', 'productos.id', 'detalle_ventas.id_producto')
                                  ->where('venta.id',$idVenta)
@@ -227,9 +231,9 @@ class RealizarVenta extends Component
             $htmlProductos = $htmlProductos.'<tr>
             <td>'.$producto->cantidad.'</td>
             <td>'.$producto->nombre_producto." - Talla: ".($producto->talla_producto != "" ? $producto->talla_producto : "ST(Sin Talla)").'</td>
-            <td>'.$producto->precio_producto.'</td>
+            <td>'.$producto->precio_unitario.'</td>
             <td>'.$producto->descuento_item.'</td>
-            <td>'.((float) $producto->cantidad * (float) $producto->precio_producto).'</td>
+            <td>'.$producto->subtotal.'</td>
           </tr>';
         }
 
@@ -4430,7 +4434,7 @@ class RealizarVenta extends Component
                       <th style="width: 10%;">Cantidad</th>
                       <th style="width: 45%;">Descripcion</th>
                       <th style="width: 15%;">Precio Unitario [Bs]</th>
-                      <!--th style="width: 15%;">Descuento [%]</th-->
+                      <th style="width: 15%;">Descuento [Bs]</th>
                       <th style="width: 15%;">Subtotal [Bs]</th>
                     </tr>
                     '.$htmlProductos.'
