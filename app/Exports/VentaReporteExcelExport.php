@@ -13,13 +13,14 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 
 
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidths, WithColumnFormatting, WithMapping, WithStyles
+class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidths, WithColumnFormatting, WithMapping, WithStyles, WithStrictNullComparison
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -86,7 +87,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                                 ->where('venta.estado',1);
               
             $this->numRegistrosConsulta = $consulta->count();
-
+            
             return $consulta;
         }
 
@@ -117,7 +118,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
                 $invoice->descripcion,
                 $invoice->precio_unitario,
                 $invoice->cantidad,
-                $invoice->descuento != 0 ? $invoice->descuento_item:"0" ,
+                $invoice->descuento_item != 0 ? $invoice->descuento_item:0,
                 $invoice->subtotal, 
                 $invoice->tipo,
                 $invoice->nombre_usuario,

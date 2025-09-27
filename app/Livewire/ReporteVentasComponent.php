@@ -107,7 +107,7 @@ class ReporteVentasComponent extends Component
     }
 
     public function obtenerReporte()
-    {
+    {   
         $this->sucursalesEventosUsuario(auth()->user()->usertype_id, auth()->user()->id);
         
         if (strtolower($this->titleLabel) == strtolower('Sucursal')) 
