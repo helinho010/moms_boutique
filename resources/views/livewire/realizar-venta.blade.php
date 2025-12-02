@@ -10,18 +10,31 @@
                     <div class="input-group">
                         <select class="form-select form-control" aria-describedby="" name="id_producto" id="select_producto" wire:model='idProductoSeleccionado'>
                             <option value="seleccionado" disabled>Seleccione una opcion...</option>
-                            @foreach ($productosEvento as $producto)
-                              @if ( $producto->estado_inventario_externo == 1 && $producto->cantidad_inventario_externo > 0)
+                            {{-- @foreach ($productosEvento as $producto) --}}
+                            @foreach ($productos as $producto)
+                              {{-- @if ( $producto->estado_inventario_externo == 1 && $producto->cantidad_inventario_externo > 0)
                                 <option value="{{ $producto->id_producto }}"> 
                                     {{$producto->nombre_producto}} - 
                                     Talla: {{ $producto->talla_producto != '' ? $producto->talla_producto : "ST(Sin Talla)"}} -
                                     Precio:  {{ $producto->precio_producto != '' ? $producto->precio_producto : "0"}} Bs -
                                     (Stock: {{ $producto->cantidad_inventario_externo }})  
+                                </option>     
+                              @endif --}}
+                              @if ($producto->stock_inventario_internos < 1)
+                                <option value="{{ $producto->id_productos }}" disabled> 
+                                    {{"$producto->id_productos - $producto->nombre_productos"}} 
+                                    - Talla: {{ $producto->talla_productos == '' ? "ST(Sin talla)" : $producto->talla_productos}}
+                                    - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock_inventario_internos }})
+                                </option>
+                              @else
+                                <option value="{{ $producto->id_productos }}"> 
+                                    {{"$producto->id_productos - $producto->nombre_productos"}} 
+                                    - Talla: {{ $producto->talla_productos == '' ? "ST(Sin talla)" : $producto->talla_productos}}
+                                    - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock_inventario_internos }})
                                 </option>      
                               @endif
                             @endforeach    
                          </select>
-                          
                          {{-- <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-cart-arrow-down" style="color:green; font-size: 20px;"></i></button> --}}
                     </div>
                     @error('idProductoSeleccionado') <span class="error" style="color: red"> Debe seleccionar un producto *</span> @enderror
@@ -53,7 +66,7 @@
                           <th style="width: 15%;">Cantidad</th>
                           <th style="width: 40%; border-left: solid 2px black;">Descripcion</th>
                           <th style="width: 15%; border-left: solid 2px black;">Precio Unitario [Bs.]</th>
-                          <th style="width: 15%; border-left: solid 2px black;">Descuento [Bs.]</th>
+                          <th style="width: 7%; border-left: solid 2px black;">Descuento [Bs.]</th>
                           <th style="width: 15%; border-left: solid 2px black;">Subtotal [Bs.]</th>
                         </tr>
                       </thead>
@@ -62,7 +75,7 @@
                         
                         <tr style="border: 0;" id="contenidoItemsProductos">
                             <th colspan="5">
-                                @foreach ($productosAVender as $index =>$productoventa)
+                                @foreach ($productosAVender as $index => $productoventa)
                                     <tr class="text-center itemProductoVenta" style="border-bottom: solid 1px black;">
                                         <th scope="row"> 
                                             <button class="btn" 
@@ -75,7 +88,7 @@
                                         <td> {{ $productoventa["descripcion"] }} </td> 
                                         <td> {{ $productoventa["precio_unitario"] }} </td>
                                         <td> 
-                                              <input class="inputSinEstilos" type="number" 
+                                              <input class="inputSinEstilos" style="width: 100%" type="text" 
                                                     wire:model="productosAVender.{{ $index }}.descuento"
                                                     placeholder="0 Bs." key($productoventa["id_producto"]) wire:change='calcularValoresMonetarios'
                                                     wire:keydown.enter='calcularValoresMonetarios'
@@ -86,25 +99,28 @@
                                 @endforeach
                             </th>
                         </tr>
+                        <tr style="border: 0;">
+                            <th colspan="5"></th>
+                        </tr>
                         {{-- Suma de Items --}}
                         <tr class="sinMargen">
-                            <th colspan="2" ></th>
-                            <td style="font-weight: bold;">Total Descuento [Bs]: </td> 
+                            <th colspan="2"></th>
+                            <td colspan="2" style="font-weight: bold;">Total Descuento [Bs]: </td> 
                             <td><input type="text" placeholder="0" id="descuentoVenta" wire:model='descuentoTotal' wire:keydown.enter='calcularValoresMonetarios' wire:keydown.tab='calcularValoresMonetarios' readonly></td>
                           </tr>
                         <tr class="sinMargen">
                           <th colspan="2" ></th>
-                          <td style="font-weight: bold;">Total [Bs.]: </td> 
+                          <td colspan="2" style="font-weight: bold;">Total [Bs.]: </td> 
                           <td id="total"> <input type="text" name="total" wire:model='total' id="totalinput" readonly> </td>
                         </tr>
                         <tr class="sinMargen">
                             <th colspan="2"></th>
-                            <td style="font-weight: bold">Efectivo Recibido [Bs.]: </td> 
+                            <td colspan="2" style="font-weight: bold">Efectivo Recibido [Bs.]: </td> 
                             <td><input type="text" placeholder="0" id="efectivoRecebido" wire:model='efectivoRecivido' wire:keydown.enter='calcularValoresMonetarios' wire:keydown.tab='calcularValoresMonetarios'></td>
                         </tr>
                         <tr class="sinMargen">
                             <th colspan="2"></th>
-                            <td style="font-weight: bold">Cambio [Bs.]: </td> 
+                            <td colspan="2" style="font-weight: bold">Cambio [Bs.]: </td> 
                             <td id="cambio"><input type="text" name="cambio" wire:model='cambio' id="cambioinput" readonly></td>
                         </tr>
                         <tr style="border: 0;">
@@ -185,6 +201,14 @@
     {
         $('#'+id).select();
     }
+
+    document.addEventListener('livewire:initialized', () => {
+            Livewire.on('ventaAlmacenada', (idVenta, idSucursalEvento, sucursalEvento) => {
+                // console.log('Venta Datos:', datos);
+                // Aquí puedes abrir el PDF, mostrar alerta, etc.
+                window.open(`/reporte_venta_pdf/${sucursalEvento}/${idSucursalEvento}/venta/${idVenta}`, '_blank');
+            });
+    });
 
     $("#descuentoVenta").on('click', function(){
         $(this).select();

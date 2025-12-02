@@ -118,6 +118,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reimprimir_pdf',[VentaController::class,'reImprimirPdf'])->name('reimprimir_pdf');
     Route::get('/reporte_venta',[VentaController::class, 'reporteVenta'])->name('reporte_venta');
     Route::post('/reporte_venta',[VentaController::class, 'reporteVentaExcel'])->name('reporte_venta_excel');
+    Route::get('/reporte_venta_pdf/{sucursalevento}/{idSucursalEvento}/venta/{idventa}',[VentaController::class, 'exportPdfVenta'])->name('exportarVentaPdf');
 
     // Route::get('/editar_venta',[VentaController::class, 'editarVenta'])->name('editar_venta');
     // Route::post('/editar_venta',[VentaController::class, 'editarVentaUpdate'])->name('update_editar_venta');

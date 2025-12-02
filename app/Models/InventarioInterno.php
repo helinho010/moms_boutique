@@ -141,4 +141,31 @@ class InventarioInterno extends Model
                         ->orderBy('productos.nombre', 'asc');
 
     }
+
+    public static function buscarItemInvetario($id_producto, $id_sucursal)
+    {
+      return self::selectRaw('
+                                inventario_internos.id as id_inventario_internos,
+                                inventario_internos.stock as stock_inventario_internos,
+                                inventario_internos.cantidad_ingreso as cantidad_ingreso_inventario_internos,
+                                inventario_internos.estado as estado_inventario_internos,
+                                productos.id as id_productos,
+                                productos.nombre as nombre_productos,
+                                productos.costo as costo_productos,
+                                productos.precio as precio_productos,
+                                productos.talla as talla_productos,
+                                productos.estado as estado_productos
+                        ')
+          ->join('productos', 'productos.id', 'inventario_internos.id_producto')
+          ->where('inventario_internos.id_producto',$id_producto)
+          ->where('inventario_internos.id_sucursal', $id_sucursal);
+    }
+
+    public static function disminuirStock($id_producto, $cantidadStock)
+    {
+      $item =  self::where('id_producto', $id_producto)
+                  -> first();
+      $item->stock = $item->stock - $cantidadStock;
+      $item->save();  
+    }
 }
