@@ -4705,10 +4705,10 @@ class VentaController extends Controller
                         'tituloPdf' => 'Venta',
                         'fechaVenta' => $datosVenta->created_at,
                         'sucursal' => Sucursal::obtenerSucursal($idSucursalEvento),
-                        // 'productosVendidos' => $productosVendidos,
-                        // 'literalCanitdadTotal' => $literal,
-                        // 'cliente' => $cliente,
-                        // 'venta' => $datosVenta,
+                        'productosVendidos' => $productosVendidos,
+                        'literalCanitdadTotal' => $literal,
+                        'cliente' => $cliente,
+                        'venta' => $datosVenta,
                     ]);
                         
                     $nombre_archivo = 'Venta_'.date('dmY_His').'.pdf';
@@ -4721,7 +4721,9 @@ class VentaController extends Controller
 
             }else{
                 // $datosSucursalEvento = Evento::findOrFail($datosVenta['id_evento']);
-                $pdf = Pdf::loadView('pdf.venta.evento', "hola");
+                $pdf = Pdf::loadView('pdf.venta.evento', [
+                    'mensaje' => "hola",
+                ]);
                 return $pdf->download('invoice.pdf'); 
             }   
     }

@@ -207,7 +207,7 @@ class RealizarVenta extends Component
 
     public function almacenarDatos()
     {
-
+        
         $cliente = new Cliente();
         $cliente->nit_ci = $this->nitCliente != "" ? $this->nitCliente : 0 ;
         $cliente->razon_social = $this->nombreCliente != "" ? $this->nombreCliente : "S/N" ;
@@ -261,8 +261,9 @@ class RealizarVenta extends Component
         // $this->exportarPdf($venta->id);
         $this->js("$('#staticBackdrop').modal('hide');");
         $this->mount();
+        // dd($venta->id,$this->sucursalDB->id, $this->tipoVenta);
         $this->dispatch('ventaAlmacenada',
-            $venta->id,$this->sucursalDB->id, $this->tipoVenta,
+            $this->tipoVenta, $this->sucursalDB->id, $venta->id 
         );
         // return Storage::disk("eventos")->download($nombreArchivo);
     }

@@ -203,10 +203,11 @@
     }
 
     document.addEventListener('livewire:initialized', () => {
-            Livewire.on('ventaAlmacenada', (idVenta, idSucursalEvento, sucursalEvento) => {
-                // console.log('Venta Datos:', datos);
+            Livewire.on('ventaAlmacenada', ( data ) => {
+                // console.log('Datos: ' + data);
                 // Aquí puedes abrir el PDF, mostrar alerta, etc.
-                window.open(`/reporte_venta_pdf/${sucursalEvento}/${idSucursalEvento}/venta/${idVenta}`, '_blank');
+                // console.log(`/reporte_venta_pdf/${data[0]}/${data[1]}/venta/${data[2]}`);
+                window.open(`/reporte_venta_pdf/${data[0]}/${data[1]}/venta/${data[2]}`, '_blank');
             });
     });
 

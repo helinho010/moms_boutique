@@ -37,7 +37,7 @@ class DetalleVenta extends Model
                                     venta.created_at,
                                     venta.updated_at
                                 ')
-                     ->join('venta', 'venta.id', 'detalle_ventas.id')
+                     ->join('venta', 'venta.id', 'detalle_ventas.id_venta')
                      ->where("venta.id", $id_venta);
         return $items;
     }

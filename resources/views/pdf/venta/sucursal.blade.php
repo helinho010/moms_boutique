@@ -4211,7 +4211,7 @@
                       <th style="width: 15%;">Descuento [Bs]</th>
                       <th style="width: 15%;">Subtotal [Bs]</th>
                     </tr>
-                    {{-- @foreach ($productosVendidos as $item)
+                    @foreach ($productosVendidos as $item)
                         <tr>
                             <td> {{ $loop->iteration }} </td>
                             <td> {{ $item->cantidad_detalle_ventas }} </td>
@@ -4220,15 +4220,15 @@
                             <td> {{ $item->decuento_item_detalle_ventas }} </td>
                             <td> {{ $item->subtotal_detalle_ventas }} </td>
                         </tr>
-                    @endforeach --}}
+                    @endforeach
                 </table>
-                {{-- <table class="totales">
+                <table class="totales">
                     <tr>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td class="rotulo">Descuento Total [Bs]</td>
-                      <td class="cantidades"> {{$venta->desuento}} </td>
+                      <td class="cantidades"> {{ $venta->descuento }} </td>
                     </tr>
                     <tr>
                       <td></td>
@@ -4256,7 +4256,7 @@
                     <tr>
                         <td class="">Son: {{ $literalCanitdadTotal }} </td>
                     </tr>
-                </table> --}}
+                </table>
             </div>
             <footer>
                 Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit est sint nesciunt, repellat magnam asperiores. Quo dolore in odit eum tempore cumque sed quia! Deserunt optio similique molestiae corrupti eligendi!
