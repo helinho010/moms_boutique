@@ -45,12 +45,12 @@
             <h4>Realizando Venta en el Evento: 
                 <span class="h4" style="color: #512BFA">
                     @isset($evento)
-                        {{ $evento[0]->nombre }}
+                        {{ $evento->nombre }}
                     @endisset
                 </span>
                 <span class="h4" style="color: #512BFA">
                     @isset($evento)
-                        {{ $evento[0]->fecha_evento }}
+                        {{ $evento->fecha_evento }}
                     @endisset
                 </span>
             </h4>
@@ -59,7 +59,7 @@
 @endsection
 
 @section('content')
-    @livewire('realizar-venta')
+    @livewire('realizar-venta', ['tipoVenta' => 'evento', 'id_tipo_venta'=> $evento->id])
 @endsection
 
 

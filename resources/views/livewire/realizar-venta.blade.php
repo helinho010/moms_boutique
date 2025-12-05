@@ -20,17 +20,17 @@
                                     (Stock: {{ $producto->cantidad_inventario_externo }})  
                                 </option>     
                               @endif --}}
-                              @if ($producto->stock_inventario_internos < 1)
+                              @if ($producto->stock < 1)
                                 <option value="{{ $producto->id_productos }}" disabled> 
                                     {{"$producto->id_productos - $producto->nombre_productos"}} 
                                     - Talla: {{ $producto->talla_productos == '' ? "ST(Sin talla)" : $producto->talla_productos}}
-                                    - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock_inventario_internos }})
+                                    - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock }})
                                 </option>
                               @else
                                 <option value="{{ $producto->id_productos }}"> 
                                     {{"$producto->id_productos - $producto->nombre_productos"}} 
                                     - Talla: {{ $producto->talla_productos == '' ? "ST(Sin talla)" : $producto->talla_productos}}
-                                    - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock_inventario_internos }})
+                                    - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock }})
                                 </option>      
                               @endif
                             @endforeach    

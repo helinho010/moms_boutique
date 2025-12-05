@@ -15,6 +15,7 @@ use Luecano\NumeroALetras\NumeroALetras;
 
 use App\Exports\VentaReporteExcelExport;
 use App\Models\Evento;
+use App\Models\InventarioExterno;
 use App\Models\UsuarioEvento;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -60,6 +61,29 @@ class VentaController extends Controller
             'tipoPagos' => $tipoPagos,
             'tipoVenta' => 'sucursal',
         ]);
+    }
+
+    public function seleccionEventoVenta(Request $request)
+    {
+
+        $validacion = $request->validate([
+            "id_evento" => "required|integer|exists:eventos,id",
+        ]);
+
+        $evento = Evento::findOrFail($request->id_evento);
+
+        $tipoPagos = TipoPago::where('estado',1)->get();
+
+        $productosEvento = InventarioExterno::inventarioXEvento($request->id_evento)->get();
+        
+        session(['eventoSeleccionadoParaVenta' => $request->id_evento]); 
+
+        return view('Venta.ventaEvento',[
+            'evento'=>$evento,
+            'productos' => $productosEvento,
+            'tipoPagos' => $tipoPagos,
+            'tipoVenta' => 'evento',
+        ]);   
     }
 
 

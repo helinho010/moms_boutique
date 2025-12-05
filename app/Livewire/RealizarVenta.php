@@ -69,15 +69,12 @@ class RealizarVenta extends Component
             $this->productos = InventarioInterno::inventarioXSucurusal($this->id_tipo_venta)->get();
 
         }else{
-            dd("no");
-            // $this->evento = Evento::where('id',session('eventoSeleccionadoParaVenta'))->get();
-            $this->eventoDB = Evento::where('id',$this->idTipoVenta)->get();    
-            //$this->productosEvento = InventarioExterno::inventarioXEvento(session('eventoSeleccionadoParaVenta'))->get();
-            $this->productos = InventarioExterno::inventarioXEvento($this->idTipoVenta)->get();
+            
+            $this->eventoDB = Evento::where('id',$this->id_tipo_venta)->get();    
+            $this->productos = InventarioExterno::inventarioXEvento($this->id_tipo_venta)->get();
         }
         
         $this->idProductoSeleccionado = 'seleccionado';
-        
         $this->cantidadDelProductoSeleccionado = 0;
     }
 

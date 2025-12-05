@@ -30,9 +30,8 @@ class InventarioInterno extends Model
     {
       $inventario = self::selectRaw('
                                     inventario_internos.id as id_inventario_internos,
-                                    inventario_internos.stock as stock_inventario_internos,
+                                    inventario_internos.stock as stock,
                                     inventario_internos.cantidad_ingreso as cantidad_ingreso_inventario_internos,
-                                    inventario_internos.stock as stock_inventario_internos,
                                     inventario_internos.estado as estado_inventario_internos,
                                     productos.id as id_productos,
                                     productos.nombre as nombre_productos,

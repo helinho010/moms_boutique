@@ -93,8 +93,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/actualizar_inventario_externo',[InventarioExternoController::class,'update'])->name('actualizar_inventario_externo');
     Route::delete('/eliminar_item_inventario_externo',[InventarioExternoController::class,'elimiarItemInventarioInterno'])->name('eliminar_item_inventario_externo');
     Route::get('/inventario_externo_pdf', [InventarioExternoController::class,'exportarInventarioExternoPdf'])->name('inventario_externo_pdf');
-    Route::get('/inventario_externo_retornar_productos', [InventarioExternoController::class,'retornarProductos'])->name('inventario_externo_retornar_productos');
-    Route::post('/seleccion_evento_venta',[InventarioExternoController::class,'seleccionEventoVenta'])->name('seleccion_evento_venta');  
+    Route::get('/inventario_externo_retornar_productos', [InventarioExternoController::class,'retornarProductos'])->name('inventario_externo_retornar_productos');  
 
 
     //Traspaso de Productos
@@ -111,6 +110,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/actualizar_detalle_venta',[DetalleVentaController::class,'update'])->name('actualizar_detalle_venta');
     Route::post('/actualizar_estado_venta',[VentaController::class,'update_estado'])->name('actualizar_estado_detalle_venta');
     Route::post('/seleccion_sucursal_venta',[VentaController::class,'seleccionSucursalVenta'])->name('seleccion_sucursal_venta');
+    Route::post('/seleccion_evento_venta',[VentaController::class,'seleccionEventoVenta'])->name('seleccion_evento_venta');
     Route::post('/numeros_a_letras',[VentaController::class,'numeroALetras'])->name('numeros_a_letras');
     Route::post('/realizar_venta',[VentaController::class,'realizarVenta'])->name('realizar_venta');
     Route::get('/exportar_venta_detalle_venta',[VentaController::class,'exportVentaPdf'])->name('exportar_venta_detalle_venta');
