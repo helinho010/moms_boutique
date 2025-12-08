@@ -111,4 +111,22 @@ class InventarioExterno extends Model
 
         return $inventario;
     }
+
+    public static function buscarItemInventario($id_producto, $id_evento)
+    {
+      return self::selectRaw('
+                                inventario_externos.id,
+                                inventario_externos.cantidad as stock,
+                                inventario_externos.activo as estado,
+                                productos.id as id_productos,
+                                productos.nombre as nombre_productos,
+                                productos.costo as costo_productos,
+                                productos.precio as precio_productos,
+                                productos.talla as talla_productos,
+                                productos.estado as estado_productos
+                        ')
+          ->join('productos', 'productos.id', 'inventario_externos.id_producto')
+          ->where('inventario_externos.id_producto',$id_producto)
+          ->where('inventario_externos.id_evento', $id_evento);
+    }
 }

@@ -4722,6 +4722,8 @@ class VentaController extends Controller
             $datosCliente = Cliente::findOrFail($datosVenta['id_cliente']);
             
             $productosVendidos = DetalleVenta::ventaDetalleItems($idVenta)->get();
+
+            $nombre_archivo = 'Venta_'.date('dmY_His').'.pdf';
             
             if($sucursalEvento === 'sucursal'){
                 try {
@@ -4735,8 +4737,7 @@ class VentaController extends Controller
                         'venta' => $datosVenta,
                     ]);
                         
-                    $nombre_archivo = 'Venta_'.date('dmY_His').'.pdf';
-                    return $pdf->download('pruebita_nombre.pdf'); 
+                    return $pdf->download($nombre_archivo . '.pdf'); 
 
                 } catch (\Throwable $th) {
                     dd($th->getMessage());
@@ -4744,11 +4745,18 @@ class VentaController extends Controller
             
 
             }else{
-                // $datosSucursalEvento = Evento::findOrFail($datosVenta['id_evento']);
+                
                 $pdf = Pdf::loadView('pdf.venta.evento', [
-                    'mensaje' => "hola",
+                        'tituloPdf' => 'Venta',
+                        'fechaVenta' => $datosVenta->created_at,
+                        'evento' => Evento::findOrFail($idSucursalEvento),
+                        'productosVendidos' => $productosVendidos,
+                        'literalCanitdadTotal' => $literal,
+                        'cliente' => $cliente,
+                        'venta' => $datosVenta,
                 ]);
-                return $pdf->download('invoice.pdf'); 
+
+                return $pdf->download($nombre_archivo . '.pdf');
             }   
     }
 

@@ -4216,9 +4216,9 @@
                             <td> {{ $loop->iteration }} </td>
                             <td> {{ $item->cantidad_detalle_ventas }} </td>
                             <td> {{ $item->descripcion_detalle_ventas }} </td>
-                            <td> {{ $item->precio_unitario_detalle_ventas }} </td>
-                            <td> {{ $item->decuento_item_detalle_ventas }} </td>
-                            <td> {{ $item->subtotal_detalle_ventas }} </td>
+                            <td> {{ number_format($item->precio_unitario_detalle_ventas, 2) }} </td>
+                            <td> {{ number_format($item->decuento_item_detalle_ventas, 2) }} </td>
+                            <td> {{ number_format($item->subtotal_detalle_ventas, 2) }} </td>
                         </tr>
                     @endforeach
                 </table>
@@ -4228,28 +4228,28 @@
                       <td></td>
                       <td></td>
                       <td class="rotulo">Descuento Total [Bs]</td>
-                      <td class="cantidades"> {{ $venta->descuento }} </td>
+                      <td class="cantidades"> {{ number_format($venta->descuento, 2) }} </td>
                     </tr>
                     <tr>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td class="rotulo">Total Venta [Bs]</td>
-                      <td class="cantidades"> {{ $venta->total_venta }} </td>
+                      <td class="cantidades"> {{ number_format($venta->total_venta, 2) }} </td>
                     </tr>
                     <tr>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td class="rotulo">Monto Recibido [Bs]</td>
-                      <td class="cantidades">{{$venta->efectivo_recibido}} </td>
+                      <td class="cantidades">{{ number_format($venta->efectivo_recibido, 2) }} </td>
                     </tr>
                     <tr>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td class="rotulo">Cambio [Bs]</td>
-                        <td class="cantidades"> {{ (float) $venta->cambio }} </td>
+                        <td class="cantidades"> {{ number_format($venta->cambio, 2) }} </td>
                     </tr>
                 </table>
                 <table class="literalCanitdadTotal">

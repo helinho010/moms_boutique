@@ -106,22 +106,24 @@
                         <tr class="sinMargen">
                             <th colspan="2"></th>
                             <td colspan="2" style="font-weight: bold;">Total Descuento [Bs]: </td> 
-                            <td><input type="text" placeholder="0" id="descuentoVenta" wire:model='descuentoTotal' wire:keydown.enter='calcularValoresMonetarios' wire:keydown.tab='calcularValoresMonetarios' readonly></td>
-                          </tr>
+                            <td>{{ number_format($descuentoTotal, 2) }}</td>
+                        </tr>
                         <tr class="sinMargen">
                           <th colspan="2" ></th>
                           <td colspan="2" style="font-weight: bold;">Total [Bs.]: </td> 
-                          <td id="total"> <input type="text" name="total" wire:model='total' id="totalinput" readonly> </td>
+                          <td id="total"> {{ number_format($total, 2) }} </td>
                         </tr>
                         <tr class="sinMargen">
                             <th colspan="2"></th>
                             <td colspan="2" style="font-weight: bold">Efectivo Recibido [Bs.]: </td> 
-                            <td><input type="text" placeholder="0" id="efectivoRecebido" wire:model='efectivoRecivido' wire:keydown.enter='calcularValoresMonetarios' wire:keydown.tab='calcularValoresMonetarios'></td>
+                            <td><input type="text" placeholder="0" id="efectivoRecebido" 
+                                value="{{ number_format($efectivoRecividoFormateado, 2) }}"
+                                wire:model='efectivoRecivido' wire:keydown.enter='calcularValoresMonetarios' wire:keydown.tab='calcularValoresMonetarios'></td>
                         </tr>
                         <tr class="sinMargen">
                             <th colspan="2"></th>
                             <td colspan="2" style="font-weight: bold">Cambio [Bs.]: </td> 
-                            <td id="cambio"><input type="text" name="cambio" wire:model='cambio' id="cambioinput" readonly></td>
+                            <td id="cambio"> {{ number_format($cambio, 2) }} </td>
                         </tr>
                         <tr style="border: 0;">
                             <th colspan="5"></th>

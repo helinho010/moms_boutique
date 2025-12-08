@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Type\Integer;
 
+use function PHPSTORM_META\type;
 
 class RealizarVenta extends Component
 {
@@ -42,9 +43,10 @@ class RealizarVenta extends Component
     // Valores monetarios
     public $subtotal;
     public $descuentoItem = [];
-    public $descuentoTotal = 0;
+    public $descuentoTotal;
     public $total;
     public $efectivoRecivido;
+    public $efectivoRecividoFormateado = 80.2035;
     public $cambio;
     public $productosAVender;
     public $literalMonto; 
@@ -70,7 +72,7 @@ class RealizarVenta extends Component
 
         }else{
             
-            $this->eventoDB = Evento::where('id',$this->id_tipo_venta)->get();    
+            $this->eventoDB = Evento::findOrFail($this->id_tipo_venta);    
             $this->productos = InventarioExterno::inventarioXEvento($this->id_tipo_venta)->get();
         }
         
@@ -97,11 +99,11 @@ class RealizarVenta extends Component
 
         $this->valoresIniciales();
         // $this->descuento = "0.0";
-        $this->total = "0.0";
-        $this->efectivoRecivido = "0.0";
-        $this->cambio = "0.0";
+        $this->total = 0.0;
+        $this->efectivoRecivido = 0.0;
+        $this->cambio = 0.0;
         $this->productosAVender = array();
-        $this->literalMonto = 0.0;
+        $this->literalMonto = 0;
         $this->nitCliente = "";
         $this->nombreCliente = "";
         $this->idTipoPagoSeleccionado = "seleccionarTipoPago";
@@ -122,12 +124,15 @@ class RealizarVenta extends Component
                 $this->id_tipo_venta
             )->first();
         } else {
-            // Código para el evento inventario interno
-            return; 
+            $productoBuscado = InventarioExterno::buscarItemInventario(
+                $this->idProductoSeleccionado,
+                $this->id_tipo_venta
+            )->first();
         }
 
         if (!$productoBuscado) {
             // Podrías lanzar un error o un return temprano si no encuentra el producto
+            dd("Esta pasando por aqui");
             return;
         }
 
@@ -190,10 +195,9 @@ class RealizarVenta extends Component
             $this->descuentoTotal += $descuento;
         }
 
-        $this->descuentoTotal = number_format($this->descuentoTotal != "" ? $this->descuentoTotal : 0 , 2);
-        //$this->total = number_format($this->total - ($this->descuentoTotal!="" ? $this->descuentoTotal:0), 2);    
-        $this->efectivoRecivido = number_format($this->efectivoRecivido != "" ? floatval($this->efectivoRecivido):0, 2);
-        $this->cambio = number_format($this->efectivoRecivido - $this->total,2);
+        // $this->descuentoTotal = number_format($this->descuentoTotal != "" ? $this->descuentoTotal : 0 , 2);    
+        $this->cambio = $this->efectivoRecivido - $this->total;
+        // $this->efectivoRecivido = round($this->efectivoRecivido, 2);
     }
 
     public function exportarPdf($idVenta)
@@ -204,7 +208,7 @@ class RealizarVenta extends Component
 
     public function almacenarDatos()
     {
-        
+        // dd($this->efectivoRecivido);
         $cliente = new Cliente();
         $cliente->nit_ci = $this->nitCliente != "" ? $this->nitCliente : 0 ;
         $cliente->razon_social = $this->nombreCliente != "" ? $this->nombreCliente : "S/N" ;
@@ -255,14 +259,13 @@ class RealizarVenta extends Component
             
         }
 
-        // $this->exportarPdf($venta->id);
         $this->js("$('#staticBackdrop').modal('hide');");
+        
         $this->mount();
-        // dd($venta->id,$this->sucursalDB->id, $this->tipoVenta);
+        $se = $this->tipoVenta === "sucursal" ?  $this->sucursalDB->id : $this->eventoDB->id;
         $this->dispatch('ventaAlmacenada',
-            $this->tipoVenta, $this->sucursalDB->id, $venta->id 
+            $this->tipoVenta, $se, $venta->id 
         );
-        // return Storage::disk("eventos")->download($nombreArchivo);
     }
 
     public function eliminarProducto($id_producto)
