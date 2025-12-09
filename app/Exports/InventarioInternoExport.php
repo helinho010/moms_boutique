@@ -64,9 +64,9 @@ class InventarioInternoExport implements FromCollection, WithStrictNullCompariso
             $invoice->costo_productos,
             $invoice->precio_productos,
             $invoice->tipo_tipo_ingreso_salidas,
-            $invoice->stock_inventario_internos != 0 ? $invoice->stock_inventario_internos:"0",
+            $invoice->stock != 0 ? $invoice->stock:"0",
             $invoice->name_users,
-            $invoice->estado == 1 ? "Activo":"Inactivo",
+            $invoice->estado_inventario_internos == 1 ? "Activo":"Inactivo",
         ];
     }
 

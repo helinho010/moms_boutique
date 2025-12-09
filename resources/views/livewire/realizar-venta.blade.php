@@ -174,10 +174,13 @@
                       @endforeach
                     </select>
                 </div>
-                
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="factura">Factura:</label>
+                    <input type="text" class="form-control" id="factura" placeholder="Introduzca el numero de factura" wire:model='factura'>
+                </div>
                 <div class="input-group mb-3">
                     <label class="input-group-text" for="envio">Envios:</label>
-                    <input type="text" class="form-control" id="envio" placeholder="Intraduzca el envio" wire:model='envio'>
+                    <input type="text" class="form-control" id="envio" placeholder="Introduzca el envio" wire:model='envio'>
                 </div>
                 <div class="input-group mb-3">
                     <label class="input-group-text" for="referencia">Referencia:</label>

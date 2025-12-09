@@ -54,6 +54,7 @@ class RealizarVenta extends Component
     // Datos de la factura 
     public $nitCliente;
     public $nombreCliente;
+    public $factura;
 
     // #[Validate('required|min:1|numeric')]
     public $idTipoPagoSeleccionado;
@@ -105,6 +106,7 @@ class RealizarVenta extends Component
         $this->productosAVender = array();
         $this->literalMonto = 0;
         $this->nitCliente = "";
+        $this->factura = "";
         $this->nombreCliente = "";
         $this->idTipoPagoSeleccionado = "seleccionarTipoPago";
         $this->envio = "";
@@ -208,7 +210,7 @@ class RealizarVenta extends Component
 
     public function almacenarDatos()
     {
-        // dd($this->efectivoRecivido);
+        // dd($this->factura);
         $cliente = new Cliente();
         $cliente->nit_ci = $this->nitCliente != "" ? $this->nitCliente : 0 ;
         $cliente->razon_social = $this->nombreCliente != "" ? $this->nombreCliente : "S/N" ;
@@ -230,6 +232,7 @@ class RealizarVenta extends Component
         $venta->efectivo_recibido = $this->efectivoRecivido;
         $venta->cambio = $this->cambio;
         $venta->id_tipo_pago = $this->idTipoPagoSeleccionado;
+        $venta->numero_factura = $this->factura;
         $venta->envio = $this->envio;
         $venta->referencia = $this->referencia;
         $venta->observacion = $this->observacion;

@@ -275,7 +275,7 @@
                     </th>
                     <th>{{ $item->tipo_tipo_ingreso_salidas }}</th>
                     <th>{{ $item->cantidad_ingreso_inventario_internos }}</th>
-                    <th>{{ $item->stock_inventario_internos }}</th>
+                    <th>{{ $item->stock }}</th>
                     <th>{{ $item->name_users }}</th>
                     <td>
                         @if ( $item->estado_inventario_internos == 1 )

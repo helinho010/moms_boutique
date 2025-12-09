@@ -4254,7 +4254,7 @@
                             <th>{{ $loop->iteration }}</th>
                             <td>{{ $item->nombre_productos }}</td>
                             <td>{{ $item->tipo_tipo_ingreso_salidas }}</td>
-                            <td>{{ $item->stock_inventario_internos}}</td>
+                            <td>{{ $item->stock}}</td>
                             <td>{{ $item->name_users}}</td>
                             <td>
                                 @if ($item->estado_inventario_internos == 1)
