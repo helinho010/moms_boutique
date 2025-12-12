@@ -4229,7 +4229,7 @@
                                 @endcan
                             </td>
                             <td>{{ $item->tipo_ingreso_salida }}</td>
-                            <td>{{ $item->cantidad_inventario_externo }}</td>
+                            <td>{{ $item->stock }}</td>
                             <td>{{ $item->nombre_del_usuario }}</td>
                             <td>
                                 @if ($item->estado_inventario_externo == 1)

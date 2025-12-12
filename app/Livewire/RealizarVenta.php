@@ -46,7 +46,6 @@ class RealizarVenta extends Component
     public $descuentoTotal;
     public $total;
     public $efectivoRecivido;
-    public $efectivoRecividoFormateado = 80.2035;
     public $cambio;
     public $productosAVender;
     public $literalMonto; 
@@ -101,6 +100,7 @@ class RealizarVenta extends Component
         $this->valoresIniciales();
         // $this->descuento = "0.0";
         $this->total = 0.0;
+        $this->descuentoTotal = 0.0;
         $this->efectivoRecivido = 0.0;
         $this->cambio = 0.0;
         $this->productosAVender = array();
@@ -210,7 +210,7 @@ class RealizarVenta extends Component
 
     public function almacenarDatos()
     {
-        // dd($this->factura);
+        // dd( (int) $this->idTipoPagoSeleccionado);
         $cliente = new Cliente();
         $cliente->nit_ci = $this->nitCliente != "" ? $this->nitCliente : 0 ;
         $cliente->razon_social = $this->nombreCliente != "" ? $this->nombreCliente : "S/N" ;
@@ -231,8 +231,8 @@ class RealizarVenta extends Component
         $venta->total_venta = $this->total;
         $venta->efectivo_recibido = $this->efectivoRecivido;
         $venta->cambio = $this->cambio;
-        $venta->id_tipo_pago = $this->idTipoPagoSeleccionado;
-        $venta->numero_factura = $this->factura;
+        $venta->id_tipo_pago = (int) $this->idTipoPagoSeleccionado;
+        $venta->numero_factura = (int) $this->factura;
         $venta->envio = $this->envio;
         $venta->referencia = $this->referencia;
         $venta->observacion = $this->observacion;

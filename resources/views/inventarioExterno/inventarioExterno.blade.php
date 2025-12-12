@@ -171,14 +171,14 @@
                     </th>
                     <th>{{"$item->ciudad_sucursal -".substr($item->direccion_sucursal,0,30)."..." }}</th>
                     <th>
-                        {{ $item->nombre_producto }} <br>
+                        {{ $item->nombre_productos }} <br>
                         Talla: <span class="badge bg-primary">{{ $item->talla_productos!=""?$item->talla_productos:"ST(Sin Talla)"}}</span>
                         Precio: <span class="badge bg-info text-dark">{{ $item->precio_producto != "" ? $item->precio_producto : 0 }} Bs</span> 
                         @can('costo producto')
                             costo: <span class="badge bg-info text-dark">{{ $item->costo_producto != "" ? $item->costo_producto : 0 }} Bs</span> 
                         @endcan  
                     </th>
-                    <th>{{$item->cantidad_inventario_externo}}</th>
+                    <th>{{$item->stock}}</th>
                     <th>{{"$item->tipo_ingreso_salida"}}</th>
                     <th>{{"$item->nombre_del_usuario"}}</th>
                     <td> 

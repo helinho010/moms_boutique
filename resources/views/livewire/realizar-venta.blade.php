@@ -117,7 +117,6 @@
                             <th colspan="2"></th>
                             <td colspan="2" style="font-weight: bold">Efectivo Recibido [Bs.]: </td> 
                             <td><input type="text" placeholder="0" id="efectivoRecebido" 
-                                value="{{ number_format($efectivoRecividoFormateado, 2) }}"
                                 wire:model='efectivoRecivido' wire:keydown.enter='calcularValoresMonetarios' wire:keydown.tab='calcularValoresMonetarios'></td>
                         </tr>
                         <tr class="sinMargen">
