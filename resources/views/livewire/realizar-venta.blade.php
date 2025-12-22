@@ -22,13 +22,13 @@
                               @endif --}}
                               @if ($producto->stock < 1)
                                 <option value="{{ $producto->id_productos }}" disabled> 
-                                    {{"$producto->id_productos - $producto->nombre_productos"}} 
+                                    {{ $producto->nombre_productos }} 
                                     - Talla: {{ $producto->talla_productos == '' ? "ST(Sin talla)" : $producto->talla_productos}}
                                     - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock }})
                                 </option>
                               @else
                                 <option value="{{ $producto->id_productos }}"> 
-                                    {{"$producto->id_productos - $producto->nombre_productos"}} 
+                                    {{ $producto->nombre_productos }} 
                                     - Talla: {{ $producto->talla_productos == '' ? "ST(Sin talla)" : $producto->talla_productos}}
                                     - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock }})
                                 </option>      
@@ -38,7 +38,7 @@
                          {{-- <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-cart-arrow-down" style="color:green; font-size: 20px;"></i></button> --}}
                     </div>
                     @error('idProductoSeleccionado') <span class="error" style="color: red"> Debe seleccionar un producto *</span> @enderror
-                    
+                    {{-- @livewire('formulario.input-select', ['nomreInput' => "producto", "identificadorInput" => "producto", "placeholder" => "quepasa", "textoValue" => "****", "modelo" => \App\Models\InventarioInterno::class]) --}}
                 </div>
             </form>
         </div>
@@ -152,7 +152,7 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="staticBackdropLabel">Datos del Cliente </h5>
+              <h5 class="modal-title" id="staticBackdropLabel"> Datos del Cliente </h5>
               <button type="button" class="btn-close modalBtnCerrar" data-bs-dismiss="modal" aria-label="Close" id=""></button>
             </div>
             <div class="modal-body">
@@ -213,6 +213,10 @@
                 // console.log(`/reporte_venta_pdf/${data[0]}/${data[1]}/venta/${data[2]}`);
                 window.open(`/reporte_venta_pdf/${data[0]}/${data[1]}/venta/${data[2]}`, '_blank');
             });
+    });
+
+    Livewire.on('refreshMe', () => {
+       location.reload();   
     });
 
     $("#descuentoVenta").on('click', function(){

@@ -33,7 +33,7 @@ class RealizarVenta extends Component
     public $productos;
     public $tipoPagos;
 
-    // Varialbes de los modelos 
+    // Varialbes de los modelos
     #[Validate('required|numeric')]
     public $idProductoSeleccionado;
 
@@ -48,9 +48,9 @@ class RealizarVenta extends Component
     public $efectivoRecivido;
     public $cambio;
     public $productosAVender;
-    public $literalMonto; 
+    public $literalMonto;
 
-    // Datos de la factura 
+    // Datos de la factura
     public $nitCliente;
     public $nombreCliente;
     public $factura;
@@ -65,17 +65,17 @@ class RealizarVenta extends Component
     public function valoresIniciales()
     {
         $this->tipoPagos = TipoPago::where('estado',1)->get();
-        
+
         if ($this->tipoVenta === 'sucursal') {
             $this->sucursalDB = Sucursal::obtenerSucursal($this->id_tipo_venta);
             $this->productos = InventarioInterno::inventarioXSucurusal($this->id_tipo_venta)->get();
 
         }else{
-            
-            $this->eventoDB = Evento::findOrFail($this->id_tipo_venta);    
+
+            $this->eventoDB = Evento::findOrFail($this->id_tipo_venta);
             $this->productos = InventarioExterno::inventarioXEvento($this->id_tipo_venta)->get();
         }
-        
+
         $this->idProductoSeleccionado = 'seleccionado';
         $this->cantidadDelProductoSeleccionado = 0;
     }
@@ -86,9 +86,9 @@ class RealizarVenta extends Component
         $litNum = new NumeroALetras();
 
         $litNum->apocope = true;
-        
+
         if ($this->total >= 0){
-            $this->literalMonto = $litNum->toMoney($this->total, 2, 'bolivianos', 'centavos');    
+            $this->literalMonto = $litNum->toMoney($this->total, 2, 'bolivianos', 'centavos');
         }else{
             $this->js("alert('El total de la factura no puede ser negativo')");
         }
@@ -141,7 +141,7 @@ class RealizarVenta extends Component
         // Normalizar valores
         $precioUnitario = floatval($productoBuscado->precio_productos ?? 0);
         $cantidadNueva = intval($this->cantidadDelProductoSeleccionado);
-        $descripcion = $productoBuscado->nombre_productos 
+        $descripcion = $productoBuscado->nombre_productos
             . " - Talla: " . ($productoBuscado->talla_productos ?: "ST (Sin Talla)");
 
         $coleccion = collect($this->productosAVender);
@@ -168,7 +168,7 @@ class RealizarVenta extends Component
 
         // Resetear selección
         $this->idProductoSeleccionado = 'seleccionado';
-        $this->cantidadDelProductoSeleccionado = 0;        
+        $this->cantidadDelProductoSeleccionado = 0;
 
         // Recalcular totales
         $this->calcularValoresMonetarios();
@@ -180,7 +180,7 @@ class RealizarVenta extends Component
         $this->total = 0;
         $this->descuentoTotal = 0;
 
-        foreach ($this->productosAVender as $key => $producto) 
+        foreach ($this->productosAVender as $key => $producto)
         {
 
             $cantidad = floatval($producto["cantidad"]);
@@ -197,83 +197,88 @@ class RealizarVenta extends Component
             $this->descuentoTotal += $descuento;
         }
 
-        // $this->descuentoTotal = number_format($this->descuentoTotal != "" ? $this->descuentoTotal : 0 , 2);    
+        // $this->descuentoTotal = number_format($this->descuentoTotal != "" ? $this->descuentoTotal : 0 , 2);
         $this->cambio = $this->efectivoRecivido - $this->total;
         // $this->efectivoRecivido = round($this->efectivoRecivido, 2);
     }
 
     public function exportarPdf($idVenta)
     {
-        
+
     }
 
 
     public function almacenarDatos()
     {
-        // dd( (int) $this->idTipoPagoSeleccionado);
-        $cliente = new Cliente();
-        $cliente->nit_ci = $this->nitCliente != "" ? $this->nitCliente : 0 ;
-        $cliente->razon_social = $this->nombreCliente != "" ? $this->nombreCliente : "S/N" ;
-        $cliente->save();
+        if ( count($this->productosAVender) <= 0 ) {
+            $this->js('alert("La lista de productos está vacía.")');
+            return redirect()->route('home_venta');
+            // $this->dispatch('refreshMe');
+        } else {
+            $cliente = new Cliente();
+            $cliente->nit_ci = $this->nitCliente != "" ? $this->nitCliente : 0 ;
+            $cliente->razon_social = $this->nombreCliente != "" ? $this->nombreCliente : "S/N" ;
+            $cliente->save();
 
-        $venta = new Venta();
-        if ($this->tipoVenta === 'sucursal') {
-            $venta->id_sucursal = $this->id_tipo_venta;
-            $venta->id_evento = 0;
-        }else{
-            $venta->id_sucursal = 0;
-            $venta->id_evento = $this->id_tipo_venta;
-        }
-
-        $venta->id_usuario = auth()->user()->id;
-        $venta->id_cliente = $cliente->id;
-        $venta->descuento = $this->descuentoTotal;
-        $venta->total_venta = $this->total;
-        $venta->efectivo_recibido = $this->efectivoRecivido;
-        $venta->cambio = $this->cambio;
-        $venta->id_tipo_pago = (int) $this->idTipoPagoSeleccionado;
-        $venta->numero_factura = (int) $this->factura;
-        $venta->envio = $this->envio;
-        $venta->referencia = $this->referencia;
-        $venta->observacion = $this->observacion;
-        $venta->nombre_pdf = "";
-        $venta->save();        
-
-        foreach ($this->productosAVender as $key => $producto) 
-        {
-            $detalleVenta = new DetalleVenta();
-            $detalleVenta->id_venta = $venta->id;
-            $detalleVenta->id_producto = $producto["id_producto"];
-            $detalleVenta->cantidad = $producto["cantidad"];
-            $detalleVenta->descuento_item = $producto["descuento"];
-            $detalleVenta->descripcion = $producto["descripcion"];
-            $detalleVenta->precio_unitario = $producto["precio_unitario"];
-            $detalleVenta->subtotal = $producto["subtotal"];
-            $detalleVenta->save();
-
-            
-            if ($this->tipoVenta === "sucursal"){
-                InventarioInterno::disminuirStock($producto["id_producto"], $producto["cantidad"]);
+            $venta = new Venta();
+            if ($this->tipoVenta === 'sucursal') {
+                $venta->id_sucursal = $this->id_tipo_venta;
+                $venta->id_evento = 0;
             }else{
-                $productoInventarioExterno = InventarioExterno::where('id_evento',session('eventoSeleccionadoParaVenta'))
-                                                      ->where('id_producto',$producto["id_producto"])          
-                                                      ->update(['cantidad'=> DB::raw('cantidad-'.$producto["cantidad"])]);
+                $venta->id_sucursal = 0;
+                $venta->id_evento = $this->id_tipo_venta;
             }
-            
-        }
 
-        $this->js("$('#staticBackdrop').modal('hide');");
-        
-        $this->mount();
-        $se = $this->tipoVenta === "sucursal" ?  $this->sucursalDB->id : $this->eventoDB->id;
-        $this->dispatch('ventaAlmacenada',
-            $this->tipoVenta, $se, $venta->id 
-        );
+            $venta->id_usuario = auth()->user()->id;
+            $venta->id_cliente = $cliente->id;
+            $venta->descuento = $this->descuentoTotal;
+            $venta->total_venta = $this->total;
+            $venta->efectivo_recibido = $this->efectivoRecivido;
+            $venta->cambio = $this->cambio;
+            $venta->id_tipo_pago = (int) $this->idTipoPagoSeleccionado;
+            $venta->numero_factura = (int) $this->factura;
+            $venta->envio = $this->envio;
+            $venta->referencia = $this->referencia;
+            $venta->observacion = $this->observacion;
+            $venta->nombre_pdf = "";
+            $venta->save();
+
+            foreach ($this->productosAVender as $key => $producto)
+            {
+                $detalleVenta = new DetalleVenta();
+                $detalleVenta->id_venta = $venta->id;
+                $detalleVenta->id_producto = $producto["id_producto"];
+                $detalleVenta->cantidad = $producto["cantidad"];
+                $detalleVenta->descuento_item = $producto["descuento"];
+                $detalleVenta->descripcion = $producto["descripcion"];
+                $detalleVenta->precio_unitario = $producto["precio_unitario"];
+                $detalleVenta->subtotal = $producto["subtotal"];
+                $detalleVenta->save();
+
+
+                if ($this->tipoVenta === "sucursal"){
+                    InventarioInterno::disminuirStock($producto["id_producto"], $producto["cantidad"]);
+                }else{
+                    $productoInventarioExterno = InventarioExterno::where('id_evento',session('eventoSeleccionadoParaVenta'))
+                                                        ->where('id_producto',$producto["id_producto"])
+                                                        ->update(['cantidad'=> DB::raw('cantidad-'.$producto["cantidad"])]);
+                }
+
+            }
+
+            $this->js("$('#staticBackdrop').modal('hide');");
+
+            $this->mount();
+            $se = $this->tipoVenta === "sucursal" ?  $this->sucursalDB->id : $this->eventoDB->id;
+            $this->dispatch('ventaAlmacenada',
+                $this->tipoVenta, $se, $venta->id
+            );
+        }
     }
 
     public function eliminarProducto($id_producto)
     {
-        foreach ($this->productosAVender as $key => $producto) 
+        foreach ($this->productosAVender as $key => $producto)
         {
           if($producto["id_producto"] == $id_producto )
           {

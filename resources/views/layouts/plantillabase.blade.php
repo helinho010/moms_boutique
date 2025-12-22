@@ -21,10 +21,15 @@
     @yield('css')
 </head>
 <body>
-    <div class="wrapper">
+    <div class="wrapper">       
         @include('layouts.app.nav')
         <div class="main">
             @include('layouts.app.usernav')
+            @env(['local', 'developer'])
+                <div id="desarrolloLocal" style="width: 100%; background: green; color:beige;" class="text-center">
+                    Estas en modo desarrollo 👍
+                </div>
+            @endenv
             @include('layouts.app.content')
             @include('layouts.app.footer')
         </div>

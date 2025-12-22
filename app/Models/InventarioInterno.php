@@ -69,7 +69,7 @@ class InventarioInterno extends Model
     public static function buscar($idSucursal, $buscar, $paginate=10)
     {
        $inventario = self::selectRaw('inventario_internos.id as id_inventario_internos,
-                                      inventario_internos.stock as stock_inventario_internos,
+                                      inventario_internos.stock,
                                       inventario_internos.cantidad_ingreso as cantidad_ingreso_inventario_internos,
                                       inventario_internos.estado as estado_inventario_internos,
                                       inventario_internos.created_at as created_at_inventario_internos, 
