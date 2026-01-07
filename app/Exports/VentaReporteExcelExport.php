@@ -41,7 +41,9 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
         public function query()
         {
             // dd($this->idSucursalEvento."--".$this->titleLabel."--".$this->fechaInicial."--".$this->fechaFinal);
-            $columnas = 'detalle_ventas.descripcion,
+            $columnas = '
+                         categorias.nombre as categoria,
+                         detalle_ventas.descripcion,
                          detalle_ventas.precio_unitario,
                          detalle_ventas.cantidad,
                          detalle_ventas.descuento_item,
@@ -71,6 +73,8 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
             $consulta = Venta::query()
                             ->selectRaw($columnas)
                             ->join('detalle_ventas', 'detalle_ventas.id_venta', 'venta.id')
+                            ->join('productos', 'productos.id', 'detalle_ventas.id_producto')
+                            ->join('categorias', 'categorias.id', 'productos.id_categoria')
                             ->join('users', 'users.id', 'venta.id_usuario')
                             ->join('tipo_pagos', 'tipo_pagos.id', 'venta.id_tipo_pago');
             
@@ -96,17 +100,18 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
             return [
                 "Sucursal/Evento",      //A
                 "Fecha Hora",           //B
-                "Producto",             //C
-                "P/U [Bs]",             //D
-                "Cantidad",             //E    
-                "Descuento[Bs]",        //F
-                "Sub Total",            //G    
-                "Tipo Pago",            //H
-                "Vendedor",             //I
-                "Numero Factura",       //J
-                "Envio" ,               //k
-                "Referencia",           //L
-                "observacion"           //M    
+                "Categoria",            //C
+                "Producto",             //D
+                "P/U [Bs]",             //E
+                "Cantidad",             //F    
+                "Descuento[Bs]",        //G
+                "Sub Total",            //H    
+                "Tipo Pago",            //I
+                "Vendedor",             //J
+                "Numero Factura",       //K
+                "Envio" ,               //L
+                "Referencia",           //M
+                "observacion"           //N    
             ];
         }
 
@@ -115,6 +120,7 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
             return [
                 $invoice->direccion != "" ? substr($invoice->direccion,0,45)."..." : $invoice->nombre,
                 $invoice->created_at,
+                $invoice->categoria,
                 $invoice->descripcion,
                 $invoice->precio_unitario,
                 $invoice->cantidad,
@@ -134,9 +140,10 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
         public function columnFormats(): array
         {
             return [
-                'F' => NumberFormat::FORMAT_NUMBER_00,
+                'E' => NumberFormat::FORMAT_NUMBER_00,
                 'G' => NumberFormat::FORMAT_NUMBER_00,
-                'J' => NumberFormat::FORMAT_TEXT,
+                'H' => NumberFormat::FORMAT_NUMBER_00,
+                'K' => NumberFormat::FORMAT_TEXT,
             ];
         }
 
@@ -145,17 +152,18 @@ class VentaReporteExcelExport implements FromQuery, WithHeadings, WithColumnWidt
             return [
                 'A' => 30,
                 'B' => 20,
-                'C' => 30,
-                'D' => 10,
+                'C' => 20,
+                'D' => 30,
                 'E' => 10,
                 'F' => 16,
-                'G' => 18,
+                'G' => 16,
                 'H' => 18,
-                'I' => 13,
-                'J' => 15, 
+                'I' => 18,
+                'J' => 20, 
                 'K' => 15,   
                 'L' => 20,
                 'M' => 20,
+                'N' => 30,
             ];
         }
 
