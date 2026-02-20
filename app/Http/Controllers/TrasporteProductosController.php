@@ -123,7 +123,7 @@ class TrasporteProductosController extends Controller
         
         $sucursalDestino = Sucursal::findOrFail($request->destino_sucursal_traspaso_productos);
         
-        $traspasos = TrasporteProductos::traspasoXSucursal($request->origen_sucursal_traspaso_productos)->get();
+        $traspasos = TrasporteProductos::traspasoProductosFecha($sucursalOrigen->id, $sucursalDestino->id, $request->fecha_form_traspaso_productos_pdf)->get();
          
         $pdf = Pdf::loadView('pdf.traspasoProductos', [
                'sucursalOrigen' => $sucursalOrigen,

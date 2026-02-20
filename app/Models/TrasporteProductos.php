@@ -99,7 +99,7 @@ class TrasporteProductos extends Model
                     ->orderBy('trasporte_productos.updated_at', 'desc');
     }
 
-    public static function traspasoXSucursal($id_sucursal)
+    public static function traspasoProductosFecha($idSucursalOrigen, $idSucursalDestino, $fecha)
     {
         return self::selectRaw('
                                 trasporte_productos.id as id_trasporte_productos,
@@ -133,7 +133,9 @@ class TrasporteProductos extends Model
                     ->join('productos', 'trasporte_productos.id_producto', 'productos.id')
                     ->join('tipo_ingreso_salidas', 'trasporte_productos.id_tipo_ingreso_salida', 'tipo_ingreso_salidas.id')
                     ->join('users', 'trasporte_productos.id_usuario', 'users.id')
-                    ->where('trasporte_productos.id_sucursal_origen', $id_sucursal)
+                    ->where('trasporte_productos.id_sucursal_origen', $idSucursalOrigen)
+                    ->where('trasporte_productos.id_sucursal_destino', $idSucursalDestino)
+                    ->whereDate('trasporte_productos.created_at', $fecha)
                     ->orderBy('trasporte_productos.updated_at', 'desc');
     }
 }
