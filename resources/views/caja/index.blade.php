@@ -242,7 +242,7 @@
     {{-- Modal para registrar un nuevo cierre de caja--}}
     @can('crear cierre caja')
         <x-modal id="nuevoCierreCaja" title="Cierre de Caja" 
-             idformulario="frm-cierre-caja" nombre-btn="Guardar">
+             idformulario="frm-cierre-caja" nombre-btn="Guardar" onclick="confirmarEnviar('frm-cierre-caja')">
             <div class="row" style="font-size: 1rem; font-weight: bold">
                 <div class="col">
                     <span class="h5">Ventas del Sistema:</span>
@@ -346,7 +346,7 @@
     {{-- Modal para revisar un cierre de caja --}}
     @can('revisar cierre caja')
         <x-modal id="verificarCierreCaja" title="Verificar Cierre de Caja" 
-             idformulario="revCierreCaja" nombre-btn="Registrar">
+             idformulario="revCierreCaja" nombre-btn="Registrar" onclick="confirmarEnviar('revCierreCaja')">
             <div class="row">
                 <div class="col-md-12 text-center title h4">
                     Datos del Cierre
@@ -470,7 +470,8 @@
 
     {{-- Modal para reporte Pdf --}}
     @can('exportar pdf')
-        <x-modal id="modalExportarPdfCierreCaja" title="Exportar Cierre a Pdf" idformulario="formExportCierreierreCaja" nombre-btn="Exportar pdf">
+        <x-modal id="modalExportarPdfCierreCaja" title="Exportar Cierre a Pdf" 
+                 idformulario="formExportCierreierreCaja" nombre-btn="Exportar pdf" onclick="confirmarEnviar('formExportCierreierreCaja')">
         
             @php $fechahoy = date('Y-m-d')  @endphp
 
@@ -519,7 +520,7 @@
     {{-- Modal ExportarExcel --}}
     @can('exportar excel')
         <x-modal id="modalExportarExcelCierreCaja" title="Exportar Cierre a Excel" 
-             idformulario="formExportCierreierreCajaExcel" nombre-btn="Exportar Excel">
+             idformulario="formExportCierreierreCajaExcel" nombre-btn="Exportar Excel" onclick="confirmarEnviar('formExportCierreierreCajaExcel')">
         
             @php $fechahoy = date('Y-m-d')  @endphp
 

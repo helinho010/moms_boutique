@@ -203,6 +203,16 @@
                 </li>  
             @endcan
 
+            @can('opc compras')
+                <li class="sidebar-item" id="compra">
+                    <a class="sidebar-link" href="{{ route('home_compras') }}">
+                        <i class="fas fa-list-alt"></i>
+                        <span class="align-middle">Compras</span>
+                    </a>
+                </li>
+            @endcan
+
+
            @can('opc ventas')
             <li class="sidebar-item" id="venta">
                 <a data-bs-target="#ui" data-bs-toggle="collapse" class="sidebar-link collapsed" aria-expanded="false">

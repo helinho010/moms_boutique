@@ -16,9 +16,10 @@ class modal extends Component
         public string $title,
         public string $nombreBtn,
         public string $idformulario,
+        public ? string $tamanioModal = null, // Nuevo atributo para el tamaño del modal
     )
     {
-        //
+        
     }
 
     /**

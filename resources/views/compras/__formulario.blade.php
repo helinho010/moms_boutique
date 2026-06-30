@@ -7,42 +7,42 @@
             </div>
         </div>
         <div class="row cabecera">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-12 h5 text-center">
-                            Datos de la Compra
-                        </div>
-                        <div class="col-md-12">
-                            <div class="input-group input-group-sm mb-2">
-                                <label for="id_usuario">Usuario</label>
-                                <select class="form-select-sm select2" name="id_usuario" id="id_usuario">
-                                    <option value="">Seleccione un usuario</option>
-                                    @foreach ($usuarios as $usuario)
-                                        <option value="{{ $usuario->id }}" 
-                                            @if ($usuario->id == auth()->user()->id) selected @endif
-                                        > {{ $usuario->name}} </option>
-                                    @endforeach
-                                </select>
+                    <div class="row mb-4 mt-4">
+                        <div class="mb-3 row">
+                            <label for="staticEmail" class="col-sm-3 col-form-label">Usuario: </label>
+                            <div class="col-sm-6">
+                                <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{ auth()->user()->name }}">
                             </div>
-                            <div class="input-group input-group-sm mb-2">
-                                <label for="">Sucursal Destino: </label>
-                                <select class="form-select-sm select2" name="id_sucursal" id="id_sucursal">
-                                    <option value="">Seleccione una Sucursal...</option>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="sucursal_destino" class="col-sm-3 col-form-label">Sucursal Destino: </label>
+                            <div class="col-sm-6">
+                                <select name="sucursal_destino" id="sucursal_destino">
+                                    <option value="-1">Seleccione una opcion...</option>
                                     @foreach ($sucursales as $sucursal)
                                         <option value="{{ $sucursal->id }}">{{ $sucursal->direccion }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="mb-2">
-                                <label for="" class="form-labe">Codigo: </label>
-                                <input type="text" name="codigo_compra" id="codigo_compra" class="form-control form-control-sm" value="{{ $codigo_compra }}" readonly>
-                            </div>    
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="staticEmail" class="col-sm-3 col-form-label">Codigo Compra: </label>
+                            <div class="col-sm-6">
+                                <input type="text" readonly name="codigo_compra" class="form-control-plaintext" value="{{ $codigo_compra }}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="staticEmail" class="col-sm-3 col-form-label">Fecha Compra: </label>
+                            <div class="col-sm-6">
+                                <input type="date" class="form-control-plaintext" name="fecha_compra" value="{{ $fecha_compra }}">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            {{-- <div class="col-md-4">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12 h5 text-center">
@@ -65,8 +65,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
+            </div> --}}
+            {{-- <div class="col-md-4">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12 h5 text-center">
@@ -84,65 +84,26 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
-        <div class="row mt-4 mb-4">
-            <div class="col-md-7 text-center">
-                <div class="input-group mb-3">
-                    <label for="" class="col-sm-3 col-form-label">Producto: </label>
-                    <select name="" id="" class="form-control select2">
-                        <option value="">Seleccione un Producto</option>
-                        @foreach ($productos as $producto)
-                            <option value="{{ $producto->id }}">{{ $producto->nombre }} - {{ $producto->precio }}</option>
-                        @endforeach
-                    </select>
-                </div>                
-            </div>
-            <div class="col-md-4">
-                <div class="input-group mb-3">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control-sm" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
-                        <button class="btn btn-outline-secondary bt-sm" type="button" id="button-addon2">Button</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row cabecera">
-            <div class="col-md-12">
-                <table class="table table-bordered table-sm mt-3">
-                    <thead>
-                        <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Cantidad</th>
-                        <th scope="col">Producto</th>
-                        <th scope="col">P. Unitario</th>
-                        <th scope="col">Sub Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                        <th scope="row">1</th>
-                        <td>2</td>
-                        <td>Conjunto ropa XL - 15</td>
-                        <td>70</td>
-                        <td>140</td>
-                        </tr>
-                        <tr>
-                        <th colspan="3"></th>
-                        <td>Total</td>
-                        <td>1500</td>
-                        </tr>
-                    </tbody>
-                    </table>
-            </div>
-        </div>
+        @livewire('compra.detalle-productos', ['productos' => $productos])
     </div>
 </div>
 
 @section('css')
     <style>
         .cabecera > div, .cuerpo > div {
-            border: 1px solid black;
+            border: 0px solid black;
+        }
+
+        hr {
+            border: 1px dashed rgb(100, 16, 69);
+            margin-bottom: 60px;
+        }
+        
+        label {
+            font-weight: bold;
+            size: 14px; 
         }
     </style>
 @endsection
@@ -154,9 +115,18 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        $('.select2').select2({
-            width: '70%',
+    // $(document).ready(function() {
+    //     $('.select2').select2({
+    //         width: '60%',
+    //     });
+    // });
+
+    document.addEventListener('livewire:load', function () {
+        $('#id_producto_seleccionado').select2();
+
+        $('#id_producto_seleccionado').on('change', function () {
+            let value = $(this).val();
+            Livewire.find(componentId).set('idProductoSeleccionado', value);
         });
     });
 </script>

@@ -6,8 +6,11 @@
     "placeholder",
 ])
 <div>
-    <textarea class="form-control" name="{{ $name }}" id="{{ $id }}" 
+    <textarea name="{{ $name }}" id="{{ $id }}" 
               cols="{{ $cols }}" rows="{{ $rows }}" 
               placeholder="{{ $placeholder }}"
-    >{{ $slot }}</textarea>
+              {{ $attributes->merge(['class' => 'form-control']) }}
+    >
+        {{ $slot }}
+    </textarea>
 </div>
