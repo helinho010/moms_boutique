@@ -15,6 +15,41 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ComprasController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     $validacion = $request->validate([
+    //         "buscar" => "string|nullable|max:50",
+    //         "id_sucursal" => "nullable|exists:sucursals,id",
+    //     ]);
+
+    //     if($request->has('id_sucursal') && $request->input('id_sucursal') != null){
+            
+    //         $idSucursal = $request->input('id_sucursal');
+
+    //         if ($request->has('buscar') && $request->input('buscar') != null) {
+
+    //             $buscar = $request->input('buscar');
+    //             $compras = Compras::compras(null, $buscar, $idSucursal)->paginate(10)->appends(['buscar' => $buscar]);
+    //             session()->flash('mensaje-errores', "Buscar verdad");
+    //         }else{
+
+    //             $compras = Compras::compras(null, null, $idSucursal)->paginate(10)->appends(['id_sucursal' => $idSucursal]);
+    //             session()->flash('mensaje-errores', "Buscar falso");
+    //         }
+
+    //     }else{
+    //         $compras = Compras::whereNull('id')->paginate(10);
+    //         session()->flash('mensaje-errores', "id_sucursal no existe");
+    //     }
+
+    //     return view('compras.index', [
+    //         'compras' => $compras,
+    //         'sucursales' => UserSucursal::sucursalesHabilitadasUsuario(auth()->id()),
+    //         'id_sucursal' => $request->input('id_sucursal') ? $request->input('id_sucursal') : null,
+    //         'buscar' => $request->input('buscar') ? $request->input('buscar') : null,
+    //     ]);
+    // }
+
     public function index(Request $request)
     {
         $validacion = $request->validate([
@@ -22,47 +57,41 @@ class ComprasController extends Controller
             "id_sucursal" => "nullable|exists:sucursals,id",
         ]);
 
-        if($request->has('buscar') && $request->input('buscar') != null) {
-            
-            $buscar = $request->input('buscar');
-            $compras = Compras::compras(null, $buscar)->paginate(10)->appends(['buscar' => $buscar]);
+        $idSucursal = $request->input('id_sucursal');
+        $buscar = $request->input('buscar');
 
-        }else if($request->has('id_sucursal') && $request->input('id_sucursal') != null){
-            
-            $idSucursal = $request->input('id_sucursal');
-            $compras = Compras::compras(null, null, $idSucursal)->paginate(10)->appends(['id_sucursal' => $idSucursal]);
-
-        }else{
-            $compras = Compras::whereNull('id')->paginate(10);
+        if ($idSucursal) {
+            // Si hay sucursal, obtener compras filtradas
+            if ($buscar) {
+                $compras = Compras::compras(null, $buscar, $idSucursal)->paginate(10)->withQueryString(); //appends(['buscar' => $buscar, 'id_sucursal' => $idSucursal]);
+            } else {
+                $compras = Compras::compras(null, null, $idSucursal)->paginate(10)->withQueryString();//appends(['id_sucursal' => $idSucursal]);
+            }
+        } else {
+            // Si no hay sucursal, mostrar todas las compras o vacío según tu lógica
+            // En lugar de whereNull('id'), podrías mostrar todas las compras
+            $compras = Compras::wherenull('id')->paginate(10);
         }
-        
+
         return view('compras.index', [
-            
             'compras' => $compras,
             'sucursales' => UserSucursal::sucursalesHabilitadasUsuario(auth()->id()),
+            'id_sucursal' => $idSucursal,
+            'buscar' => $buscar,
         ]);
     }
 
     public function create()
     {
-        $sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->id());
-        $productos = Producto::all();
-        $estadoCompra = ["creado", "revisado", "aprobado"];
+        $productos = Producto::where("estado", 1)->get();
 
         return view('compras.create', [
-            'sucursales' => $sucursales,
             'productos' => $productos,
-            'codigo_compra' => 'COMP-2025070001',
-            'estadoCompra' => $estadoCompra,
-            'id_sucursal' => null,
-            'fecha_compra' => date('Y-m-d'),
         ]);
     }
 
     public function store(Request $request)
     {
-        // dd($request);
-        // Validar y guardar la compra
         $data = $request->validate([
             'codigo_compra' => 'required|string|max:20',
             'id_sucursal' => 'required|exists:sucursals,id',

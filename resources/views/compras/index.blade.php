@@ -85,10 +85,16 @@
 
             <div class="col-md-5" style="margin: auto;">
                 <div class="d-inline">
-                    <form action="{{ route('home_compras') }}" method="GET" class="d-inline">
+                    <form action="{{ route('home_compras') }}" method="GET" class="d-inline" id="formularioBuscarCompras">
                         <div class="input-group flex-nowrap">
-                            <input type="text" name="buscar" id="buscar" class="form-control" placeholder="Buscar..." aria-label="buscar" aria-describedby="addon-wrapping">
-                            <button type="submit" class="input-group-text" id="btnBuscarFormularioCierreCaja">
+                            <input type="hidden" id="id_sucursal_buscar" name="id_sucursal" value="{{ $id_sucursal ? $id_sucursal : '' }}">
+                            <input type="text" name="buscar" 
+                                   id="buscar" class="form-control" 
+                                   placeholder="Buscar..." 
+                                   aria-label="buscar" aria-describedby="addon-wrapping"
+                                   value="{{ $buscar ? $buscar : '' }}"
+                            >
+                            <button type="button" class="input-group-text" id="btnBuscarCompras">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -107,9 +113,9 @@
                             <th scope="col" style="width: 10%">Opciones</th>
                             <th scope="col">Codigo</th>
                             <th scope="col">Destino Compra</th>
+                            <th scope="col">Total IVA Bs.</th>
                             <th scope="col">Total Compra Bs.</th>
-                            <th scope="col">Presupuesto Bs.</th>
-                            <th scope="col">Sobrante Bs.</th>
+                            {{-- <th scope="col">Sobrante Bs.</th> --}}
                             <th scope="col">Fecha Compra</th>
                             <th scope="col">Observacion</th>
                             <th scope="col">Usuario</th>
@@ -183,15 +189,15 @@
                                 </th>
                                 <td>{{ $compra->codigo_compra }}</td>
                                 <td>{{ $compra->direccion }}</td>
+                                <td>{{ $compra->total_iva }}</td>
                                 <td>{{ $compra->total_compra }}</td>
-                                <td>2152</td>
-                                <td>{{ 2152 - $compra->total_compra }}</td>
+                                {{-- <td>{{ $compra->total_compra }}</td> --}}
                                 <td> {{ $compra->fecha_compra->format('d/m/Y') }} </td>
                                 <td>{{ $compra->observaciones }}</td>
                                 <td>
-                                    C: {{ $compra->usrname_creador }} <br>
-                                    A: {{ $compra->usrname_aprobador ?? '---' }} <br>
-                                    E: {{ $compra->usrname_envio_bd ?? '---' }} <br>
+                                    <span data-toggle="tooltip" data-placement="top" title="Creado">C:</span> {{ $compra->usrname_creador }} <br>
+                                    <span data-toggle="tooltip" data-placement="top" title="Aprobado">A:</span> {{ $compra->usrname_aprobador ?? '---' }} <br>
+                                    <span data-toggle="tooltip" data-placement="top" title="Enviado a Almacen">E:</span> {{ $compra->usrname_envio_bd ?? '---' }} <br>
                                 </td>
                                 <td>
                                         @if ($compra->estado_aprobacion == 0)
@@ -361,6 +367,7 @@
                                                 <th scope="col">Producto</th>
                                                 <th scope="col">Cantidad</th>
                                                 <th scope="col">Precio Unitario (Bs.)</th>
+                                                <th scope="col">Iva (Bs.)</th>
                                                 <th scope="col">Subtotal (Bs.)</th>
                                             </tr>
                                         </thead>
@@ -370,12 +377,17 @@
                                                     <td>${item.descripcion}</td>
                                                     <td>${item.cantidad}</td>
                                                     <td>${item.precio_unitario.toFixed(2)}</td>
+                                                    <td>${(item.iva).toFixed(2)}</td>
                                                     <td>${(item.cantidad * item.precio_unitario).toFixed(2)}</td>
                                                 </tr>
                                             `).join('')}
                                                 <tr>
-                                                    <td colspan="3" class="text-end"><strong>Total Compra:</strong></td>
+                                                    <td colspan="4" class="text-end"><strong>Total Compra:</strong></td>
                                                     <td><strong>Bs. ${totalCompra.toFixed(2)}</strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4" class="text-end"><strong>Total Iva:</strong></td>
+                                                    <td><strong>Bs. ${compra[0].total_iva.toFixed(2)}</strong></td>
                                                 </tr>
                                         </tbody>
                                     </table>
@@ -446,7 +458,28 @@
                     });
                 }
 
+                if($(this).attr('id') === "btnBuscarCompras")
+                {
+                    let buscarInput = $('#buscar').val();
+                    let idSucursalInput = $('#idSucursalSelectPrincipal').val();
+                    
+                    if (idSucursalInput == "seleccionado" || idSucursalInput == null || idSucursalInput == undefined) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Por favor, seleccione una sucursal antes de buscar.',
+                        });
+                    }else{
+                        $('#formularioBuscarCompras').submit();
+                    }
+                }
             });
+
+            $("#idSucursalSelectPrincipal").change(function() {
+                let selectedSucursal = $(this).val();
+                $('#id_sucursal_buscar').val(selectedSucursal);
+            });
+
         });
     </script>
 @endpush

@@ -25,7 +25,7 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3 row">
+                            <div class="mb-3 row" wire:ignore>
                                 <label class="col-sm-3 col-form-label">Sucursal:</label>
                                 <div class="col-sm-6">
                                     <select class="form-select" wire:model="sucursalDestinoId">
@@ -55,6 +55,16 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">IVA:</label>
+                                <div class="col-sm-6">
+                                    <input type="checkbox" class="form-check-input"
+                                        wire:model="iva"
+                                        wire:click="calcularIva"
+                                    >
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -62,12 +72,12 @@
 
             <hr>
 
-            <!-- Productos -->
+            <!-- Formualario Item Productos -->
             <div class="row mt-4 mb-4 align-items-center"  wire:ignore>
 
                 <div class="col-md-6">
                     <div class="input-group">
-                        <label class="col-sm-3 col-form-label">Producto</label>
+                        <label class="col-sm-2 col-form-label">Producto</label>
 
                         <div>
                             <livewire:select-2
@@ -104,6 +114,8 @@
 
             </div>
 
+            <!-- Fin Formualario Item Productos -->
+
             <hr>
 
             <!-- Tabla -->
@@ -118,6 +130,7 @@
                                 <th>Producto</th>
                                 <th>Cantidad</th>
                                 <th>P. Unitario</th>
+                                <th>IVA</th>
                                 <th>Sub Total</th>
                             </tr>
                         </thead>
@@ -133,15 +146,21 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item['descripcion'] }}</td>
                                     <td>{{ $item['cantidad'] }}</td>
-                                    <td>{{ $item['precio_unitario'] }}</td>
-                                    <td>{{ $item['sub_total'] }}</td>
+                                    <td>{{ number_format($item['precio_unitario'], 2) }}</td>
+                                    <td>{{ number_format($item['iva'], 2) }}</td>
+                                    <td>{{ number_format($item['sub_total'], 2) }}</td>
                                 </tr>
                             @endforeach
 
                             <tr>
-                                <td colspan="4"></td>
-                                <td><b>Total</b></td>
-                                <td><b>{{ $totalCompra }}</b></td>
+                                <td colspan="5"></td>
+                                <td><b>Total General Bs.</b></td>
+                                <td><b>{{ number_format($totalCompra, 2) }}</b></td>
+                            </tr>
+                            <tr>
+                                <td colspan="5"></td>
+                                <td><b>Total IVA Bs.</b></td>
+                                <td><b>{{ number_format($totalIva, 2) }}</b></td>
                             </tr>
                         </tbody>
                     </table>
@@ -150,10 +169,10 @@
             </div>
 
             <div class="text-center mt-3">
-                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelarCompraModal">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelarCompraModal">
                     Cancelar Compra
                 </button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#observacionModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#observacionModal">
                     Guardar Compra
                 </button>
             </div>
@@ -192,6 +211,3 @@
 
 </div>
 
-@script
-    
-@endscript

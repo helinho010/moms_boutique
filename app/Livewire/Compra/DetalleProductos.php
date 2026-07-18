@@ -4,7 +4,7 @@ namespace App\Livewire\Compra;
 
 use App\Models\Compras;
 use App\Models\DetalleCompra;
-use App\Models\Sucursal;
+use App\Models\UserSucursal;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +24,8 @@ class DetalleProductos extends Component
     public $codigo_compra; //almacena el código de compra generado
     public $fecha_compra; //almacena la fecha de compra seleccionada por el usuario
     public $observacion; //almacena la observación ingresada por el usuario
+    public $iva = true; //almacena si la compra tiene IVA o no
+    public $totalIva; //almacena el total de IVA de la compra
 
     public $producto; //Prueba
 
@@ -39,13 +41,13 @@ class DetalleProductos extends Component
         })->toArray();
 
         $this->idProductoSeleccionado = 1;
-        $this->cantidadProducto = 0;    
+        $this->cantidadProducto = '';    
         $this->totalCompra = 0;
-        $this->sucursales = Sucursal::all();
+        $this->totalIva = 0;
+        $this->sucursales = UserSucursal::sucursalesHabilitadasUsuario(auth()->id());
 
         if($compra)
         {
-            // dd($detalleCompra);
             $this->sucursalDestinoId = $compra[0]->id_sucursal_destino;
             $this->codigo_compra = $compra[0]->codigo_compra;
             $this->fecha_compra = $compra[0]->fecha_compra->format('Y-m-d');
@@ -53,12 +55,10 @@ class DetalleProductos extends Component
             $this->detalleCompra = $detalleCompra->toArray();
             $this->totalCompra = $this->calcularTotalCompra();
         }
-        else{
+        else {
             $this->codigo_compra = $this->generateCodigoCompra();
             $this->fecha_compra = date('Y-m-d'); 
         }
-
-        //this->observacion = null; 
     }
 
     public function generateCodigoCompra()
@@ -81,6 +81,15 @@ class DetalleProductos extends Component
         return $total;
     }
 
+    private function calcularTotalIva()
+    {
+        $totalIva = 0;
+        foreach ($this->detalleCompra as $producto) {
+            $totalIva += $producto['iva'];
+        }
+        return $totalIva;
+    }
+
     private function existeProductoEnDetalle($idProducto)
     {
         foreach ($this->detalleCompra as $producto) {
@@ -96,7 +105,8 @@ class DetalleProductos extends Component
         foreach ($this->detalleCompra as &$producto) {
             if ($producto['id'] == $idProducto) {
                 $producto['cantidad'] += $cantidad;
-                $producto['sub_total'] = $producto['precio_unitario'] * $producto['cantidad'];
+                $producto['iva'] = $this->iva ? $producto['precio_unitario'] * 0.13 : 0;
+                $producto['sub_total'] = $producto['precio_unitario'] * $producto['cantidad'] - ($producto['iva']);
                 break;
             }
         }
@@ -109,24 +119,29 @@ class DetalleProductos extends Component
         
         $this->validate();
 
-        if ($this->existeProductoEnDetalle($this->idProductoSeleccionado)) {
+        if ($this->existeProductoEnDetalle($this->idProductoSeleccionado)) 
+        {
             $this->actualizarCantidadProductoEnDetalle($this->idProductoSeleccionado, $this->cantidadProducto);
+
         }else{
 
             $item = $this->productos->where('id', $this->idProductoSeleccionado)->first();
+            
             $producto_compra = [
                 'id' => $this->idProductoSeleccionado,
                 'descripcion' => $item->nombre . ' - Talla: ' . $item->talla,
                 'cantidad' => $this->cantidadProducto,
-                'precio_unitario' => $this->productos->where('id', $this->idProductoSeleccionado)->first()->precio,
-                'sub_total' => $this->productos->where('id', $this->idProductoSeleccionado)->first()->precio * $this->cantidadProducto,
+                'precio_unitario' => $item->costo,
+                'iva' => $this->iva ? $item->costo * 0.13 * $this->cantidadProducto : 0,
+                'sub_total' => $item->costo * $this->cantidadProducto - ($this->iva ? $item->costo * 0.13 * $this->cantidadProducto : 0),
             ];
 
             array_push($this->detalleCompra, $producto_compra);
         }
 
         $this->totalCompra = $this->calcularTotalCompra();
-        $this->cantidadProducto = 0;
+        $this->totalIva = $this->calcularTotalIva();
+        $this->cantidadProducto = '';
     }
 
     public function guardarCompra()
@@ -139,6 +154,8 @@ class DetalleProductos extends Component
                 'id_sucursal_destino' => $this->sucursalDestinoId,
                 'fecha_compra' => $this->fecha_compra,
                 'total_compra' => $this->totalCompra,
+                'total_iva' => $this->totalIva,
+                'con_iva' => $this->iva,
                 'observaciones' => $this->observacion,
                 'updated_at' => now(),
                 'created_at' => now(),
@@ -156,12 +173,13 @@ class DetalleProductos extends Component
             $nuevoDetalleCompra->descripcion = $producto['descripcion'];
             $nuevoDetalleCompra->cantidad = $producto['cantidad'];
             $nuevoDetalleCompra->precio_unitario = $producto['precio_unitario'];
+            $nuevoDetalleCompra->iva = $producto['iva'];
             $nuevoDetalleCompra->sub_total = $producto['sub_total'];
             $nuevoDetalleCompra->save();
         }        
 
         session()->flash('mensaje-exito', 'Compra ' . $compraGuardada->codigo_compra . ' guardada exitosamente.');
-        redirect()->route('home_compras');
+        redirect()->route('home_compras', ['id_sucursal' => $compraGuardada->id_sucursal_destino]);
     }
 
     public function eliminarProducto($idProducto)
@@ -184,13 +202,21 @@ class DetalleProductos extends Component
     {
         $this->detalleCompra = [];
         $this->totalCompra = 0;
-        $this->sucursalDestinoId = null;
         $this->codigo_compra = $this->generateCodigoCompra();
         $this->fecha_compra = date('Y-m-d');
         $this->observacion = null;
         
         session()->flash('mensaje-exito', 'Compra cancelada exitosamente.');
-        redirect()->route('home_compras');
+        redirect()->route('home_compras', ['id_sucursal' => $this->sucursalDestinoId]);
+    }
+
+    public function calcularIva()
+    {
+        foreach ($this->detalleCompra as &$producto) {
+            $producto['iva'] = $this->iva ? $producto['precio_unitario'] * 0.13 * $producto['cantidad'] : 0 ;
+            $producto['sub_total'] = $producto['precio_unitario'] * $producto['cantidad'] - ($producto['iva']);
+        }
+        $this->totalCompra = $this->calcularTotalCompra();
     }
 
     public function render()

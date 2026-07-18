@@ -47,7 +47,7 @@
                     @endcan
                 </div-->
                 <div class="d-inline">
-                    <a href="{{ route('home_compras') }}" class="btn btn-warning text-dark">
+                    <a href="{{ route('home_compras', ['id_sucursal' => $compra[0]->id_sucursal_destino]) }}" class="btn btn-warning text-dark">
                         <i class="fas fa-arrow-left"></i> Volver a Compras Pendientes
                     </a>
                 </div>

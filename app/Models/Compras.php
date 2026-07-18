@@ -20,13 +20,70 @@ class Compras extends Model
     ];
 
     
+    // public static function compras($idCompra = null, $buscar = null, $idSucursal = null)
+    // {
+    //     $query = self::leftJoin('users as usuario_creador', 'usuario_creador.id', '=', 'compras.id_usuario')
+    //                    ->leftJoin('users as usuario_aprobador', 'usuario_aprobador.id', '=', 'compras.id_usuario_aprobador')
+    //                    ->leftJoin('users as usuario_envio_bd', 'usuario_envio_bd.id', '=', 'compras.id_usuario_envio_bd')
+    //                    ->leftJoin('sucursals', 'sucursals.id', '=', 'compras.id_sucursal_destino')
+    //                    ->select(
+    //                     'compras.*',
+    //                     'usuario_creador.name as nombre_usuario_creador',
+    //                     'usuario_creador.username as usrname_creador',
+    //                     'usuario_aprobador.name as nombre_usuario_aprobador',
+    //                     'usuario_aprobador.username as usrname_aprobador',
+    //                     'usuario_envio_bd.name as nombre_usuario_envio_bd',
+    //                     'usuario_envio_bd.username as usrname_envio_bd',
+    //                     'sucursals.razon_social',
+    //                     'sucursals.direccion',
+    //                     'sucursals.nit',
+    //                     'sucursals.telefonos',
+    //                     'sucursals.ciudad'
+    //                     );
+
+    //     if ( !(is_null($idCompra) || $idCompra > 0) && 
+    //          (is_null($buscar) || $buscar === '') && 
+    //          (is_null($idSucursal) || $idSucursal === '') 
+    //         ) {
+
+    //         $query->where('compras.id', $idCompra);
+
+    //     } else if ( (is_null($idCompra) || $idCompra <= 0 || gettype($idCompra) === "string" ) && 
+    //                 ! (is_null($buscar) || strlen($buscar) <= 0 ) && 
+    //                 ! (is_null($idSucursal) || $idSucursal === '') 
+    //             ) {
+    //         $query->Where('compras.id_sucursal_destino', $idSucursal)
+    //               ->where('compras.codigo_compra', 'like', "%$buscar%")
+    //               ->orWhere('compras.observaciones', 'like', "%$buscar%")
+    //               ->orWhere('sucursals.razon_social', 'like', "%$buscar%")
+    //               ->orWhere('sucursals.direccion', 'like', "%$buscar%")
+    //               ->orWhere('sucursals.nit', 'like', "%$buscar%")
+    //               ->orWhere('sucursals.ciudad', 'like', "%$buscar%")
+    //               ->orWhere('usuario_creador.name', 'like', "%$buscar%")
+    //               ->orWhere('usuario_creador.username', 'like', "%$buscar%")
+    //               ->orWhere('usuario_aprobador.name', 'like', "%$buscar%")
+    //               ->orWhere('usuario_aprobador.username', 'like', "%$buscar%")
+    //               ->orWhere('usuario_envio_bd.name', 'like', "%$buscar%")
+    //               ->orWhere('usuario_envio_bd.username', 'like', "%$buscar%");
+                  
+    //     } else if ( is_null($idCompra) && is_null($buscar) && !is_null($idSucursal) ) {
+
+    //         $query->where('compras.id_sucursal_destino', $idSucursal);
+
+    //     } 
+
+    //     $query->orderBy('compras.updated_at', 'desc');
+        
+    //     return $query;
+    // }
+
     public static function compras($idCompra = null, $buscar = null, $idSucursal = null)
     {
         $query = self::leftJoin('users as usuario_creador', 'usuario_creador.id', '=', 'compras.id_usuario')
-                       ->leftJoin('users as usuario_aprobador', 'usuario_aprobador.id', '=', 'compras.id_usuario_aprobador')
-                       ->leftJoin('users as usuario_envio_bd', 'usuario_envio_bd.id', '=', 'compras.id_usuario_envio_bd')
-                       ->leftJoin('sucursals', 'sucursals.id', '=', 'compras.id_sucursal_destino')
-                       ->select(
+                    ->leftJoin('users as usuario_aprobador', 'usuario_aprobador.id', '=', 'compras.id_usuario_aprobador')
+                    ->leftJoin('users as usuario_envio_bd', 'usuario_envio_bd.id', '=', 'compras.id_usuario_envio_bd')
+                    ->leftJoin('sucursals', 'sucursals.id', '=', 'compras.id_sucursal_destino')
+                    ->select(
                         'compras.*',
                         'usuario_creador.name as nombre_usuario_creador',
                         'usuario_creador.username as usrname_creador',
@@ -41,29 +98,37 @@ class Compras extends Model
                         'sucursals.ciudad'
                         );
 
-        if ( !is_null($idCompra) && is_null($buscar) && is_null($idSucursal) ) {
-
+        // Caso 1: Búsqueda por ID específico
+        if ($idCompra !== null && $idCompra > 0) {
             $query->where('compras.id', $idCompra);
-
-        } else if ( is_null($idCompra) && !is_null($buscar) && is_null($idSucursal) ) {
-            $query->where('compras.codigo_compra', 'like', "%$buscar%")
-                  ->orWhere('compras.observaciones', 'like', "%$buscar%")
-                  ->orWhere('sucursals.razon_social', 'like', "%$buscar%")
-                  ->orWhere('sucursals.direccion', 'like', "%$buscar%")
-                  ->orWhere('sucursals.nit', 'like', "%$buscar%")
-                  ->orWhere('sucursals.ciudad', 'like', "%$buscar%")
-                  ->orWhere('usuario_creador.name', 'like', "%$buscar%")
-                  ->orWhere('usuario_creador.username', 'like', "%$buscar%")
-                  ->orWhere('usuario_aprobador.name', 'like', "%$buscar%")
-                  ->orWhere('usuario_aprobador.username', 'like', "%$buscar%")
-                  ->orWhere('usuario_envio_bd.name', 'like', "%$buscar%")
-                  ->orWhere('usuario_envio_bd.username', 'like', "%$buscar%");
-                  
-        } else if ( is_null($idCompra) && is_null($buscar) && !is_null($idSucursal) ) {
-
-            $query->where('compras.id_sucursal_destino', $idSucursal);
-
         } 
+        // Caso 2: Búsqueda con filtros (sucursal + término de búsqueda)
+        else if ($idSucursal !== null && $idSucursal !== '') {
+            $query->where('compras.id_sucursal_destino', $idSucursal);
+            
+            // Si hay término de búsqueda, agregar condiciones
+            if ($buscar !== null && $buscar !== '') {
+                $query->where(function($q) use ($buscar) {
+                    $q->where('compras.codigo_compra', 'like', "%$buscar%")
+                    ->orWhere('compras.observaciones', 'like', "%$buscar%")
+                    ->orWhere('sucursals.razon_social', 'like', "%$buscar%")
+                    ->orWhere('sucursals.direccion', 'like', "%$buscar%")
+                    ->orWhere('sucursals.nit', 'like', "%$buscar%")
+                    ->orWhere('sucursals.ciudad', 'like', "%$buscar%")
+                    ->orWhere('usuario_creador.name', 'like', "%$buscar%")
+                    ->orWhere('usuario_creador.username', 'like', "%$buscar%")
+                    ->orWhere('usuario_aprobador.name', 'like', "%$buscar%")
+                    ->orWhere('usuario_aprobador.username', 'like', "%$buscar%")
+                    ->orWhere('usuario_envio_bd.name', 'like', "%$buscar%")
+                    ->orWhere('usuario_envio_bd.username', 'like', "%$buscar%");
+                });
+            }
+        } else {
+            $compras = Compras::where('id', '<', 0)->paginate(10); // Siempre vacío
+            session()->flash('mensaje-errores', "Debe seleccionar una sucursal");
+        }
+        // Caso 3: Sin filtros (todas las compras)
+        // Si no hay ningún filtro, no agregamos where adicionales
 
         $query->orderBy('compras.updated_at', 'desc');
         

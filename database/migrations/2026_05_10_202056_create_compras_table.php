@@ -20,13 +20,15 @@ return new class extends Migration
             $table->unsignedBigInteger('id_sucursal_destino');
             $table->string('codigo_compra')->unique();
             $table->date('fecha_compra'); //cuando se va a realizar la comprar 
-            $table->integer('total_compra');
+            $table->integer('total_compra')->default(0);
+            $table->integer('total_iva')->default(0);
             $table->unsignedTinyInteger('estado_aprobacion')->default(0); // 0: Pendiente, 1: Aprobada, 2: Rechazada, 3: Enviada a Bodega
             $table->date('fecha_creacion_compra')->default(date("Y-m-d")); // cuando el usuario creo esta compra
             $table->date('fecha_aprobacion')->nullable();
             $table->date('fecha_envio_productos_bd')->nullable();
             $table->boolean('estado')->default(true);
             $table->string('observaciones')->nullable();
+            $table->boolean('con_iva')->default(false);
             $table->timestamps();
         });
     }

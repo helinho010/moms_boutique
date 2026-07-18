@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('descripcion');
             $table->integer('cantidad');
             $table->integer('precio_unitario');
-            $table->integer('sub_total');
+            $table->integer('iva')->default(0);
+            $table->integer('sub_total')->default(0);
             $table->timestamps();
 
             $table->foreign('id_compra')->references('id')->on('compras')->onDelete('cascade');
