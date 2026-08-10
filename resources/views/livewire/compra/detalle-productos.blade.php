@@ -20,14 +20,20 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label">Usuario:</label>
                                 <div class="col-sm-6">
-                                    <input type="text" readonly class="form-control-plaintext"
-                                        value="{{ auth()->user()->name }}">
+                                    {{-- <input type="text" readonly class="form-control-plaintext"
+                                        value="{{ auth()->user()->name }}"> --}}
+                                        {{ auth()->user()->name }}
                                 </div>
                             </div>
 
-                            <div class="mb-3 row" wire:ignore>
-                                <label class="col-sm-3 col-form-label">Sucursal:</label>
-                                <div class="col-sm-6">
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">
+                                    @error('sucursalDestinoId') 
+                                        <i class="fas fa-exclamation-triangle" style="color: red;"></i>
+                                    @enderror   
+                                    Sucursal:
+                                </label>
+                                <div class="col-sm-6" wire:ignore>
                                     <select class="form-select" wire:model="sucursalDestinoId">
                                         <option value="">Seleccione...</option>
                                         @foreach ($sucursales as $sucursal)
@@ -42,13 +48,19 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label">Código:</label>
                                 <div class="col-sm-6">
-                                    <input type="text" readonly class="form-control-plaintext"
-                                        value="{{ $codigo_compra }}">
+                                    {{-- <input type="text" readonly class="form-control-plaintext"
+                                        value="{{ $codigo_compra }}"> --}}
+                                        {{ $codigo_compra }}
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
-                                <label class="col-sm-3 col-form-label">Fecha Compra:</label>
+                                <label class="col-sm-3 col-form-label">
+                                    @error('fecha_compra') 
+                                        <i class="fas fa-exclamation-triangle" style="color: red;"></i>
+                                    @enderror 
+                                    Fecha Compra:
+                                </label>
                                 <div class="col-sm-6">
                                     <input type="date" class="form-control"
                                         wire:model="fecha_compra">
@@ -73,12 +85,10 @@
             <hr>
 
             <!-- Formualario Item Productos -->
-            <div class="row mt-4 mb-4 align-items-center"  wire:ignore>
-
+            <div class="row mt-4 mb-4 align-items-center">
                 <div class="col-md-6">
                     <div class="input-group">
                         <label class="col-sm-2 col-form-label">Producto</label>
-
                         <div>
                             <livewire:select-2
                                 :options="$this->productosSelect"
@@ -86,9 +96,8 @@
                             />
                         </div>
                     </div>
-
                     @error('idProductoSeleccionado')
-                        <div class="text-danger">{{ $message }}</div>
+                        <div class="text-danger">{{ $message }}***</div>
                     @enderror
                 </div>
 
@@ -106,12 +115,10 @@
                             Agregar
                         </button>
                     </div>
-
                     @error('cantidadProducto')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-
             </div>
 
             <!-- Fin Formualario Item Productos -->
@@ -207,7 +214,6 @@
     >
         <p class="text-center">Esta accion redirigirá a la página principal, sin guardar la compra</p>
     </x-modal>
-
 
 </div>
 

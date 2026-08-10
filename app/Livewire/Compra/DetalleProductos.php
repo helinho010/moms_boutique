@@ -13,15 +13,19 @@ class DetalleProductos extends Component
 {
     public $productos; //recibe todos los productos para mostrarlos en el detalle
     public $productosSelect; //almacena los productos formateados para mostrarlos en el select
-    #[Validate('required|integer|exists:productos,id')]
+    // #[Validate('required|integer|exists:productos,id', onUpdate: false)]
     public $idProductoSeleccionado; //almacena el id del producto seleccionado
-    #[Validate('required|integer|min:1')]
+    #[Validate('required', message:"La cantidad es requerida")]
+    #[Validate('integer', message:"La cantidad tiene que ser un número entero")]
+    #[Validate('min:1', message:"La cantidad tiene que ser un número entero mayor a 0")]
     public $cantidadProducto; //almacena la cantidad ingresada por el usuario
     public $detalleCompra = []; //almacena el detalle de compra con los productos agregados
     public $totalCompra; //almacena el total de la compra
     public $sucursales; //obteiene todas las sucursales habilitadas para el usuairo 
+    #[Validate('required|integer|exists:sucursals,id', onUpdate: false)]
     public $sucursalDestinoId; //almacena el id de la sucursal seleccionada por el usuario
     public $codigo_compra; //almacena el código de compra generado
+    #[Validate('required|date', message:"La fecha de compra es requerida")]
     public $fecha_compra; //almacena la fecha de compra seleccionada por el usuario
     public $observacion; //almacena la observación ingresada por el usuario
     public $iva = true; //almacena si la compra tiene IVA o no
@@ -63,13 +67,7 @@ class DetalleProductos extends Component
 
     public function generateCodigoCompra()
     {
-        $numero_compras_mes = Compras::whereYear('created_at', date('Y'))
-                            ->whereMonth('created_at', date('m'))
-                            ->count();
-        if($numero_compras_mes >= 9999){
-            $numero_compras_mes = 0;
-        }
-        return 'COMP-' . date('Ym') . str_pad($numero_compras_mes + 1, 4, '0', STR_PAD_LEFT);
+        return 'CMP-' . time();
     }
 
     private function calcularTotalCompra()
@@ -115,9 +113,10 @@ class DetalleProductos extends Component
     
     public function agregarProducto()
     {
-        unset($this->producto_compra);
-        
+
         $this->validate();
+
+        unset($this->producto_compra);
 
         if ($this->existeProductoEnDetalle($this->idProductoSeleccionado)) 
         {
@@ -146,6 +145,23 @@ class DetalleProductos extends Component
 
     public function guardarCompra()
     {
+        if ( !$this->sucursalDestinoId ) {
+            $this->addError('sucursalDestinoId', 'Debe seleccionar una sucursal');
+            $this->js("$('#observacionModal').modal('hide')");
+            return;
+        }
+
+        if ( !$this->fecha_compra ) {
+            $this->addError('fecha_compra', 'Debe seleccionar una fecha de compra');
+            $this->js("$('#observacionModal').modal('hide')");
+            return;
+        }
+
+        if (count($this->detalleCompra) == 0) {
+            $this->addError('detalleCompra', 'Debe agregar al menos un producto a la compra');
+            $this->js("$('#observacionModal').modal('hide')");
+            return;
+        }
         
         DB::table('compras')->updateOrInsert(
             ['codigo_compra' => $this->codigo_compra],
@@ -179,7 +195,8 @@ class DetalleProductos extends Component
         }        
 
         session()->flash('mensaje-exito', 'Compra ' . $compraGuardada->codigo_compra . ' guardada exitosamente.');
-        redirect()->route('home_compras', ['id_sucursal' => $compraGuardada->id_sucursal_destino]);
+        // redirect()->route('home_compras', ['id_sucursal' => $compraGuardada->id_sucursal_destino]);
+        $this->redirectRoute('home_compras', ['id_sucursal' => $compraGuardada->id_sucursal_destino]);
     }
 
     public function eliminarProducto($idProducto)

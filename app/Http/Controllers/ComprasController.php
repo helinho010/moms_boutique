@@ -12,6 +12,9 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\InventarioSucursal;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\ComprasExport;
+use App\Models\DetalleCompra;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ComprasController extends Controller
 {
@@ -143,7 +146,7 @@ class ComprasController extends Controller
         $compra->fecha_aprobacion = now();
         $compra->save();
 
-        return redirect()->route('home_compras')->with('mensaje-exito', 'Compra aprobada exitosamente.');
+        return redirect()->route('home_compras',["id_sucursal" => $compra->id_sucursal_destino])->with('mensaje-exito', 'Compra aprobada exitosamente.');
     }
 
 
@@ -191,7 +194,7 @@ class ComprasController extends Controller
             }    
         }
     
-        return redirect()->route('home_compras')->with('mensaje-exito', 'Productos comprados enviados al Inventario exitosamente.');
+        return redirect()->route('home_compras', ["id_sucursal" => $compra->id_sucursal_destino])->with('mensaje-exito', 'Productos comprados enviados al Inventario exitosamente.');
     }
 
     public function destroy($id)
@@ -199,7 +202,7 @@ class ComprasController extends Controller
         if ($id >= 0) {
            $compra = Compras::findOrFail($id);
            $compra->delete();
-           return redirect()->route('home_compras')->with('mensaje-exito', 'Compra eliminada exitosamente ' . $compra->codigo_compra . ".");
+           return redirect()->route('home_compras', ["id_sucursal" => $compra->id_sucursal_destino])->with('mensaje-exito', 'Compra eliminada exitosamente ' . $compra->codigo_compra . ".");
         }
     }
 
@@ -237,18 +240,13 @@ class ComprasController extends Controller
 
     public function exportarCompraExcel(Request $request)
     {
-        $idCompra = $request->input('id_compra');
-        $compra = Compras::compras($idCompra)->get();
-        $detalleCompra = Compras::find($idCompra)->detalleproductos;
+        $id_sucursal = $request->input('id_sucursal');
+        $fecha_inicio = $request->input('fecha_inicio');
+        $fecha_fin = $request->input('fecha_fin');
 
-        // Aquí puedes implementar la lógica para exportar a Excel
-        // Por ejemplo, usando Laravel Excel o cualquier otra librería que prefieras
+        $detalle_general = DetalleCompra::reporteCompras($id_sucursal, $fecha_inicio, $fecha_fin);
 
-        return response()->json([
-            'message' => 'Exportación a Excel no implementada aún.',
-            'compra' => $compra,
-            'detalleCompra' => $detalleCompra,
-        ]);
+        return Excel::download(new ComprasExport($id_sucursal, $fecha_inicio, $fecha_fin, $detalle_general), 'compras.xlsx');
     }
 
 

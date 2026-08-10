@@ -6,6 +6,19 @@
     <div class="h5">Nueva Compra</div>
 @endsection
 
+@section('mensaje-errores')
+    @if (session('mensaje-errores'))
+        <div class="alert alert-danger">
+            {{ session('mensaje-errores') }}
+        </div>
+    @endif
+    @if (session('mensaje-exito'))
+        <div class="alert alert-success">
+            {{ session('mensaje-exito') }}
+        </div>
+    @endif
+@endsection
+
 @section('content')
 
     @livewire('compra.detalle-productos', ['productos' => $productos])

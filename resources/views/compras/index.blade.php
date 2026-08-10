@@ -352,6 +352,7 @@
                                     <h5><strong>Usuario Creador:</strong> ${compra[0].nombre_usuario_creador}</h5>
                                     <h5><strong>Usuario Aprobador:</strong> ${compra[0].nombre_usuario_aprobador}</h5>
                                     <h5><strong>Código de Compra:</strong> ${compra[0].codigo_compra}</h5>
+                                    <h5><strong>IVA:</strong> ${compra[0].con_iva ? 'Sí' : 'No'}</h5>
                                 </div>
                                 <div class="col-md-6">
                                     <h5><strong>Destino de Compra:</strong> ${compra[0].direccion}</h5>
