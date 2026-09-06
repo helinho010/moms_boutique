@@ -4221,6 +4221,7 @@
                         <th>Descripcion</th>
                         <th>Cantidad</th>
                         <th>Precio Unitario</th>
+                        <th>IVA</th>
                         <th>Sub Total</th>
                     </tr>
                     @foreach ($detalleCompra as $item)
@@ -4228,13 +4229,18 @@
                             <th>{{ $loop->iteration }}</th>
                             <td>{{ $item->descripcion }}</td>
                             <td>{{ $item->cantidad }}</td>
-                            <td>{{ $item->precio_unitario }}</td>
-                            <td>{{ $item->sub_total }}</td>
+                            <td>{{ number_format($item->precio_unitario, 2) }}</td>
+                            <td>{{ number_format($item->iva / 100, 2) }}</td>
+                            <td>{{ number_format($item->sub_total / 100, 2) }}</td>
                         </tr>
                     @endforeach
                     <tr>
-                        <th colspan="4" style="text-align: right;">Total</th>
-                        <th>{{ $compra->total_compra }}</th>
+                        <th colspan="5" style="text-align: right;">Total</th>
+                        <th>{{ number_format($compra->total_compra / 100, 2) }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="5" style="text-align: right;">Total IVA</th>
+                        <th>{{ number_format($compra->total_iva / 100, 2) }}</th>
                     </tr>
                 </table>
             </div>

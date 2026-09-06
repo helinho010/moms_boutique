@@ -276,7 +276,7 @@
      
      @can('crear permiso')
          <x-modal id="crearPermisoModal" title="Crear Permiso" class="btnCerrarModalCrearPermiso"
-                  idformulario="frmCrearPermisoModal" nombreBtn="Guardar">
+                  idformulario="frmCrearPermisoModal" nombreBtn="Guardar" onclick="confirmarEnviar('frmCrearPermisoModal')">
             <form action="{{ route('crear_permiso') }}" method="post" id="frmCrearPermisoModal">
                 @method('post')
                 @csrf
@@ -466,8 +466,8 @@
     function confirmarEnviar(idFormualrioEnviar)
     {
         swal.fire({
-            title: '¿Estas seguro de guardar el Cierre de caja?',
-            text: "Se guardaran los datos del cierre de caja",
+            title: '¿Estas seguro de enviar los datos?',
+            text: "Se guardaran los datos ingresados",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',

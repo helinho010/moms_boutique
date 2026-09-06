@@ -134,6 +134,7 @@ class ComprasController extends Controller
             'compra' => $compra,
             'detalleCompra' => $detalleCompra,
             'totalCompra' => $detalleCompra->sum('sub_total'),
+            'totalIva' => $detalleCompra->sum('iva'),
         ]);
     }
 
@@ -245,8 +246,9 @@ class ComprasController extends Controller
         $fecha_fin = $request->input('fecha_fin');
 
         $detalle_general = DetalleCompra::reporteCompras($id_sucursal, $fecha_inicio, $fecha_fin);
+        $sucursal = Sucursal::find($id_sucursal);
 
-        return Excel::download(new ComprasExport($id_sucursal, $fecha_inicio, $fecha_fin, $detalle_general), 'compras.xlsx');
+        return Excel::download(new ComprasExport($id_sucursal, $sucursal->direccion, $fecha_inicio, $fecha_fin, $detalle_general), 'compra'. $detalle_general->first()->codigo_compra .'.xlsx');
     }
 
 

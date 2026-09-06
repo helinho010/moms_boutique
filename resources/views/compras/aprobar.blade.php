@@ -65,29 +65,36 @@
 
                             <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label">Usuario:</label>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 font-weight-bold">
                                     {{ $compra[0]->nombre_usuario_creador }}
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label">Sucursal:</label>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 font-weight-bold">
                                     {{ $compra[0]->razon_social }} - {{ $compra[0]->direccion }}
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label">Código:</label>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 font-weight-bold">
                                     {{ $compra[0]->codigo_compra }}
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label">Fecha Compra:</label>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 font-weight-bold">
                                     {{ $compra[0]->fecha_compra->format('d/m/Y') }}
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Iva:</label>
+                                <div class="col-sm-6 font-weight-bolder">
+                                    {{ $compra[0]->con_iva ? 'Sí' : 'No' }}
                                 </div>
                             </div>
 
@@ -108,6 +115,7 @@
                                 <th>Producto</th>
                                 <th>Cantidad</th>
                                 <th>P. Unitario</th>
+                                <th>IVA</th>
                                 <th>Sub Total</th>
                             </tr>
                         </thead>
@@ -119,16 +127,22 @@
                                     <td>{{ $item['descripcion'] }}</td>
                                     <td>{{ $item['cantidad'] }}</td>
                                     <td>{{ $item['precio_unitario'] }}</td>
-                                    <td>{{ $item['sub_total'] }}</td>
+                                    <td>{{ number_format( $item['iva'] / 100, 2) }}</td>
+                                    <td>{{ number_format($item['sub_total'] / 100 ,2) }}</td>
                                 </tr>
                             @endforeach
                             <tr>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td colspan="3"></td>
-                                <td><b>Total</b></td>
-                                <td><b>{{ $totalCompra }}</b></td>
+                                <td colspan="4"></td>
+                                <td><b>Total Compra</b></td>
+                                <td><b>{{ number_format($totalCompra / 100, 2) }}</b></td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"></td>
+                                <td><b>Total IVA</b></td>
+                                <td><b>{{ number_format($totalIva / 100, 2) }}</b></td>
                             </tr>
                         </tbody>
                     </table>

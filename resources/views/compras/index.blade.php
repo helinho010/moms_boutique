@@ -21,7 +21,7 @@
             <div class="col">
                 <h4><strong>Compra de Items</strong> <span class="h6">(Planificacion de Compras)</span></h4>
             </div>
-            @can('crear compras')
+            @can('agregar')
                 <div class="col text-end">
                     <a href="{{ route('agregar_compra') }}" class="btn btn-success">
                         <i class="fas fa-plus"></i> Agregar Compra
@@ -72,7 +72,7 @@
                                 </button>
                         </form>
 
-                        @can('exportar excel')
+                        @can('excel')
                             <button type="button" class="btn btn-success" id="exportarCompra" data-bs-toggle="modal"
                                         data-bs-target="#modalExportarCompras" class="d-inline">
                                     <i class="far fa-file-excel" style="font-size: 22px;"></i>
@@ -127,17 +127,17 @@
                             <tr>
                                 <th scope="row">
                                     @if ($compra->estado_aprobacion == 0)
-                                        @can('editar compras')
+                                        @can('editar')
                                             <a href="{{ route("editar_compra", ["id" => $compra->id ]) }}" class="btn btn-info btn-sm" title="Editar Compra">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         @endcan
-                                        @can('aprobar compras')
+                                        @can('aprobar')
                                             <a href="{{ route('aprobar_compra', ['id' => $compra->id ]) }}" class="btn btn-success btn-sm" title="Aprobar Compra">
                                                 <i class="fas fa-check"></i>
                                             </a>
                                         @endcan
-                                        @can('eliminar compras')
+                                        @can('eliminar')
                                             <form action="{{ route('eliminar_compra', ['id' => $compra->id]) }}" method="post" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -148,21 +148,27 @@
                                         @endcan
                                     @else
                                         @if ($compra->id_usuario_envio_bd == null && $compra->fecha_envio_productos_bd == null)
-                                            <form action="{{ route('enviar_compra_bodega') }}" method="post" class="d-inline">
-                                                @method("PATCH")
-                                                @csrf
-                                                <input type="number" name="id_compra" value="{{ $compra->id }}" hidden readonly>
-                                                <button type="button" class="btn btn-primary btn-sm" title="Enviar a la bodega" id="btn-enviar-compra-bodega">
-                                                    <i class="fas fa-truck"></i>
-                                                </button>
-                                            </form>
-                                            <span class="d-inline">
-                                                <button type="button" class="btn btn-warning btn-sm" title="Ver Compra" onclick="verCompra({{ $compra->id }})">
-                                                    <!--data-bs-toggle="modal" data-bs-target="#modalVerCompra{{ $compra->id }}"-->
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                            </span>
-                                            @can('exportar pdf')
+                                            @can('enviar_bodega')
+                                                <form action="{{ route('enviar_compra_bodega') }}" method="post" class="d-inline">
+                                                    @method("PATCH")
+                                                    @csrf
+                                                    <input type="number" name="id_compra" value="{{ $compra->id }}" hidden readonly>
+                                                    <button type="button" class="btn btn-primary btn-sm" title="Enviar a la bodega" id="btn-enviar-compra-bodega">
+                                                        <i class="fas fa-truck"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
+                                            
+                                            @can('ver')
+                                                <span class="d-inline">
+                                                    <button type="button" class="btn btn-warning btn-sm" title="Ver Compra" onclick="verCompra({{ $compra->id }})">
+                                                        <!--data-bs-toggle="modal" data-bs-target="#modalVerCompra{{ $compra->id }}"-->
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </span>
+                                            @endcan
+
+                                            @can('pdf')
                                                 <form action="{{ route('compra_exportar_pdf', ["id_compra" => $compra->id]) }}" method="post" class="d-inline">
                                                     @csrf
                                                     @method('POST')
@@ -175,7 +181,7 @@
                                             <button type="button" class="btn btn-secondary btn-sm d-inline" title="Compra Enviada a Bodega">
                                                 <i class="fa fa-lock" aria-hidden="true"></i> 
                                             </button>
-                                            @can('exportar pdf')
+                                            @can('pdf')
                                                 <form action="{{ route('compra_exportar_pdf', ["id_compra" => $compra->id]) }}" method="post" class="d-inline">
                                                     @csrf
                                                     @method('POST')
@@ -189,8 +195,8 @@
                                 </th>
                                 <td>{{ $compra->codigo_compra }}</td>
                                 <td>{{ $compra->direccion }}</td>
-                                <td>{{ $compra->total_iva }}</td>
-                                <td>{{ $compra->total_compra }}</td>
+                                <td>{{ number_format($compra->total_iva / 100, 2) }}</td>
+                                <td>{{ number_format($compra->total_compra / 100, 2) }}</td>
                                 {{-- <td>{{ $compra->total_compra }}</td> --}}
                                 <td> {{ $compra->fecha_compra->format('d/m/Y') }} </td>
                                 <td>{{ $compra->observaciones }}</td>
@@ -221,41 +227,6 @@
                                 </td>
                             </tr>
                         @endforeach
-                        
-                        {{-- <tr>
-                            <th scope="row">
-                                @can('editar compras')
-                                    <a href="#" class="btn btn-info btn-sm mb-2" title="Editar Compra">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                @endcan
-                                @can('revisar compras')
-                                    <a href="#" class="btn btn-warning btn-sm mb-2" title="Revisar Compra">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                @endcan
-                                @can('aprobar compras')
-                                    <a href="#" class="btn btn-success btn-sm mb-2" title="Aprobar Compra">
-                                        <i class="fas fa-check"></i>
-                                    </a>
-                                @endcan
-                                @can('eliminar compras')
-                                    <a href="#" class="btn btn-danger btn-sm mb-2" title="Eliminar Compra">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                @endcan
-                            </th>
-                            <td>cmp-20250001</td>
-                            <td>La Paz-Calle Diaz Romero, esquina montes y pando</td>
-                            <td>1507.53</td>
-                            <td>1500</td>
-                            <td>7.53</td>
-                            <td>Compra generada aleratoriamente, en el sistema de compras con criterio</td>
-                            <td>allanos</td>
-                            <td >
-                                <span class="badge rounded-pill text-bg-info">creado 05/07/2025</span>
-                            </td>
-                        </tr> --}}
                     </tbody>
                 </table>
             </div>
@@ -270,7 +241,7 @@
         <div id="datosCompra"></div>
     </x-modal>
 
-    @can('exportar excel')
+    @can('excel')
         <x-modal id="modalExportarCompras" nombreBtn="Exportar" tamanioModal="modal-md" onclick="confirmarEnviar('frm-exportar-compras')">
             <x-slot:title>
                 Exportar Compras a Excel
@@ -378,17 +349,17 @@
                                                     <td>${item.descripcion}</td>
                                                     <td>${item.cantidad}</td>
                                                     <td>${item.precio_unitario.toFixed(2)}</td>
-                                                    <td>${(item.iva).toFixed(2)}</td>
-                                                    <td>${(item.cantidad * item.precio_unitario).toFixed(2)}</td>
+                                                    <td>${(item.iva / 100).toFixed(2)}</td>
+                                                    <td>${(item.cantidad * item.precio_unitario - item.iva / 100).toFixed(2)}</td>
                                                 </tr>
                                             `).join('')}
                                                 <tr>
                                                     <td colspan="4" class="text-end"><strong>Total Compra:</strong></td>
-                                                    <td><strong>Bs. ${totalCompra.toFixed(2)}</strong></td>
+                                                    <td><strong>Bs. ${(totalCompra / 100).toFixed(2)}</strong></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="4" class="text-end"><strong>Total Iva:</strong></td>
-                                                    <td><strong>Bs. ${compra[0].total_iva.toFixed(2)}</strong></td>
+                                                    <td><strong>Bs. ${(compra[0].total_iva / 100).toFixed(2)}</strong></td>
                                                 </tr>
                                         </tbody>
                                     </table>

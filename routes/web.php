@@ -164,24 +164,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/editar_cierre/{id_sucursal}/{id_cierre}', [CajaController::class, 'editarCierre'])->name('editar_cierre')->middleware(['permission:editar cierre caja']);
     Route::patch('/editar_cierre/guardar/{id}', [CajaController::class, 'guardarEditadoCierre'])->name('actualizar_cierre');
     Route::patch('/editar_cierre/verificado', [CajaController::class, 'verificarCierre'])->name('verificar_cierre');
-    Route::get('/cierre_caja/exportar_pdf', [CajaController::class, 'exportarCierrePdf'])
-         ->name('exportar_cierre_pdf')
-         ->middleware(['permission:exportar pdf']);
+    Route::get('/cierre_caja/exportar_pdf', [CajaController::class, 'exportarCierrePdf'])->name('exportar_cierre_pdf')->middleware(['permission:exportar pdf']);
     Route::get('/cierre_caja/exportar_excel', [CajaController::class, 'exportarCierreExcel'])->name('exportar_cierre_excel');
 
     // Compra Producto
     Route::get('/compras', [ComprasController::class, 'index'])->name('home_compras')->middleware(['permission:opc compras']);
-    Route::get('/compras/agregar_compra', [ComprasController::class, 'create'])->name('agregar_compra')->middleware(['permission:crear compra']);
-    Route::get('/compras/editar_compra/{id}', [ComprasController::class, 'editar'])->name('editar_compra')->middleware(['permission:editar_compra']);
-    Route::get('/compras/aprobar_compra/{id}', [ComprasController::class, 'aprobar'])->name('aprobar_compra')->middleware(['permission:aprobar compra']);
+    Route::get('/compras/agregar_compra', [ComprasController::class, 'create'])->name('agregar_compra')->middleware(['permission:agregar']);
+    Route::get('/compras/editar_compra/{id}', [ComprasController::class, 'editar'])->name('editar_compra')->middleware(['permission:editar']);
+    Route::get('/compras/aprobar_compra/{id}', [ComprasController::class, 'aprobar'])->name('aprobar_compra')->middleware(['permission:aprobar']);
     Route::post('/compras/aprobar_compra', [ComprasController::class, 'aprobarCompraPost'])->name('aprobar_compra_post');
     Route::post('/compras/rechazar_compra', [ComprasController::class, 'rechazarCompra'])->name('rechazar_compra');
     Route::post('/compras/guardar_compra', [ComprasController::class, 'store'])->name('guardar_compra');
     Route::patch('/compras/enviar_compra_bodega', [ComprasController::class, 'enviarCompraBodega'])->name('enviar_compra_bodega');
-    Route::delete('/compras/eliminar_compra/{id}', [ComprasController::class, 'destroy'])->name("eliminar_compra")->middleware(['permission:eliminar compra']);
+    Route::delete('/compras/eliminar_compra/{id}', [ComprasController::class, 'destroy'])->name("eliminar_compra")->middleware(['permission:eliminar']);
     Route::post('/compras/detalle_compra/{id}',[ComprasController::class, 'detalleCompra'])->name('detalle_compra');
-    Route::post('/compras/compra_exportar_pdf', [ComprasController::class, 'exportarCompraPdf'])->name('compra_exportar_pdf')->middleware(['permission:exportar pdf']);
-    Route::post('/compras/compra_exportar_excel', [ComprasController::class, 'exportarCompraExcel'])->name('compra_exportar_excel')->middleware(['permission:exportar excel']);
+    Route::post('/compras/compra_exportar_pdf', [ComprasController::class, 'exportarCompraPdf'])->name('compra_exportar_pdf')->middleware(['permission:pdf']);
+    Route::post('/compras/compra_exportar_excel', [ComprasController::class, 'exportarCompraExcel'])->name('compra_exportar_excel')->middleware(['permission:excel']);
 
     // Rutas de prueba
     // Route::get('/pruebaSelect2Vite', function () {

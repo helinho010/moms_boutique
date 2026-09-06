@@ -51,6 +51,7 @@ class DetalleCompra extends Model
                 ->leftJoin('users as usuario_enviobd', 'usuario_enviobd.id', '=', 'compras.id_usuario_envio_bd')
                 ->where('compras.id_sucursal_destino', $idSucursal)
                 ->whereBetween('compras.fecha_compra', [$fechaInicio, $fechaFin])
+                ->whereIn('compras.estado_aprobacion',[1,3])
                 ->orderBy('compras.updated_at', 'desc')
                 ->get();
     }

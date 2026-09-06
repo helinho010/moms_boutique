@@ -69,12 +69,14 @@
 
                             <div class="mb-3 row">
                                 <label class="col-sm-3 col-form-label">IVA:</label>
-                                <div class="col-sm-6">
+                                <div class="d-inline p-2 col-sm-4">
                                     <input type="checkbox" class="form-check-input"
                                         wire:model="iva"
                                         wire:click="calcularIva"
                                     >
+                                    <div class="d-inline p-2 text-muted">{{ $iva ? 'Sí' : 'No' }}</div>
                                 </div>
+                                
                             </div>
 
                         </div>
@@ -107,6 +109,7 @@
                             class="form-control"
                             placeholder="Cantidad"
                             wire:model="cantidadProducto"
+                            wire:keydown.tab="agregarProducto"
                             min="1">
 
                         <button class="btn btn-success btn-sm"
@@ -154,20 +157,20 @@
                                     <td>{{ $item['descripcion'] }}</td>
                                     <td>{{ $item['cantidad'] }}</td>
                                     <td>{{ number_format($item['precio_unitario'], 2) }}</td>
-                                    <td>{{ number_format($item['iva'], 2) }}</td>
-                                    <td>{{ number_format($item['sub_total'], 2) }}</td>
+                                    <td>{{ number_format($item['iva'] / 100, 2) }}</td>
+                                    <td>{{ number_format($item['sub_total'] / 100, 2) }}</td>
                                 </tr>
                             @endforeach
 
                             <tr>
                                 <td colspan="5"></td>
                                 <td><b>Total General Bs.</b></td>
-                                <td><b>{{ number_format($totalCompra, 2) }}</b></td>
+                                <td><b>{{ number_format($totalCompra / 100, 2) }}</b></td>
                             </tr>
                             <tr>
                                 <td colspan="5"></td>
                                 <td><b>Total IVA Bs.</b></td>
-                                <td><b>{{ number_format($totalIva, 2) }}</b></td>
+                                <td><b>{{ number_format($totalIva / 100, 2) }}</b></td>
                             </tr>
                         </tbody>
                     </table>
