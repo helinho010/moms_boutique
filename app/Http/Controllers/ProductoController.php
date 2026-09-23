@@ -135,6 +135,17 @@ class ProductoController extends Controller
         $producto->save();
     }
 
+    public function destroy($id)
+    {
+        $producto = Producto::findOrFail($id);
+        
+        if ($producto->delete()) {
+            return redirect()->route('home_producto')->with('mensaje-exito', 'Producto' . " $producto->nombre - $producto->talla - $producto->precio " . 'eliminado correctamente.');
+        }else{
+            return redirect()->route('home_producto')->with('mensaje-error', 'Error al eliminar el producto ' . " $producto->nombre - $producto->talla - $producto->precio " . '.');
+        }
+    }
+
     public function buscarProductoId(Request $request)
     {
         $validate = $request->validate([

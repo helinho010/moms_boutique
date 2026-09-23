@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/nuevo_producto',[ProductoController::class,'store'])->name('nuevo_producto');
     Route::post('/actualizar_producto',[ProductoController::class,'update'])->name('actualizar_producto');
     Route::post('/actualizar_estado_producto',[ProductoController::class,'update_estado'])->name('actualizar_estado_producto');
+    Route::delete('/eliminar_producto/{id}', [ProductoController::class,'destroy'])->name('eliminar_producto')->middleware(['permission:eliminar']);
 
     // Sucursal
     Route::get('/sucursal', [SucursalController::class,'index'])->name('home_sucursal')->middleware(['permission:opc sucursales']);
