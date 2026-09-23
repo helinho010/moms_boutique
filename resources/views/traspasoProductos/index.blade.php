@@ -298,7 +298,7 @@
             $fechahoy = date('Y-m-d');
         @endphp
         <x-modal id="modalComponentstaticBackdrop" title="Reporte de Traspaso de Productos PDF" 
-                 idformulario="tra_prod_form_pdf" nombre-btn="Exportar">
+                 idformulario="tra_prod_form_pdf" nombre-btn="Exportar" onclick="confirmarEnviar('tra_prod_form_pdf')">
             <form action="{{route('traspaso_productos_formulario_pdf')}}" method="post" id="tra_prod_form_pdf">
                 @method('post')
                 @csrf
