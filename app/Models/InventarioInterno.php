@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InventarioInterno extends Model
 {
     use HasFactory;
+    use SoftDeletes;
+    
     protected $fillable = [ 'id_sucursal',
                             'id_producto',
                             'id_usuario',
@@ -68,7 +71,7 @@ class InventarioInterno extends Model
 
     public static function buscar($idSucursal, $buscar, $paginate=10)
     {
-       $inventario = self::selectRaw('inventario_internos.id as id_inventario_internos,
+       $inventario = self::toBase()->selectRaw('inventario_internos.id as id_inventario_internos,
                                       inventario_internos.stock,
                                       inventario_internos.cantidad_ingreso as cantidad_ingreso_inventario_internos,
                                       inventario_internos.estado as estado_inventario_internos,
@@ -160,9 +163,10 @@ class InventarioInterno extends Model
           ->where('inventario_internos.id_sucursal', $id_sucursal);
     }
 
-    public static function disminuirStock($id_producto, $cantidadStock)
+    public static function disminuirStock($id_producto, $cantidadStock, $id_sucursal)
     {
       $item =  self::where('id_producto', $id_producto)
+                  ->where('id_sucursal', $id_sucursal)
                   -> first();
       $item->stock = $item->stock - $cantidadStock;
       $item->save();  

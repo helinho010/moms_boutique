@@ -50,6 +50,19 @@
     @endphp
 @endsection
 
+@section('mensaje-errores')
+    @if (session('mensaje-errores'))
+        <div class="alert alert-danger">
+            {{ session('mensaje-errores') }}
+        </div>
+    @endif
+    @if (session('mensaje-exito'))
+        <div class="alert alert-success">
+            {{ session('mensaje-exito') }}
+        </div>
+    @endif
+@endsection
+
 @section('card-title')
     <div class="row">
         <div class="col">
@@ -96,7 +109,23 @@
                 @foreach ($productos as $aux)
                   <tr>
                     <th scope="row">
-                        <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
+                        <button type="button" class="btn btn-info btn-sm" title="Editar producto" onclick='editar
+                                    (@php echo json_encode([
+                                            "id"=>$aux->id,
+                                            "codigo"=>$aux->codigo_producto,
+                                            "nombre"=>$aux->nombre,
+                                            "costo"=>$aux->costo,
+                                            "precio"=>$aux->precio,
+                                            "talla"=>$aux->talla,
+                                            "descripcion"=>$aux->descripcion,
+                                            "id_categoria"=>$aux->id_categoria,
+                                            "arrayCategorias" => $categorias,
+                                            ]); 
+                                     @endphp)' >
+                           <i class="fas fa-edit"></i>
+                        </button>
+
+                        {{-- <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
                             "id"=>$aux->id,
                             "codigo"=>$aux->codigo_producto,
                             "nombre"=>$aux->nombre,
@@ -107,27 +136,38 @@
                             "id_categoria"=>$aux->id_categoria,
                             "arrayCategorias" => $categorias,
                             ]); @endphp)'>
-                        </i>
-                        @php
-                        $auxdata = json_encode([
-                            "id"=>$aux->id,
-                            "codigo"=>$aux->codigo_producto,
-                            "nombre"=>$aux->nombre,
-                            "costo"=>$aux->costo,
-                            "precio"=>$aux->precio,
-                            "talla"=>$aux->talla,
-                            "descripcion"=>$aux->descripcion,
-                            "estado"=>$aux->estado,
-                            "id_categoria"=>$aux->id_categoria,
-                            ]);
-                        if ($aux->estado == 1) 
-                        {
-                            echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>'; 
-                        }else{
-                            echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>';
-                        }
-                      @endphp
-
+                        </i> --}}
+                        {{-- @php
+                            $auxdata = json_encode([
+                                "id"=>$aux->id,
+                                "codigo"=>$aux->codigo_producto,
+                                "nombre"=>$aux->nombre,
+                                "costo"=>$aux->costo,
+                                "precio"=>$aux->precio,
+                                "talla"=>$aux->talla,
+                                "descripcion"=>$aux->descripcion,
+                                "estado"=>$aux->estado,
+                                "id_categoria"=>$aux->id_categoria,
+                                ]);
+                            if ($aux->estado == 1) 
+                            {
+                                echo  '<i class="fas fa-trash-alt fa-xl" style="color:#FA746B" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>'; 
+                            }else{
+                                echo '<i class="fas fa-check-circle fa-xl" style="color:#FAAE43" onclick=\'habilitarDesabilitar('.$auxdata.')\'></i>';
+                            }
+                        @endphp --}}
+                        @can('eliminar')
+                            <form action="{{ route('eliminar_producto', ['id' => $aux->id]) }}" 
+                                  method="post" id="eliminar-form-{{$aux->id}}" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-danger btn-sm" title="Eliminar producto" 
+                                onclick='confirmarAccion("eliminar", "¿Está seguro de eliminar el producto {{ $aux->nombre }} - {{ $aux->talla }}?", "eliminar-form-{{$aux->id}}")'>
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </form>
+                        @endcan
+                        
                     </th>
                     {{-- <th>{{$aux->codigo_producto}}</th> --}}
                     <th>{{$aux->nombre}}</th>
@@ -163,11 +203,6 @@
                         @csrf
                         @method('POST')
                         <div class="mb-3">
-                            {{-- <select class="select2" name="category">
-                                @foreach($categorias as $categoria)
-                                <option value="{{ $categoria->id }}">{{ "$categoria->nombre - $categoria->talla - $categoria->precio" }}</option>
-                                @endforeach 
-                            </select> --}}
                              <label for="id_categoria_producto" class="form-label">Categoria:</label>
                              <select class="form-select" aria-label="Default select example" name="id_categoria" id="id_categoria_producto">
                                 <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
@@ -217,6 +252,62 @@
             </div>
         </div>
         <!--Fin modal agregar producto-->
+
+    @can('editar')    
+        <x-modal id="modalEditarProducto" nombreBtn="Actualizar" 
+                title="Editar Producto" onclick="confirmarAccion('actualizar', '¿Está seguro de actualizar el producto?', 'frmProducto')"> 
+                <form method="POST" action="{{ route('actualizar_producto') }}" id="frmProducto">
+                    @csrf
+                    @method('PATCH')
+                    <div @class(['mb-3'])>
+                        <label for="id_categoria_producto" class="form-label">Categoria:</label>
+                        <select class="form-select" aria-label="Default select example" name="id_categoria" id="id_categoria_producto_e">
+                            <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
+                                @foreach ($categorias as $categoria)
+                                    @if ($categoria->estado == 1)
+                                        <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                    @endif
+                                @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                    <label for="nombre_producto" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" name="nombre" id="nombre_producto_e" aria-describedby="emailHelp" placeholder="Introduzca el Nombre del producto"> 
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="costo_producto" class="form-label">Costo del Producto:</label>
+                                <input type="number" class="form-control" name="costo" id="costo_producto_e" placeholder="Costo del Producto"> 
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="precio_producto" class="form-label">Precio de Venta Producto:</label>
+                                <input type="number" class="form-control" name="precio" id="precio_producto_e" placeholder="Precio del Producto"> 
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="talla_producto" class="form-label">Talla:</label>
+                        <input type="text" class="form-control" name="talla" id="talla_producto_e" aria-describedby="emailHelp" placeholder="Introduzca la Talla del Producto"> 
+                    </div>
+                    <div class="mb-3">
+                        <label for="talla_producto" class="form-label">Descripcion:</label>
+                        <textarea class="form-control" name="descripcion" id="descripcion_producto_e" rows="3" placeholder="Introduzca una Descripcion del Producto"></textarea>
+                    </div>
+                </form>
+        </x-modal>
+    @endcan
+
+    @can('eliminar')
+        <x-modal id="modalEliminarProducto" nombreBtn="Actualizar" 
+             title="Eliminar Producto"> 
+                
+        </x-modal>
+    @endcan
+
 @endsection
 
 
@@ -258,21 +349,14 @@
 
     function editar(item)
     {
-        $("#exampleModal").modal("show");
-        $("#exampleModalLabel").html("<h3>Editar Producto</h3>");
-        $("#formularioRegistroActualizacion").attr("action","{{ route('actualizar_producto') }}");
-        $("#formularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
-        $("#id_categoria_producto").val(item.id_categoria);
-        $("#nombre_producto").val(item.nombre);
-        $("#costo_producto").val(item.costo);
-        $("#precio_producto").val(item.precio);
-        $("#talla_producto").val(item.talla);
-        $("#descripcion_producto").val(item.descripcion);
-        $("#btnGuardarActualizar").val("Actualizar");
-        $("#btnGuardarActualizar").on('click',function(){
-            $("#formularioRegistroActualizacion").submit();
-            resestablecerValoresModal();
-        });
+        $("#modalEditarProducto").modal("show");
+        $("#frmProducto").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
+        $("#id_categoria_producto_e").val(item.id_categoria);
+        $("#nombre_producto_e").val(item.nombre);
+        $("#costo_producto_e").val(item.costo);
+        $("#precio_producto_e").val(item.precio);
+        $("#talla_producto_e").val(item.talla);
+        $("#descripcion_producto_e").val(item.descripcion);
     }
 
     function habilitarDesabilitar(item)
@@ -316,6 +400,25 @@
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    function confirmarAccion(accion, mensaje, idFormulario)
+    {
+        Swal.fire({
+            title: '¿Está seguro de ' + accion + ' el producto?',
+            text: mensaje,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, ' + accion,
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Aquí puedes enviar el formulario para eliminar el producto
+                document.getElementById(idFormulario).submit();
+            }
+        });
     }
 
     $(document).ready(function(){

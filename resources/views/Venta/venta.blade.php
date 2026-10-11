@@ -5,6 +5,7 @@
 <!--Aqui cominza la nueva logica de ventas en las sucursales-->
 
 @section('css')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet"/>
     <style>
         div.row > div.container-fluid > div{
             margin: auto;
@@ -45,16 +46,11 @@
     <div class="row">
         <div class="col">
             <h4>Realizando Venta Sucursal: 
-                <span class="h4" style="color: #512BFA">
+                <span class="h4" style="color: #512BFA; font-weight: bold">
                     @isset($sucursal)
                         {{ $sucursal->direccion }}
                     @endisset
                 </span>
-                {{-- <span class="h4" style="color: #512BFA">
-                    @isset($evento)
-                        {{ $evento[0]->fecha_evento }}
-                    @endisset
-                </span> --}}
             </h4>
         </div>
     </div>
@@ -68,6 +64,7 @@
 @push('scripts')
     <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function(){
             $("#home").removeClass('active');

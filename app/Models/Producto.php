@@ -5,10 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webpatser\Uuid\Uuid;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Producto extends Model
 {
+
     use HasFactory;
+    use SoftDeletes;
+    
     protected $fillable = ['nombre', 'talla', 'precio'];
 
     public static function boot()

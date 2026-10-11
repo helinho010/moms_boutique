@@ -34,10 +34,10 @@ class RealizarVenta extends Component
     public $tipoPagos;
 
     // Varialbes de los modelos
-    #[Validate('required|numeric')]
+    #[Validate('required|numeric|exists:productos,id')]
     public $idProductoSeleccionado;
 
-    #[Validate('required|min:1|numeric')]
+    #[Validate('required|numeric|min:1')]
     public $cantidadDelProductoSeleccionado;
 
     // Valores monetarios
@@ -75,9 +75,6 @@ class RealizarVenta extends Component
             $this->eventoDB = Evento::findOrFail($this->id_tipo_venta);
             $this->productos = InventarioExterno::inventarioXEvento($this->id_tipo_venta)->get();
         }
-
-        $this->idProductoSeleccionado = 'seleccionado';
-        $this->cantidadDelProductoSeleccionado = 0;
     }
 
     public function literalTotal ()
@@ -96,8 +93,9 @@ class RealizarVenta extends Component
 
     public function mount()
     {
-
         $this->valoresIniciales();
+        $this->idProductoSeleccionado = null;
+        $this->cantidadDelProductoSeleccionado = "";
         // $this->descuento = "0.0";
         $this->total = 0.0;
         $this->descuentoTotal = 0.0;
@@ -117,6 +115,7 @@ class RealizarVenta extends Component
 
     public function almaceneArrayProdcutosVenta()
     {
+
         $this->validate();
 
         // Buscar producto según tipo de venta
@@ -125,11 +124,14 @@ class RealizarVenta extends Component
                 $this->idProductoSeleccionado,
                 $this->id_tipo_venta
             )->first();
-        } else {
+        } else if ($this->tipoVenta === 'evento') {
             $productoBuscado = InventarioExterno::buscarItemInventario(
                 $this->idProductoSeleccionado,
                 $this->id_tipo_venta
             )->first();
+        } else {
+            $productoBuscado = null;
+            return redirect()->route('home_venta')->with('error', 'Tipo de venta no válido.');
         }
 
         if (!$productoBuscado) {
@@ -152,8 +154,7 @@ class RealizarVenta extends Component
         if ($posicion !== false) {
             // Ya existe → actualizar
             $this->productosAVender[$posicion]['cantidad'] += $cantidadNueva;
-            $this->productosAVender[$posicion]['subtotal'] =
-                $precioUnitario * $this->productosAVender[$posicion]['cantidad'];
+            $this->productosAVender[$posicion]['subtotal'] = $precioUnitario * $this->productosAVender[$posicion]['cantidad'];
         } else {
             // No existe → agregar
             $this->productosAVender[] = [
@@ -167,11 +168,12 @@ class RealizarVenta extends Component
         }
 
         // Resetear selección
-        $this->idProductoSeleccionado = 'seleccionado';
+        $this->idProductoSeleccionado = null;
         $this->cantidadDelProductoSeleccionado = 0;
 
         // Recalcular totales
         $this->calcularValoresMonetarios();
+        $this->dispatch('resetSelectProducto');
     }
 
 
@@ -210,10 +212,11 @@ class RealizarVenta extends Component
 
     public function almacenarDatos()
     {
+        
         if ( count($this->productosAVender) <= 0 ) {
             $this->js('alert("La lista de productos está vacía.")');
-            return redirect()->route('home_venta');
-            // $this->dispatch('refreshMe');
+            // return redirect()->route('home_venta');
+            $this->dispatch('refreshMe');
         } else {
             $cliente = new Cliente();
             $cliente->nit_ci = $this->nitCliente != "" ? $this->nitCliente : 0 ;
@@ -257,9 +260,9 @@ class RealizarVenta extends Component
 
 
                 if ($this->tipoVenta === "sucursal"){
-                    InventarioInterno::disminuirStock($producto["id_producto"], $producto["cantidad"]);
+                    InventarioInterno::disminuirStock($producto["id_producto"], $producto["cantidad"], $this->id_tipo_venta);
                 }else{
-                    $productoInventarioExterno = InventarioExterno::where('id_evento',session('eventoSeleccionadoParaVenta'))
+                    InventarioExterno::where('id_evento',session('eventoSeleccionadoParaVenta'))
                                                         ->where('id_producto',$producto["id_producto"])
                                                         ->update(['cantidad'=> DB::raw('cantidad-'.$producto["cantidad"])]);
                 }
@@ -273,6 +276,7 @@ class RealizarVenta extends Component
             $this->dispatch('ventaAlmacenada',
                 $this->tipoVenta, $se, $venta->id
             );
+            $this->dispatch('refreshMe');
         }
     }
 
