@@ -61,7 +61,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/producto', [ProductoController::class,'buscar'])->name('buscar_producto');
     Route::post('/buscarProductoId', [ProductoController::class,'buscarProductoId'])->name('buscar_producto_id');
     Route::post('/nuevo_producto',[ProductoController::class,'store'])->name('nuevo_producto');
-    Route::post('/actualizar_producto',[ProductoController::class,'update'])->name('actualizar_producto');
+    Route::patch('/actualizar_producto',[ProductoController::class,'update'])->name('actualizar_producto');
     Route::post('/actualizar_estado_producto',[ProductoController::class,'update_estado'])->name('actualizar_estado_producto');
     Route::delete('/eliminar_producto/{id}', [ProductoController::class,'destroy'])->name('eliminar_producto')->middleware(['permission:eliminar']);
 
@@ -81,9 +81,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/inventario_interno', [InventarioInternoController::class,'buscar'])->name('buscar_inventario_interno');
     Route::post('/nuevo_inventario_interno',[InventarioInternoController::class,'store'])->name('nuevo_inventario_interno');
     Route::post('/actualizar_inventario_interno',[InventarioInternoController::class,'update'])->name('actualizar_inventario_interno');
-    Route::patch('/actualizar_estado_inventario_interno',[InventarioInternoController::class,'update_estado'])->name('actualizar_estado_inventario_interno');
+    // Route::patch('/actualizar_estado_inventario_interno',[InventarioInternoController::class,'update_estado'])->name('actualizar_estado_inventario_interno');
+    Route::delete('/eliminar_item_inventario_interno',[InventarioInternoController::class,'eliminar'])->name('eliminar_item_inventario_interno')->middleware(['permission:eliminar']);
     Route::get('/inventario_interno_pdf',[InventarioInternoController::class,'exportPdf'])->name('inventario_interno_pdf');
     Route::get('/inventario_interno_excel',[InventarioInternoController::class,'exportExcel'])->name('inventario_interno_excel');
+    Route::get('/agregar_productos', [InventarioInternoController::class,'agregarProductos'])->name('inventario_interno_agregar_productos');
 
     // Inventario Externo
     Route::get('/inventario_externo', [InventarioExternoController::class,'index'])->name('home_inventario_externo')->middleware(['permission:opc inventario externo']);
@@ -110,8 +112,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/nuevo_detalle_venta',[DetalleVentaController::class,'store'])->name('nuevo_detalle_venta');
     Route::post('/actualizar_detalle_venta',[DetalleVentaController::class,'update'])->name('actualizar_detalle_venta');
     Route::post('/actualizar_estado_venta',[VentaController::class,'update_estado'])->name('actualizar_estado_detalle_venta');
-    Route::post('/seleccion_sucursal_venta',[VentaController::class,'seleccionSucursalVenta'])->name('seleccion_sucursal_venta');
-    Route::post('/seleccion_evento_venta',[VentaController::class,'seleccionEventoVenta'])->name('seleccion_evento_venta');
+    Route::get('/seleccion_sucursal_venta',[VentaController::class,'seleccionSucursalVenta'])->name('seleccion_sucursal_venta');
+    Route::get('/seleccion_evento_venta',[VentaController::class,'seleccionEventoVenta'])->name('seleccion_evento_venta');
     Route::post('/numeros_a_letras',[VentaController::class,'numeroALetras'])->name('numeros_a_letras');
     Route::post('/realizar_venta',[VentaController::class,'realizarVenta'])->name('realizar_venta');
     Route::get('/exportar_venta_detalle_venta',[VentaController::class,'exportVentaPdf'])->name('exportar_venta_detalle_venta');

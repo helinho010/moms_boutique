@@ -89,29 +89,28 @@ class ProductoController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'nombre' => 'required',
-            'precio' => 'required',
-            'talla' => 'required',
+            'nombre' => 'required|string|max:255',
+            'costo' => 'required|numeric|min:0',
+            'precio' => 'required|numeric|min:0',
+            'talla' => 'required|string|max:25',
+            'descripcion' => 'nullable|string|max:255',
         ]);
 
-        $actualizarProducto = Producto::where("id",$request->id)->first();
-        $actualizarProducto->nombre = $request->nombre;
-        $actualizarProducto->costo = $request->costo;
-        $actualizarProducto->precio = $request->precio;
-        $actualizarProducto->talla = $request->talla;
-        $actualizarProducto->descripcion = $request->descripcion;
+        $Producto = Producto::findOrFail($request->id);
+        $Producto->nombre = $request->nombre;
+        $Producto->costo = $request->costo;
+        $Producto->precio = $request->precio;
+        $Producto->talla = $request->talla;
+        $Producto->descripcion = $request->descripcion;
 
         if (isset($request->id_categoria)) 
         {
-            $actualizarProducto->id_categoria = $request->id_categoria;
-        }
-        
-        $estado = 0;
-        if ($actualizarProducto->save()) {
-            $estado = 1;
+            $Producto->id_categoria = $request->id_categoria;
         }
 
-        return redirect()->route('home_producto',['actualizado'=>$estado]);
+        $Producto->save();
+
+        return redirect()->route('home_producto')->with('mensaje-exito', 'Producto' . " $Producto->nombre - $Producto->talla - $Producto->precio " . 'actualizado correctamente.');
     }
 
     public function update_estado(Request $request)

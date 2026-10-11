@@ -109,11 +109,23 @@
                 @foreach ($productos as $aux)
                   <tr>
                     <th scope="row">
-                        <button type="button" class="btn btn-info btn-sm" title="Editar producto" data-bs-toggle="modal" data-bs-target="#modalEditarProducto">
+                        <button type="button" class="btn btn-info btn-sm" title="Editar producto" onclick='editar
+                                    (@php echo json_encode([
+                                            "id"=>$aux->id,
+                                            "codigo"=>$aux->codigo_producto,
+                                            "nombre"=>$aux->nombre,
+                                            "costo"=>$aux->costo,
+                                            "precio"=>$aux->precio,
+                                            "talla"=>$aux->talla,
+                                            "descripcion"=>$aux->descripcion,
+                                            "id_categoria"=>$aux->id_categoria,
+                                            "arrayCategorias" => $categorias,
+                                            ]); 
+                                     @endphp)' >
                            <i class="fas fa-edit"></i>
                         </button>
 
-                        <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
+                        {{-- <i class="fas fa-edit fa-xl i" style="color:#6BA9FA" onclick='editar(@php echo json_encode([
                             "id"=>$aux->id,
                             "codigo"=>$aux->codigo_producto,
                             "nombre"=>$aux->nombre,
@@ -124,7 +136,7 @@
                             "id_categoria"=>$aux->id_categoria,
                             "arrayCategorias" => $categorias,
                             ]); @endphp)'>
-                        </i>
+                        </i> --}}
                         {{-- @php
                             $auxdata = json_encode([
                                 "id"=>$aux->id,
@@ -243,58 +255,47 @@
 
     @can('editar')    
         <x-modal id="modalEditarProducto" nombreBtn="Actualizar" 
-                title="Editar Producto"> 
-                <form method="POST" action="{{ route('nuevo_producto') }}" id="formularioRegistroActualizacion">
+                title="Editar Producto" onclick="confirmarAccion('actualizar', '¿Está seguro de actualizar el producto?', 'frmProducto')"> 
+                <form method="POST" action="{{ route('actualizar_producto') }}" id="frmProducto">
                     @csrf
-                    @method('POST')
+                    @method('PATCH')
                     <div @class(['mb-3'])>
                         <label for="id_categoria_producto" class="form-label">Categoria:</label>
-                        <select class="form-select" aria-label="Default select example" name="id_categoria" id="id_categoria_producto">
+                        <select class="form-select" aria-label="Default select example" name="id_categoria" id="id_categoria_producto_e">
                             <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
-                                @foreach ($categorias as $item)
-                                @if ($item->estado == 1)
-                                    <option value="{{ $item->id }}">{{ $item->nombre }}</option>
-                                    @else
-                                    <option value="{{ $item->id }}" disabled>{{ "$item->nombre (deshabilitado)" }}</option>
-                                @endif
+                                @foreach ($categorias as $categoria)
+                                    @if ($categoria->estado == 1)
+                                        <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                                    @endif
                                 @endforeach
                         </select>
                     </div>
-                    {{-- <div class="input-group mb-3">
-                        <label class="col-sm-2 col-form-label">Producto</label>
-                        <div>
-                            <livewire:select-2
-                                :options="[1,2,3,4,5]"
-                                onchange="seleccionarProducto"
-                            />
-                        </div>
-                    </div> --}}
                     <div class="mb-3">
                     <label for="nombre_producto" class="form-label">Nombre:</label>
-                    <input type="text" class="form-control" name="nombre" id="nombre_producto" aria-describedby="emailHelp" placeholder="Introduzca el Nombre del producto"> 
+                    <input type="text" class="form-control" name="nombre" id="nombre_producto_e" aria-describedby="emailHelp" placeholder="Introduzca el Nombre del producto"> 
                     </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="costo_producto" class="form-label">Costo del Producto:</label>
-                                <input type="number" class="form-control" name="costo" id="costo_producto" placeholder="Costo del Producto"> 
+                                <input type="number" class="form-control" name="costo" id="costo_producto_e" placeholder="Costo del Producto"> 
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="precio_producto" class="form-label">Precio de Venta Producto:</label>
-                                <input type="number" class="form-control" name="precio" id="precio_producto" placeholder="Precio del Producto"> 
+                                <input type="number" class="form-control" name="precio" id="precio_producto_e" placeholder="Precio del Producto"> 
                             </div>
                         </div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="talla_producto" class="form-label">Talla:</label>
-                        <input type="text" class="form-control" name="talla" id="talla_producto" aria-describedby="emailHelp" placeholder="Introduzca la Talla del Producto"> 
+                        <input type="text" class="form-control" name="talla" id="talla_producto_e" aria-describedby="emailHelp" placeholder="Introduzca la Talla del Producto"> 
                     </div>
                     <div class="mb-3">
                         <label for="talla_producto" class="form-label">Descripcion:</label>
-                        <textarea class="form-control" name="descripcion" id="descripcion_producto" rows="3" placeholder="Introduzca una Descripcion del Producto"></textarea>
+                        <textarea class="form-control" name="descripcion" id="descripcion_producto_e" rows="3" placeholder="Introduzca una Descripcion del Producto"></textarea>
                     </div>
                 </form>
         </x-modal>
@@ -348,21 +349,14 @@
 
     function editar(item)
     {
-        $("#exampleModal").modal("show");
-        $("#exampleModalLabel").html("<h3>Editar Producto</h3>");
-        $("#formularioRegistroActualizacion").attr("action","{{ route('actualizar_producto') }}");
-        $("#formularioRegistroActualizacion").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
-        $("#id_categoria_producto").val(item.id_categoria);
-        $("#nombre_producto").val(item.nombre);
-        $("#costo_producto").val(item.costo);
-        $("#precio_producto").val(item.precio);
-        $("#talla_producto").val(item.talla);
-        $("#descripcion_producto").val(item.descripcion);
-        $("#btnGuardarActualizar").val("Actualizar");
-        $("#btnGuardarActualizar").on('click',function(){
-            $("#formularioRegistroActualizacion").submit();
-            resestablecerValoresModal();
-        });
+        $("#modalEditarProducto").modal("show");
+        $("#frmProducto").append('<input type="text" name="id" '+ 'value="'+ item.id +'"' +'hidden>');
+        $("#id_categoria_producto_e").val(item.id_categoria);
+        $("#nombre_producto_e").val(item.nombre);
+        $("#costo_producto_e").val(item.costo);
+        $("#precio_producto_e").val(item.precio);
+        $("#talla_producto_e").val(item.talla);
+        $("#descripcion_producto_e").val(item.descripcion);
     }
 
     function habilitarDesabilitar(item)

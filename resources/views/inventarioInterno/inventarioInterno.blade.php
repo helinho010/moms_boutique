@@ -2,29 +2,6 @@
 
 @section('title','Inventario Interno')
 
-@section('css')
-    <style>
-        table > tbody > tr > th > i{
-            font-size: 20px;
-        }
-
-        #btnExportDataInventarioPdf{
-            height: 40px;
-        }
-
-        .titulo_sucursal{
-            margin-top: 50px;
-            margin-bottom: 10px;
-        }
-        .titulo_sucursal > div > h5{
-            font-size: 20px;
-            color: #0d6efd;
-            font-weight: bold;
-        }
-
-    </style>
-@endsection
-
 @section('mensaje-errores')
     @php
         if (isset($_GET['exito']))
@@ -99,6 +76,17 @@
         <x-formulario.mensaje-error-validacion-inputs color="danger">
             <h5>{{ session('error') }}</h5>
         </x-formulario.mensaje-error-validacion-inputs>      
+    @endif
+
+    @if (session('mensaje-errores'))
+        <div class="alert alert-danger">
+            {{ session('mensaje-errores') }}
+        </div>
+    @endif
+    @if (session('mensaje-exito'))
+        <div class="alert alert-success">
+            {{ session('mensaje-exito') }}
+        </div>
     @endif
 @endsection
 
@@ -226,42 +214,34 @@
                   <tr>
                     <th scope="row">
                         <div class="row">
-                            <div class="col-md-4">
-                                @can('editar inventario interno')
-                                    <a href="{{ route('editar_inventario_interno', ['id_sucursal'=>$item->id_sucursals, 'id_producto'=>$item->id_productos]) }}" 
-                                    class="btn btn-outline-primary" title="Editar"
-                                    >
-                                        <i class="fas fa-edit"></i>
-                                    </a>                            
-                                @endcan
-                            </div>
-                            <div class="col-md-4">
-                                @can('eliminar inventario interno')
-                                    @if ($item->estado_inventario_internos == 1)
-                                        <form action="{{ route('actualizar_estado_inventario_interno') }}" method="post" id="formularioEstadoActivo{{ $item->id_inventario_internos }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="text" name="id_inventario_interno" value="{{ $item->id_inventario_internos }}" hidden>
-                                            <input type="text" name="estado_inventario_interno" value="{{ $item->estado_inventario_internos }}" hidden>
-                                            <input type="text" name="id_sucursal" value="{{ $item->id_sucursals }}" hidden>
-                                            <button type="button" class="btn btn-outline-danger" onclick='habilitarDesabilitar("formularioEstadoActivo{{ $item->id_inventario_internos }}")'>
-                                                <i class="fas fa-trash-alt fa-xl" style="color:#FA746B"></i>
-                                            </button>
-                                        </form>
-                                    @else
-                                        <form action="{{ route('actualizar_estado_inventario_interno') }}" method="post" id="formularioEstadoNoActivo{{ $item->id_inventario_internos }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="text" name="id_inventario_interno" value="{{ $item->id_inventario_internos }}" hidden>
-                                            <input type="text" name="estado_inventario_interno" value="{{ $item->estado_inventario_internos }}" hidden>
-                                            <input type="text" name="id_sucursal" value="{{ $item->id_sucursals }}" hidden>
-                                            <button type="button" class="btn btn-outline-warning" onclick='habilitarDesabilitar("formularioEstadoNoActivo{{ $item->id_inventario_internos }}")'>
-                                                <i class="fas fa-check-circle fa-xl" style="color:#FAAE43"></i>
-                                            </button>
-                                        </form>
-                                    @endif
-                                @endcan
-                            </div>
+                            @can('editar')
+                                <form style="width: 10%" class="p-3" action="{{ route('editar_inventario_interno', ['id_sucursal'=>$item->id_sucursals, 'id_producto'=>$item->id_productos]) }}" method="get" id="frm-editar-{{ $item->id_inventario_internos }}">
+                                        @csrf
+                                        @method("GET")
+                                        <x-botones.boton-editar  
+                                                    color="info" 
+                                                    tamanio="sm" 
+                                                    nombreTitle="Editar" 
+                                                    nombreIcono="fas fa-edit" 
+                                                    onclick="confirmarAccion('editar', 'el item del inventario: {{ $item->nombre_productos }} - Talla: {{ $item->talla_productos }} - Costo Producto: {{ $item->costo_productos }} - Precio Venta: {{ $item->precio_productos }}', 'frm-editar-{{ $item->id_inventario_internos }}')"
+                                                >
+                                        </x-botones.boton-editar>
+                                </form>                            
+                            @endcan
+                        
+                            @can('eliminar')
+                                    <form style="width: 10%" class="p-3" action="{{ route('eliminar_item_inventario_interno') }}" method="post" id="frm-eliminar-{{ $item->id_inventario_internos }}">
+                                        @csrf
+                                        @method("DELETE")
+                                        <input type="text" name="id_inventario_interno" value="{{ $item->id_inventario_internos }}" hidden>
+                                        <input type="text" name="id_sucursal" value="{{ $item->id_sucursals }}" hidden>
+                                        <x-botones.boton-editar  color="danger" tamanio="sm" 
+                                                    nombreTitle="Eliminar" nombreIcono="fas fa-trash-alt" 
+                                                    onclick="confirmarAccion('eliminar', 'el item del inventario: {{ $item->nombre_productos }} - Talla: {{ $item->talla_productos }} - Costo Producto:{{ $item->costo_productos }} - Precio Venta: {{ $item->precio_productos }}', 'frm-eliminar-{{ $item->id_inventario_internos }}')"
+                                        >
+                                        </x-botones.boton-editar>
+                                    </form>
+                            @endcan
                         </div>
                     </th>
                     {{-- <th>{{"$item->direccion_sucursals"}}</th> --}}
@@ -327,7 +307,7 @@
                       </div>
                       <br>
                       @isset($productos)
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="col-md-2">
                                 <label for="inputPassword6" class="col-form-label">Producto: </label>
                             </div>
@@ -346,6 +326,26 @@
                                                 @endforeach
                                         </select>
                                     </div>
+                            </div>
+                        </div> --}}
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="modalInputCantidadIngreso" class="form-label">Productos: </label>
+                            </div>
+                            <div class="col-md-8">
+                                <select class="form-select select2Modal" aria-describedby="" 
+                                        name="id_producto" id="modalSelectProductoSelect2">
+                                    <option value="seleccionado" selected disabled>Seleccione una opcion...</option>
+                                        @foreach ($productos as $producto)
+                                            @if ($producto->estado == 1)
+                                                <option value="{{ $producto->id }}">
+                                                    {{ $producto->nombre }} -
+                                                    {{ $producto->talla != "" ? "Talla: ".$producto->talla : "ST(Sin Talla)" }} -
+                                                    {{ $producto->precio != "" ? "Precio: ".$producto->precio : 0 }} Bs.
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                </select>
                             </div>
                         </div>
                       @endisset
@@ -389,10 +389,57 @@
         </div>
 @endsection
 
+
+@assets
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <style>
+            table > tbody > tr > th > i{
+                font-size: 20px;
+            }
+
+            #btnExportDataInventarioPdf{
+                height: 40px;
+            }
+
+            .titulo_sucursal{
+                margin-top: 50px;
+                margin-bottom: 10px;
+            }
+            .titulo_sucursal > div > h5{
+                font-size: 20px;
+                color: #0d6efd;
+                font-weight: bold;
+            }
+
+            /*
+            *
+            *Estilos para el select2 en el modal de registro y actualizacion de items del inventario
+            *
+            */
+
+            .select2-container--default .select2-results {
+                background-color: #d3d3d3; /* Plomo claro */
+                /* o usa: background-color: #808080; para plomo más oscuro */
+                /* o usa: background-color: #f0f0f0; para plomo muy claro */
+            }
+            .select2-container--default .select2-selection--single {
+                height: 38px; /* Ajusta la altura según tus necesidades */
+            }
+
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                line-height: 38px; /* Ajusta la línea según la altura */
+            }
+
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 38px; /* Ajusta la altura según tus necesidades */
+            }
+    </style>
+@endassets
+
 @push('scripts')
 <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
 <script>
 
     $.ajaxSetup({
@@ -413,10 +460,35 @@
             $('#title_nombre_sucursal').text($("#select_sucursal option:selected").text());
             // formularioRegistroActualizacion-selectSucursalRegAct
             $('#selectSucursalRegAct').val($("#select_sucursal option:selected").attr('value'));
-            
         }
 
+        $('.select2Modal').select2({
+            dropdownParent: $('#exampleModal'),
+            width: '100%',
+        });
+
+        $("#home").removeClass('active');
+        $("#inventario\\ interno").addClass('active');
+
     });
+
+    function confirmarAccion(accion, mensaje, idFormulario)
+    {
+        Swal.fire({
+            title: '¿Está seguro de ' + accion + ' el producto?',
+            text: mensaje,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, ' + accion,
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(idFormulario).submit();
+            }
+        });
+    }
 
     $("#select_sucursal").on('change',function(){
         let idSucursal = $("#select_sucursal option:selected").attr('value');
@@ -513,7 +585,7 @@
     }
 
     $(document).ready(function(){
-        // $('.select2').select2();
+        
         var parametroGetExito = getParameterByName('exito');
         var parametroGetActualizado = getParameterByName('actualizado');
         var pathname = window.location.pathname;
@@ -524,18 +596,6 @@
                 $(location).attr('href',pathname);
             }, 10000);
         }
-
-        $("#home").removeClass('active');
-        $("#inventario\\ interno").addClass('active');
-
-        $('.select2').select2({
-            theme: "bootstrap-5",
-        });
-
-        $('.select2Modal').select2({
-            theme: "bootstrap-5",
-            dropdownParent: $('#exampleModal'),
-        });
     });
 
 </script>

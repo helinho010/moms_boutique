@@ -18,6 +18,7 @@ use LaravelLang\Publisher\Console\Reset;
 use Maatwebsite\Excel\Facades\Excel;
 use Svg\Tag\Rect;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\View\View as IlluminateView;
 
 use function PHPSTORM_META\type;
 
@@ -57,11 +58,12 @@ class InventarioInternoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_sucursal' => 'required|integer',
-            'id_producto' => 'required|integer',
-            'id_tipo_ingreso_salida' => 'required|integer',
-            'cantidad_ingreso' => 'required|integer',
+            'id_sucursal' => 'required|integer|exists:sucursals,id',
+            'id_producto' => 'required|integer|exists:productos,id',
+            'id_tipo_ingreso_salida' => 'required|integer|min:1',
+            'cantidad_ingreso' => 'required|integer|min:1',
         ]);
+
 
         try {
             
@@ -176,6 +178,30 @@ class InventarioInternoController extends Controller
         }
     }
 
+    public function eliminar(Request $request)
+    {
+        $validar = $request->validate([
+            'id_inventario_interno' => 'required|integer|exists:inventario_internos,id',
+            'id_sucursal' => 'integer|integer|exists:sucursals,id',
+        ]);
+
+        // dd($request->all());
+        
+        try {
+            
+            InventarioInterno::where([
+                ['id', '=', $request->id_inventario_interno],
+                ['id_sucursal', '=', $request->id_sucursal],
+            ])->delete();
+
+            return redirect()->route('home_inventario_interno', ['id_sucursal' => $request->id_sucursal])->with('mensaje-exito', 'El item fue eliminado correctamente!');
+
+        } catch (\Throwable $th) {
+            return redirect()->route('home_inventario_interno', ['id_sucursal' => $request->id_sucursal])->with('mensaje-errores', "Error al eliminar el item!");
+
+        }
+    }
+
     public function exportPdf(Request $request)
     {
         $validar = $request->validate([
@@ -222,5 +248,10 @@ class InventarioInternoController extends Controller
 
         // Exportar los datos a CSV
         return Excel::download(new InventarioInternoExport($inventarioInternoSucursal), $nombre_archivo, \Maatwebsite\Excel\Excel::XLSX);
+    }
+
+    public function agregarProductos()
+    {
+        return view('inventarioInterno.agregarProductos');
     }
 }

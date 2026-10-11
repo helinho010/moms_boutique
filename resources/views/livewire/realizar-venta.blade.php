@@ -1,58 +1,41 @@
 <div>
     <div class="row">
         <div class="col-md-1"></div>
-        <div class="col-md-5">
-            <form action="{{ route('buscar_categoria') }}" method="POST" id="buscarformulario">
-                @method('POST')
-                @csrf
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Seleccione un Producto: </label>
-                    <div class="input-group">
-                        <select class="form-select form-control" aria-describedby="" name="id_producto" id="select_producto" wire:model='idProductoSeleccionado'>
-                            <option value="seleccionado" disabled>Seleccione una opcion...</option>
-                            {{-- @foreach ($productosEvento as $producto) --}}
-                            @foreach ($productos as $producto)
-                              {{-- @if ( $producto->estado_inventario_externo == 1 && $producto->cantidad_inventario_externo > 0)
-                                <option value="{{ $producto->id_producto }}"> 
-                                    {{$producto->nombre_producto}} - 
-                                    Talla: {{ $producto->talla_producto != '' ? $producto->talla_producto : "ST(Sin Talla)"}} -
-                                    Precio:  {{ $producto->precio_producto != '' ? $producto->precio_producto : "0"}} Bs -
-                                    (Stock: {{ $producto->cantidad_inventario_externo }})  
-                                </option>     
-                              @endif --}}
-                              @if ($producto->stock < 1)
-                                <option value="{{ $producto->id_productos }}" disabled> 
+
+        <div class="col-md-5" wire:ignore>
+            <label for="select_producto" class="form-label">Seleccione un Producto: </label>
+            <div class="input-group">
+                <select class="producto-select2 form-control" 
+                        name="id_producto" id="select_producto" 
+                        >
+                    <option></option>
+                    @foreach ($productos as $producto)
+                        @if ($producto->stock >= 1)
+                            <option value="{{ $producto->id_productos }}"> 
                                     {{ $producto->nombre_productos }} 
                                     - Talla: {{ $producto->talla_productos == '' ? "ST(Sin talla)" : $producto->talla_productos}}
                                     - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock }})
-                                </option>
-                              @else
-                                <option value="{{ $producto->id_productos }}"> 
-                                    {{ $producto->nombre_productos }} 
-                                    - Talla: {{ $producto->talla_productos == '' ? "ST(Sin talla)" : $producto->talla_productos}}
-                                    - Precio {{ $producto->precio_productos == '' ? 0 :  $producto->precio_productos }} Bs (Stock: {{ $producto->stock }})
-                                </option>      
-                              @endif
-                            @endforeach    
-                         </select>
-                         {{-- <button class="input-group-text" id="btnFormDataInventario"><i class="fas fa-cart-arrow-down" style="color:green; font-size: 20px;"></i></button> --}}
-                    </div>
-                    @error('idProductoSeleccionado') <span class="error" style="color: red"> Debe seleccionar un producto *</span> @enderror
-                    {{-- @livewire('formulario.input-select', ['nomreInput' => "producto", "identificadorInput" => "producto", "placeholder" => "quepasa", "textoValue" => "****", "modelo" => \App\Models\InventarioInterno::class]) --}}
-                </div>
-            </form>
+                            </option>
+                        @endif
+                    @endforeach    
+                </select>
+            </div>
+            @error('idProductoSeleccionado') <span class="error" style="color: red"> Debe seleccionar un producto *</span> @enderror
         </div>
         
         <div class="col-md-3">
-            <div class="mb-3">
-                <label for="cantidad" class="form-label">Introduzca la Cantidad: </label>
-                <div class="input-group">
-                     <input type="number" name="cantidad" id="cantidad" class="form-control" placeholder="0" wire:model='cantidadDelProductoSeleccionado' wire:keydown.enter='almaceneArrayProdcutosVenta' wire:keydown.tab='almaceneArrayProdcutosVenta'>
-                     <button class="input-group-text" id="btnAddItemVenta" wire:click='almaceneArrayProdcutosVenta()'><i class="fas fa-cart-arrow-down" style="color:green; font-size: 20px;"></i></button>
-                </div>
-                @error('cantidadDelProductoSeleccionado') <span class="error" style="color: red"> La Cantidad debe ser mayor a cero*</span> @enderror
+            <label for="cantidad" class="form-label">Introduzca la Cantidad: </label>
+            <div class="input-group">
+                 <input type="number" name="cantidad" id="cantidad" 
+                        class="form-control" placeholder="0" 
+                        wire:model='cantidadDelProductoSeleccionado' 
+                        wire:keydown.enter='almaceneArrayProdcutosVenta' 
+                        wire:keydown.tab='almaceneArrayProdcutosVenta'>
+                 <button class="input-group-text" id="btnAddItemVenta" wire:click='almaceneArrayProdcutosVenta()'><i class="fas fa-cart-arrow-down" style="color:green; font-size: 20px;"></i></button>
             </div>
+            @error('cantidadDelProductoSeleccionado') <span class="error" style="color: red"> La Cantidad debe ser mayor a cero*</span> @enderror
         </div>
+        
         <div class="col-md-2"></div>
     </div>
     <br>
@@ -199,28 +182,77 @@
     </div>
 </div>
 
-@script
-<script>
-    function seleccionarContenidoInput(id)
-    {
-        $('#'+id).select();
-    }
+@assets
+    <style>
+        .select2-container--default .select2-results {
+            background-color: #d3d3d3; /* Plomo claro */
+            /* o usa: background-color: #808080; para plomo más oscuro */
+            /* o usa: background-color: #f0f0f0; para plomo muy claro */
+        }
+        .select2-container--default .select2-selection--single {
+            height: 38px; /* Ajusta la altura según tus necesidades */
+        }
 
-    document.addEventListener('livewire:initialized', () => {
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 38px; /* Ajusta la línea según la altura */
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 38px; /* Ajusta la altura según tus necesidades */
+        }
+        .inputSinEstilos {
+            border: none;
+            background: transparent;
+            text-align: center;
+        }
+    </style>
+@endassets
+
+@script
+    <script>
+        function seleccionarContenidoInput(id) {
+            $('#' + id).select();
+        }
+
+        // Inicializar Select2
+        $('#select_producto').select2({
+            placeholder: 'Seleccione una opción...',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Sincronizar con Livewire 3 usando $wire
+        $('#select_producto').on('change', function (e) {
+            $wire.set('idProductoSeleccionado', $(this).val())
+            console.log("PRueba de consola: " + Livewire.all().find(c => c.name === 'realizar-venta').$wire.idProductoSeleccionado);
+        });
+
+        $wire.on('resetSelectProducto', () => {
+            $('#select_producto').val(null).trigger('change.select2');
+        });
+
+        // Evento ventaAlmacenada
+        $wire.on('ventaAlmacenada', (data) => {
+            window.open(`/reporte_venta_pdf/${data[0]}/${data[1]}/venta/${data[2]}`, '_blank');
+        });
+
+        $wire.on('refreshMe', () => {
+            location.reload();
+        });
+
+        $("#descuentoVenta").on('click', function () {
+            $(this).select();
+        });
+    </script>
+@endscript
+
+
+
+{{-- document.addEventListener('livewire:initialized', () => {
             Livewire.on('ventaAlmacenada', ( data ) => {
                 // console.log('Datos: ' + data);
                 // Aquí puedes abrir el PDF, mostrar alerta, etc.
                 // console.log(`/reporte_venta_pdf/${data[0]}/${data[1]}/venta/${data[2]}`);
                 window.open(`/reporte_venta_pdf/${data[0]}/${data[1]}/venta/${data[2]}`, '_blank');
             });
-    });
-
-    Livewire.on('refreshMe', () => {
-       location.reload();   
-    });
-
-    $("#descuentoVenta").on('click', function(){
-        $(this).select();
-    });
-</script>
-@endscript
+    }); --}}
