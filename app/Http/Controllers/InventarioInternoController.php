@@ -208,6 +208,8 @@ class InventarioInternoController extends Controller
             'id_sucursal' => 'required|integer',
         ]);
 
+        set_time_limit(300); // 5 minutos
+
         $sucursal = Sucursal::find($request->id_sucursal);
 
         $pdf = Pdf::loadView('pdf.inventario', [
@@ -228,7 +230,9 @@ class InventarioInternoController extends Controller
         $validar = $request->validate([
             'id_sucursal' => 'required|integer',
         ]);
+        
         $sucursal = Sucursal::find($request->id_sucursal);
+
         $inventarioInternoSucursal = InventarioInterno::inventarioXSucurusal($request->id_sucursal)->get();
         
         $inventarioInternoSucursal = $inventarioInternoSucursal->map(function($item){
@@ -238,8 +242,8 @@ class InventarioInternoController extends Controller
                                                     ->join('categorias', 'categorias.id', 'productos.id_categoria')
                                                     ->where('productos.id',$item->id_productos)
                                                     ->get();
-
-            $item->categoria = $nombreCategoriaSegunProducto ? $nombreCategoriaSegunProducto[0]->nombre_categoria : 'Sin categoría';
+            
+            $item->categoria = $nombreCategoriaSegunProducto->first()?->nombre_categoria  ?? 'Sin categoría';
             
             return $item;
         });
