@@ -4192,19 +4192,19 @@
                 </div>
                 <div style="margin: auto; height: 100px">
                     <span>
-                        <b>Nombre Empsa:</b> {{ $sucursal->razon_social }}
+                        <b>Nombre Empsa:</b> {{ $sucursal->razon_social ?? 'Todas las Sucursales'  }}
                     </span>
                     <span>
-                        <b>Ubicacion: </b> {{ $sucursal->direccion }}
+                        <b>Ubicacion: </b> {{ $sucursal->direccion ?? 'Todas las Sucursales' }}
                     </span>
                     <span>
-                        <b>Nit: </b> {{ $sucursal->nit }}
+                        <b>Nit: </b> {{ $sucursal->nit ?? 'N/A' }}
                     </span>
                     <span>
-                        <b>Telefono: </b> {{ $sucursal->telefonos }}
+                        <b>Telefono: </b> {{ $sucursal->telefonos ?? 'N/A' }}
                     </span>
                     <span>
-                        <b>Ciudad: </b> {{ $sucursal->ciudad }} - Bolivia
+                        <b>Ciudad: </b> {{ $sucursal->ciudad ?? 'N/A' }} - Bolivia
                     </span>
                 </div>
             </div>
